@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Layout para la actividad de sopa de letras "Zazpi Kaleak".
+
+    Estructura de dos pantallas:
+    1. Pantalla de texto: Muestra información histórica sobre las Siete Calles
+       con audio explicativo y mascota animada.
+    2. Pantalla de juego: Sopa de letras interactiva con checkboxes, progreso
+       y mascota que reacciona a las acciones del usuario.
+
+    Ambas pantallas están dentro de un FrameLayout y se alternan cambiando
+    la visibilidad (VISIBLE/GONE) desde el código Kotlin.
+
+    @author Salca
+    @version 2.0
+    @since 2026-01-07
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#E3F2FD">
+
+    <!-- ============================================================================ -->
+    <!-- PANTALLA 1: TEXTO INTRODUCTORIO Y AUDIO                                     -->
+    <!-- ============================================================================ -->
+
+    <!--
+        ScrollView contenedor de la primera pantalla.
+        Visible inicialmente, se oculta al presionar "Hasi Sopa de Letras".
+    -->
+    <ScrollView
+        android:id="@+id/scrollTextContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Título de la actividad -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Zazpi Kaleak"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="#FF69B4"
+                android:gravity="center"
+                android:paddingBottom="16dp"/>
+
+            <!-- Mascota de la pantalla 1 (león normal) -->
+            <!--
+                Esta mascota aparece con animación de bounce al inicio.
+                Representa al león del Athletic en estado normal.
+            -->
+            <ImageView
+                android:id="@+id/ivMascotaPantalla1"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:src="@drawable/mascota_normal"
+                android:scaleType="fitCenter"
+                android:contentDescription="Mascota del Athletic Club"/>
+
+            <!--
+                Texto histórico sobre las Zazpi Kaleak.
+
+                Contenido:
+                "Bilbo 1300. urtean sortu zen itsasadarraren ertzean,
+                merkataritza bultzatzeko diseinatua. Herria zazpi kale nagusiren
+                inguruan egituratzen zen (Somera, Artekale, Tendería, Belostikale,
+                Carnicería Vieja, Barrenkale eta Barrenkale Barrena).
+                Kale horiek hiriaren merkataritza eta artisau bihotza ziren,
+                eta merkatariak, zapatariak, arrantzaleak, artisauak,
+                errementariak eta beste lanbide batzuk hartzen zituzten.
+
+                Bilboko Alde Zaharreko kaleek antzinako lanbideen izenak
+                jasotzen dituzte: Somera (barazkiak eta frutak saltzen ziren),
+                Artekale (erdikoa), Tendería (dendariengatik/ohialeengatik),
+                Belostikale (larru sailtzaileengatik), Carniceria Vieja
+                (harategiengatik), Barrenkale eta Barrenkale Barrena
+                (kalerik baxuenak), jatorriz zapatariak eta beste artisau
+                batzuk hartzen."
+            -->
+            <TextView
+                android:id="@+id/tvTextoIntroductorio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Bilbo 1300. urtean sortu zen itsasadarraren ertzean, merkataritza bultzatzeko diseinatua. Herria zazpi kale nagusiren inguruan egituratzen zen (Somera, Artekale, Tendería, Belostikale, Carnicería Vieja, Barrenkale eta Barrenkale Barrena). Kale horiek hiriaren merkataritza eta artisau bihotza ziren, eta merkatariak, zapatariak, arrantzaleak, artisauak, errementariak eta beste lanbide batzuk hartzen zituzten.\n\nBilboko Alde Zaharreko kaleek antzinako lanbideen izenak jasotzen dituzte: Somera (barazkiak eta frutak saltzen ziren), Artekale (erdikoa), Tendería (dendariengatik/ohialeengatik), Belostikale (larru sailtzaileengatik), Carniceria Vieja (harategiengatik), Barrenkale eta Barrenkale Barrena (kalerik baxuenak), jatorriz zapatariak eta beste artisau batzuk hartzen."
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:lineSpacingExtra="4dp"
+                android:paddingBottom="24dp"/>
+
+            <!--
+                Botón para iniciar la sopa de letras.
+                Al presionarlo:
+                1. Se oculta esta pantalla
+                2. Se muestra la pantalla de juego
+                3. Se detiene el audio
+                4. Se anima la mascota de la pantalla 2
+            -->
+            <Button
+                android:id="@+id/btnComenzarSopa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Hasi Sopa de Letras"
+                android:textSize="18sp"
+                android:backgroundTint="#FF69B4"
+                android:textColor="#FFFFFF"
+                android:paddingHorizontal="24dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ============================================================================ -->
+    <!-- PANTALLA 2: SOPA DE LETRAS INTERACTIVA                                      -->
+    <!-- ============================================================================ -->
+
+    <!--
+        ScrollView contenedor de la segunda pantalla.
+        Oculta inicialmente (visibility="gone"), se muestra al presionar el botón.
+    -->
+    <ScrollView
+        android:id="@+id/sopaContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <!-- Título de la sopa de letras -->
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Zazpi Kaleak"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#FF69B4"
+                android:gravity="center"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <!-- Mascota de la pantalla 2 (león saludando/celebrando) -->
+            <!--
+                Esta mascota cambia de estado según las acciones:
+                - Inicio: mascota_saludando (con animación wave)
+                - Al encontrar palabra: breve animación bounce
+                - Al completar todo: mascota_celebrando (con animación celebrate)
+            -->
+            <ImageView
+                android:id="@+id/ivMascotaPantalla2"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/mascota_saludando"
+                android:scaleType="fitCenter"
+                android:contentDescription="Mascota del Athletic Club"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <!--
+                Vista personalizada de la sopa de letras.
+
+                Dimensiones: 360dp de alto para que quepa bien en pantalla
+                Contiene una cuadrícula de 12x12 con las 7 palabras ocultas:
+                - SOMERA (horizontal, fila 0)
+                - ARTEKALE (horizontal, fila 1)
+                - TENDERIA (horizontal, fila 2)
+                - BELOSTIKALE (horizontal, fila 3)
+                - CARNICERIAVIEJA (vertical, columna 0)
+                - BARRENKALE (horizontal, fila 5)
+                - BARRENKALEBARRENA (vertical, columna 11)
+            -->
+            <com.salca.didaktikapp.WordSearchView
+                android:id="@+id/wordSearchView"
+                android:layout_width="0dp"
+                android:layout_height="360dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/ivMascotaPantalla2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <!-- ============ CHECKBOXES DE PALABRAS ============ -->
+
+            <!--
+                Los checkboxes se marcan automáticamente cuando se encuentra
+                cada palabra. Están deshabilitados (enabled="false") para que
+                solo se puedan marcar mediante código, no manualmente.
+            -->
+
+            <!-- Checkbox: Barrenkale -->
+            <CheckBox
+                android:id="@+id/cbBarrencalle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Barrenkale"
+                android:textSize="14sp"
+                android:enabled="false"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/wordSearchView"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <!-- Checkbox: Belostikale -->
+            <CheckBox
+                android:id="@+id/cbBelosticalle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Belostikale"
+                android:textSize="14sp"
+                android:enabled="false"
+                app:layout_constraintTop_toBottomOf="@id/cbBarrencalle"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <!-- Checkbox: Carnicería Vieja -->
+            <CheckBox
+                android:id="@+id/cbCarniceriaVieja"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Carnicería Vieja"
+                android:textSize="14sp"
+                android:enabled="false"
+                app:layout_constraintTop_toBottomOf="@id/cbBelosticalle"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <!-- Checkbox: Somera -->
+            <CheckBox
+                android:id="@+id/cbSomera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Somera"
+                android:textSize="14sp"
+                android:enabled="false"
+                app:layout_constraintTop_toBottomOf="@id/cbCarniceriaVieja"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <!-- Checkbox: Artekale -->
+            <CheckBox
+                android:id="@+id/cbArtecalle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Artekale"
+                android:textSize="14sp"
+                android:enabled="false"
+                app:layout_constraintTop_toBottomOf="@id/cbSomera"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <!-- Checkbox: Tendería -->
+            <CheckBox
+                android:id="@+id/cbTenderia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tendería"
+                android:textSize="14sp"
+                android:enabled="false"
+                app:layout_constraintTop_toBottomOf="@id/cbArtecalle"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <!-- Checkbox: Barrenkale Barrena -->
+            <CheckBox
+                android:id="@+id/cbBarrenkaleBarrena"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Barrenkale Barrena"
+                android:textSize="14sp"
+                android:enabled="false"
+                app:layout_constraintTop_toBottomOf="@id/cbTenderia"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <!-- ============ INDICADOR DE PROGRESO ============ -->
+
+            <!--
+                Muestra el progreso como "X/7" donde X es el número de palabras
+                encontradas. Se actualiza automáticamente al encontrar palabras.
+            -->
+            <TextView
+                android:id="@+id/tvProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0/7"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#FF6F00"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/cbBarrenkaleBarrena"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <!-- ============ BOTÓN DE FINALIZACIÓN ============ -->
+
+            <!--
+                Botón "Amaitu" para terminar la actividad.
+
+                Estados:
+                - Deshabilitado (enabled="false") hasta encontrar las 7 palabras
+                - Al completar, se habilita y cambia a color verde
+                - Al presionarlo, cierra la actividad y regresa al mapa
+            -->
+            <Button
+                android:id="@+id/btnFinish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Amaitu"
+                android:textSize="16sp"
+                android:enabled="false"
+                android:backgroundTint="#9E9E9E"
+                android:textColor="#FFFFFF"
+                android:paddingHorizontal="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                app:layout_constraintTop_toBottomOf="@id/tvProgress"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</FrameLayout>

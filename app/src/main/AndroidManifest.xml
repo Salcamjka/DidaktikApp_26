@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AndroidManifest.xml para DidaktikApp
+
+    Aplicación educativa sobre el Casco Viejo de Bilbao con 5 actividades interactivas:
+    1. MainActivity - Pantalla de inicio
+    2. MapActivity - Mapa con 5 marcadores de puntos de interés
+    3. SopaActivity - Sopa de letras de las Zazpi Kaleak
+    4. TxakurraActivity - Introducción histórica de Txakurraren Iturria
+    5. TxakurraTablaActivity - Tabla comparativa león vs perro
+    6. DetalleActivity - Actividad de detalle (si existe)
+
+    @author Salca
+
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ============================================================================ -->
+    <!-- PERMISOS                                                                     -->
+    <!-- ============================================================================ -->
+
+    <!-- Permiso para acceder a Internet (necesario para Google Maps) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Permiso para acceder al estado de la red -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.DidaktikApp"
+        tools:targetApi="31">
+
+        <!-- ============================================================================ -->
+        <!-- API KEY DE GOOGLE MAPS                                                       -->
+        <!-- ============================================================================ -->
+
+        <!--
+            Clave API de Google Maps para mostrar el mapa en MapActivity.
+            Esta clave debe estar activa en Google Cloud Console.
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyC7vrjNUblbJzCz0iWQPT4CKFCUkkHxeBE"/>
+
+        <!-- ============================================================================ -->
+        <!-- ACTIVIDADES DE LA APLICACIÓN                                                -->
+        <!-- ============================================================================ -->
+
+        <!-- ============ MAIN ACTIVITY ============ -->
+        <!--
+            Actividad principal y punto de entrada de la aplicación.
+            Se lanza automáticamente al abrir la app.
+        -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- ============ MAP ACTIVITY ============ -->
+        <!--
+            Actividad del mapa con 5 marcadores de puntos de interés:
+            1. San Anton Eliza (Ahorcado) - Próximamente
+            2. Antzinako Harresia (Test de imágenes) - Próximamente
+            3. Zazpi Kaleak (Sopa de letras) - Funcional
+            4. Txakurraren Iturria (Tabla comparativa) - Funcional
+            5. Bilboko Areatza (Puzzle) - Próximamente
+        -->
+        <activity
+            android:name=".MapActivity"
+            android:exported="false" />
+
+        <!-- ============ SOPA ACTIVITY ============ -->
+        <!--
+            Actividad de sopa de letras para las Zazpi Kaleak.
+
+            Flujo:
+            1. Pantalla de texto histórico con audio
+            2. Botón "Hasi Sopa de Letras"
+            3. Sopa de letras interactiva con 7 palabras
+            4. Botón "Amaitu" habilitado al completar
+
+            Características:
+            - Audio en loop (jarduera_3.m4a)
+            - Mascota animada con reacciones
+            - Validación de palabras encontradas
+            - Orientación: portrait (vertical)
+        -->
+        <activity
+            android:name=".SopaActivity"
+            android:screenOrientation="portrait"
+            android:exported="false"/>
+
+        <!-- ============ TXAKURRA ACTIVITY ============ -->
+        <!--
+            Actividad de introducción para Txakurraren Iturria.
+
+            Contenido:
+            - Texto histórico sobre la fuente
+            - Dos teorías sobre el origen del nombre
+            - Audio narrativo en loop (jarduera_4.m4a)
+            - Mascota animada (león normal)
+            - Botón "Jarraitu" para pasar a la tabla
+
+            Esta actividad NO contiene la tabla comparativa.
+            La tabla está en TxakurraTablaActivity.
+        -->
+        <activity
+            android:name=".TxakurraActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+
+        <!-- ============ TXAKURRA TABLA ACTIVITY ============ -->
+        <!--
+            Actividad de tabla comparativa león vs perro.
+
+            Contenido:
+            - Imágenes de referencia (león y perro)
+            - Tabla de 5 filas x 2 columnas
+            - Validación de campos completos
+            - Mascota con 3 estados:
+              * Saludando (inicio)
+              * Celebrando (tabla completa)
+              * Triste (tabla incompleta)
+
+            Se abre desde TxakurraActivity al presionar "Jarraitu".
+        -->
+        <activity
+            android:name=".TxakurraTablaActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+
+        <!-- ============ DETALLE ACTIVITY ============ -->
+        <!--
+            Actividad de detalle (si existe en tu proyecto).
+            Puede ser usada para mostrar información adicional.
+        -->
+        <activity
+            android:name=".DetalleActivity"
+            android:exported="false" />
+
+    </application>
+
+</manifest>

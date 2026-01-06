@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Layout para la actividad de tabla comparativa "Txakurraren Iturria".
+
+    Contiene:
+    - Título de la actividad
+    - Mascota animada (reacciona según el estado)
+    - Pregunta principal
+    - Imágenes de referencia (perro y león)
+    - Tabla de 5x2 para comparar características
+    - Botón de finalización con validación
+
+    @author Salca
+
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#E3F2FD">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- ============ TÍTULO ============ -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Txakurraren Iturria"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#FF69B4"
+            android:gravity="center"/>
+
+        <!-- ============ MASCOTA ============ -->
+        <ImageView
+            android:id="@+id/ivMascota"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/mascota_saludando"
+            android:scaleType="fitCenter"
+            android:contentDescription="Mascota del Athletic Club"/>
+
+        <!-- ============ PREGUNTA PRINCIPAL ============ -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="🦁 Lehoia ala txakurra?"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:gravity="center"
+            android:padding="12dp"
+            android:background="#FFF9C4"/>
+
+        <!-- ============ IMÁGENES DE REFERENCIA ============ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <!-- Columna del Perro -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/ivPerro"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/perro"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Perro"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="TXAKURRA"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:background="#81C784"
+                    android:textColor="#FFFFFF"
+                    android:padding="8dp"/>
+
+            </LinearLayout>
+
+            <!-- Columna del León -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/ivLeon"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/leon"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="León"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="LEHOIA"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:background="#FFB74D"
+                    android:textColor="#FFFFFF"
+                    android:padding="8dp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- ============ INSTRUCCIÓN ============ -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Aipatu 5 ezaugarri:"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:gravity="center"/>
+
+        <!-- ============ TABLA 5x2 ============ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:background="#BDBDBD"
+            android:padding="2dp">
+
+            <!-- ============ COLUMNA TXAKURRA (PERRO) ============ -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginEnd="1dp">
+
+                <EditText
+                    android:id="@+id/etTxakurra1"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="1."
+                    android:padding="8dp"
+                    android:textSize="12sp"
+                    android:background="#FFFFFF"
+                    android:layout_marginBottom="2dp"
+                    android:inputType="textCapSentences"/>
+
+                <EditText
+                    android:id="@+id/etTxakurra2"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="2."
+                    android:padding="8dp"
+                    android:textSize="12sp"
+                    android:background="#FFFFFF"
+                    android:layout_marginBottom="2dp"
+                    android:inputType="textCapSentences"/>
+
+                <EditText
+                    android:id="@+id/etTxakurra3"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="3."
+                    android:padding="8dp"
+                    android:textSize="12sp"
+                    android:background="#FFFFFF"
+                    android:layout_marginBottom="2dp"
+                    android:inputType="textCapSentences"/>
+
+                <EditText
+                    android:id="@+id/etTxakurra4"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="4."
+                    android:padding="8dp"
+                    android:textSize="12sp"
+                    android:background="#FFFFFF"
+                    android:layout_marginBottom="2dp"
+                    android:inputType="textCapSentences"/>
+
+                <EditText
+                    android:id="@+id/etTxakurra5"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="5."
+                    android:padding="8dp"
+                    android:textSize="12sp"
+                    android:background="#FFFFFF"
+                    android:inputType="textCapSentences"/>
+
+            </LinearLayout>
+
+            <!-- ============ COLUMNA LEHOIA (LEÓN) ============ -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="1dp">
+
+                <EditText
+                    android:id="@+id/etLehoia1"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="1."
+                    android:padding="8dp"
+                    android:textSize="12sp"
+                    android:background="#FFFFFF"
+                    android:layout_marginBottom="2dp"
+                    android:inputType="textCapSentences"/>
+
+                <EditText
+                    android:id="@+id/etLehoia2"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="2."
+                    android:padding="8dp"
+                    android:textSize="12sp"
+                    android:background="#FFFFFF"
+                    android:layout_marginBottom="2dp"
+                    android:inputType="textCapSentences"/>
+
+                <EditText
+                    android:id="@+id/etLehoia3"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="3."
+                    android:padding="8dp"
+                    android:textSize="12sp"
+                    android:background="#FFFFFF"
+                    android:layout_marginBottom="2dp"
+                    android:inputType="textCapSentences"/>
+
+                <EditText
+                    android:id="@+id/etLehoia4"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="4."
+                    android:padding="8dp"
+                    android:textSize="12sp"
+                    android:background="#FFFFFF"
+                    android:layout_marginBottom="2dp"
+                    android:inputType="textCapSentences"/>
+
+                <EditText
+                    android:id="@+id/etLehoia5"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="5."
+                    android:padding="8dp"
+                    android:textSize="12sp"
+                    android:background="#FFFFFF"
+                    android:inputType="textCapSentences"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- ============ BOTÓN FINALIZAR ============ -->
+        <Button
+            android:id="@+id/btnFinish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:text="Osatu Taula"
+            android:textSize="16sp"
+            android:backgroundTint="#FF69B4"
+            android:textColor="#FFFFFF"
+            android:paddingHorizontal="32dp"/>
+
+    </LinearLayout>
+
+</ScrollView>

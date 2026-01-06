@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Layout para la pantalla de introducción de "Txakurraren Iturria".
+
+    Contiene:
+    - Título de la actividad
+    - Mascota animada (león del Athletic)
+    - Texto histórico sobre la fuente
+    - Dos teorías sobre el origen del nombre
+    - Reproductor de audio con controles
+    - Botón para continuar a la actividad de la tabla
+
+    @author Salca
+    @version 2.0
+    @since 2026-01-07
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#E3F2FD">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- ============ TÍTULO ============ -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Txakurraren Iturria"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#FF69B4"
+            android:gravity="center"
+            android:drawableStart="@android:drawable/ic_dialog_map"
+            android:drawablePadding="8dp"/>
+
+        <!-- ============ MASCOTA ============ -->
+        <ImageView
+            android:id="@+id/ivMascota"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/mascota_normal"
+            android:scaleType="fitCenter"
+            android:contentDescription="Mascota del Athletic Club"/>
+
+        <!-- ============ TEXTO INTRODUCTORIO ============ -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Iturri hau izen bera duen kalean aurkitzen da; zehazki, Txakur kalean. Orain dela urte asko eraiki zen iturria dugu aurrean. Ikusten duzuenez, iturriak lehoi buru forma duen brontzezko hiru txorrota ditu. Baina, zergatik deitzen da, beraz, Txakur Iturria?\n\nHistorian zehar eztabaida handiak sortu dira jendearen artean eta guztien artean 2 kondaira desberdintzen dira:"
+            android:textSize="15sp"
+            android:textColor="#000000"
+            android:lineSpacingExtra="4dp"
+            android:paddingBottom="16dp"/>
+
+        <!-- ============ TEORÍA 1 ============ -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📚 Teoria 1: Lehenengoaren arabera, iturria eraiki zenean, bilbotarrek ez zuten lehoiaren itxura ezagutzen, ez zekiten nolakoa zen; ez zuten inoiz lehoirik ikusi. Orduan iturria ikustean, txakurrak zirela pentsatu zuten."
+            android:textSize="13sp"
+            android:textColor="#424242"
+            android:padding="10dp"
+            android:background="#FFECB3"
+            android:lineSpacingExtra="2dp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- ============ TEORÍA 2 ============ -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📚 Teoria 2: Bigarrenak aldiz, kontatzen du kale horretan gizon bat bizi zela, eta etxeko fatxadan lehoi baten eskultura jartzea erabaki zuela, bere etxea zaintzeko. Gainontzeko pertsonek barre egiten zuten txakurra zirudiela esanez. Denborarekin, txantxa sendotuz joan zen, kaleari eta ondoren iturriari izena eman arte."
+            android:textSize="13sp"
+            android:textColor="#424242"
+            android:padding="10dp"
+            android:background="#FFECB3"
+            android:lineSpacingExtra="2dp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- ============ CONCLUSIÓN ============ -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Modu horretan, denboraren poderioz, iritzi desberdinak sortu dira."
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:textStyle="italic"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp"/>
+
+        <!-- ============ REPRODUCTOR DE AUDIO ============ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="16dp"
+            android:background="#FFFFFF">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔊"
+                android:textSize="32sp"/>
+
+            <View
+                android:layout_width="200dp"
+                android:layout_height="4dp"
+                android:layout_marginTop="8dp"
+                android:background="#E0E0E0"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⏮"
+                    android:textSize="24sp"
+                    android:padding="8dp"/>
+
+                <Button
+                    android:id="@+id/btnPlayAudio"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:text="▶️"
+                    android:textSize="24sp"
+                    android:backgroundTint="#000000"
+                    android:layout_marginHorizontal="16dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⏭"
+                    android:textSize="24sp"
+                    android:padding="8dp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- ============ BOTÓN CONTINUAR ============ -->
+        <Button
+            android:id="@+id/btnContinuar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:text="Jarraitu"
+            android:textSize="18sp"
+            android:backgroundTint="#FF69B4"
+            android:textColor="#FFFFFF"
+            android:paddingHorizontal="32dp"/>
+
+    </LinearLayout>
+
+</ScrollView>
