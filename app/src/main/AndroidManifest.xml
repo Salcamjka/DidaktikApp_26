@@ -21,23 +21,23 @@
             android:value="AIzaSyC7vrjNUblbJzCz0iWQPT4CKFCUkkHxeBE"/>
 
         <activity
-            android:name=".LoginActivity"
-            android:exported="true"
-            android:screenOrientation="portrait">
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".MainActivity" />
-
         <activity android:name=".MapActivity" android:exported="false" />
         <activity android:name=".SopaActivity" android:screenOrientation="portrait" />
         <activity android:name=".TxakurraActivity" android:screenOrientation="portrait" />
         <activity android:name=".TxakurraTablaActivity" android:screenOrientation="portrait" />
+
         <activity android:name=".MurallaActivity" android:screenOrientation="portrait" />
+
         <activity android:name=".PuzzleActivity" android:screenOrientation="portrait" />
+
         <activity android:name=".DetalleActivity" android:exported="false" />
 
     </application>
