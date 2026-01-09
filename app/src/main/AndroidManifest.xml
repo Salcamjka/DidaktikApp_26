@@ -33,6 +33,7 @@
         <activity android:name=".MainActivity" />
 
         <activity android:name=".MapActivity" android:exported="false" />
+        <activity android:name=".AhorcadoActivity" android:exported="false" />
         <activity android:name=".SopaActivity" android:screenOrientation="portrait" />
         <activity android:name=".TxakurraActivity" android:screenOrientation="portrait" />
         <activity android:name=".TxakurraTablaActivity" android:screenOrientation="portrait" />
