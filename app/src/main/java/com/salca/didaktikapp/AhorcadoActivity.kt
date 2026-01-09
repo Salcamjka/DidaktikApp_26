@@ -43,7 +43,7 @@ class AhorcadoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.ahorcado_activity)
+        setContentView(R.layout.activity_ahorcado)
 
         inicializarVistas()
         iniciarJuego()
@@ -207,21 +207,42 @@ class AhorcadoActivity : AppCompatActivity() {
     private fun mostrarPantallaFinal(gano: Boolean) {
         layoutJuego.visibility = View.GONE
         layoutFinal.visibility = View.VISIBLE
+
+        // CAMBIO: Ahora el escudo SIEMPRE es visible, ganes o pierdas
+        ivFinalSuperior.visibility = View.VISIBLE
+        ivFinalSuperior.setImageResource(R.drawable.escudo)
+
         if (gano) {
-            ivFinalSuperior.visibility = View.VISIBLE
-            ivFinalSuperior.setImageResource(R.drawable.escudo)
             tvMensajePrincipal.text = palabraActual
             tvMensajePrincipal.setTextColor(Color.BLACK)
+
             tvMensajeSecundario.visibility = View.VISIBLE
             tvMensajeSecundario.text = "Oso ondo, irabazi duzu!"
+
             ivFinalInferior.setImageResource(R.drawable.leonfeliz)
+
+            // Botón Jarraitu lleva a la explicación
+            btnJarraituJuego.setOnClickListener { mostrarFaseExplicacion() }
+            btnJarraituJuego.text = "JARRAITU"
             btnJarraituJuego.visibility = View.VISIBLE
         } else {
-            ivFinalSuperior.visibility = View.GONE
             tvMensajeSecundario.visibility = View.GONE
+
             tvMensajePrincipal.text = "Galdu duzu.\nHitza hau zen:\n$palabraActual"
             tvMensajePrincipal.setTextColor(Color.RED)
+
             ivFinalInferior.setImageResource(R.drawable.leontriste)
+
+            // Botón Jarraitu en este caso REINICIA el juego o CIERRA, según prefieras.
+            // Opción A: Dejar que vean la explicación igualmente:
+            btnJarraituJuego.setOnClickListener { mostrarFaseExplicacion() }
+            btnJarraituJuego.text = "JARRAITU"
+
+            // Opción B (Si prefieres que al perder vuelva a empezar):
+            // btnJarraituJuego.setOnClickListener { iniciarJuego() }
+            // btnJarraituJuego.text = "SAIATU BERRIRO"
+
+            btnJarraituJuego.visibility = View.VISIBLE
         }
     }
 

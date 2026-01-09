@@ -64,6 +64,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 startActivity(Intent(this, PuzzleActivity::class.java))
                 return true
             }
+            "San Anton Eliza" -> {
+                startActivity(Intent(this, AhorcadoActivity::class.java))
+                return true
+            }
         }
         marker.showInfoWindow()
         return false

@@ -37,7 +37,7 @@
         <activity android:name=".MurallaActivity" android:screenOrientation="portrait" />
 
         <activity android:name=".PuzzleActivity" android:screenOrientation="portrait" />
-
+        <activity android:name=".AhorcadoActivity" android:screenOrientation="portrait" />
         <activity android:name=".DetalleActivity" android:exported="false" />
 
     </application>
