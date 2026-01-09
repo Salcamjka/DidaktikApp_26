@@ -9,14 +9,12 @@ import androidx.appcompat.app.AppCompatActivity
 
 class LoginActivity : AppCompatActivity() {
 
-    // Declaramos la base de datos
     private lateinit var dbHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // 1. Inicializamos la base de datos
         dbHelper = DatabaseHelper(this)
 
         val etName = findViewById<EditText>(R.id.etName)
@@ -27,12 +25,11 @@ class LoginActivity : AppCompatActivity() {
 
             if (studentName.isNotEmpty()) {
 
-                // 2. GUARDAR EN BASE DE DATOS
+                // CORRECTO: Ahora addStudent solo pide el nombre
                 val guardado = dbHelper.addStudent(studentName)
 
                 if (guardado) {
-                    // Si se guardó bien, pasamos a la siguiente pantalla
-                    val intent = Intent(this, MapActivity::class.java) // O MainActivity
+                    val intent = Intent(this, MapActivity::class.java)
                     intent.putExtra("STUDENT_NAME", studentName)
                     startActivity(intent)
                     finish()
