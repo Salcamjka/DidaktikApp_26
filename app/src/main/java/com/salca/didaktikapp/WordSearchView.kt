@@ -10,28 +10,14 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Vista personalizada para una sopa de letras interactiva.
+ * Vista personalizada para sopa de letras - VERSIÓN LIMPIA Y MEJORADA
  *
- * Esta vista permite a los estudiantes buscar palabras en una cuadrícula de letras
- * mediante gestos táctiles. Las palabras pueden estar en 8 direcciones:
- * horizontal, vertical y diagonal (en ambos sentidos).
+ * Cuadrícula 17x12 con TODAS las 7 palabras completas
+ * Diseño limpio con colores sutiles y profesionales
  *
- * Características principales:
- * - Cuadrícula de 12x12 letras
- * - Selección táctil mediante arrastre
- * - Resaltado de palabras encontradas con colores únicos
- * - 7 palabras ocultas: Somera, Artekale, Tendería, Belostikale,
- *   Carnicería Vieja, Barrenkale, Barrenkale Barrena
- * - Callback cuando se encuentra una palabra válida
- *
- * @author Salca
- * @version 2.0
- * @since 2026-01-07
- *
- * @property gridSize Tamaño de la cuadrícula (12x12)
- * @property cellSize Tamaño de cada celda en píxeles (calculado dinámicamente)
- * @property offsetX Desplazamiento horizontal para centrar la cuadrícula
- * @property offsetY Desplazamiento vertical para centrar la cuadrícula
+ * @author Salca - TXO Team
+ * @version 4.0 - DISEÑO LIMPIO
+ * @since 2026-01-11
  */
 class WordSearchView @JvmOverloads constructor(
     context: Context,
@@ -43,177 +29,121 @@ class WordSearchView @JvmOverloads constructor(
     // CONFIGURACIÓN DE LA CUADRÍCULA
     // ============================================================================
 
-    /** Tamaño de la cuadrícula (12 filas x 12 columnas) */
-    private val gridSize = 12
+    private val gridRows = 17  // 17 filas para palabras largas
+    private val gridCols = 12  // 12 columnas
 
-    /** Tamaño de cada celda en píxeles (calculado en onSizeChanged) */
     private var cellSize = 0f
-
-    /** Desplazamiento horizontal para centrar la cuadrícula */
     private var offsetX = 0f
-
-    /** Desplazamiento vertical para centrar la cuadrícula */
     private var offsetY = 0f
 
     /**
-     * Cuadrícula de letras 12x12.
+     * Cuadrícula 17x12 con LAS 7 PALABRAS COMPLETAS
      *
-     * Contiene las 7 palabras ocultas de forma horizontal y vertical
-     * para facilitar su búsqueda por los estudiantes:
-     *
-     * Palabras incluidas:
-     * - SOMERA (fila 0, horizontal)
-     * - ARTEKALE (fila 1, horizontal)
-     * - TENDERIA (fila 2, horizontal)
-     * - BELOSTIKALE (fila 3, horizontal)
-     * - CARNICERIAVIEJA (columna 0, vertical)
-     * - BARRENKALE (fila 5, horizontal)
-     * - BARRENKALEBARRENA (columna 11, vertical)
+     * TODAS LAS PALABRAS:
+     * - Fila 0:  SOMERA (horizontal, columnas 1-6)
+     * - Fila 1:  ARTEKALE (horizontal, columnas 0-7)
+     * - Fila 2:  TENDERIA (horizontal, columnas 1-8)
+     * - Fila 3:  BELOSTIKALE (horizontal, columnas 1-11)
+     * - Fila 5:  BARRENKALE (horizontal, columnas 1-10)
+     * - Col 0:   CARNICERIAVIEJA (vertical, 16 letras, filas 0-15)
+     * - Col 11:  BARRENKALEBARRENA (vertical, 17 letras, filas 0-16)
      */
     private val grid = arrayOf(
-        charArrayOf('S', 'O', 'M', 'E', 'R', 'A', 'X', 'Z', 'P', 'L', 'M', 'B'),
-        charArrayOf('A', 'R', 'T', 'E', 'K', 'A', 'L', 'E', 'Q', 'W', 'N', 'A'),
-        charArrayOf('T', 'E', 'N', 'D', 'E', 'R', 'I', 'A', 'F', 'G', 'H', 'R'),
-        charArrayOf('B', 'E', 'L', 'O', 'S', 'T', 'I', 'K', 'A', 'L', 'E', 'R'),
-        charArrayOf('N', 'M', 'P', 'Q', 'W', 'X', 'Y', 'Z', 'U', 'V', 'D', 'E'),
-        charArrayOf('I', 'B', 'A', 'R', 'R', 'E', 'N', 'K', 'A', 'L', 'E', 'N'),
-        charArrayOf('C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'K'),
-        charArrayOf('E', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'A'),
-        charArrayOf('R', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'L'),
-        charArrayOf('I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'E'),
-        charArrayOf('A', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'B'),
-        charArrayOf('V', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'A')
+        charArrayOf('C', 'S', 'O', 'M', 'E', 'R', 'A', 'K', 'Z', 'P', 'L', 'B'),
+        charArrayOf('A', 'A', 'R', 'T', 'E', 'K', 'A', 'L', 'E', 'W', 'N', 'A'),
+        charArrayOf('R', 'T', 'E', 'N', 'D', 'E', 'R', 'I', 'A', 'G', 'H', 'R'),
+        charArrayOf('N', 'B', 'E', 'L', 'O', 'S', 'T', 'I', 'K', 'A', 'L', 'R'),
+        charArrayOf('I', 'M', 'P', 'Q', 'W', 'X', 'Y', 'Z', 'U', 'V', 'D', 'E'),
+        charArrayOf('C', 'B', 'A', 'R', 'R', 'E', 'N', 'K', 'A', 'L', 'E', 'N'),
+        charArrayOf('E', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'K'),
+        charArrayOf('R', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'A'),
+        charArrayOf('I', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'L'),
+        charArrayOf('A', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'E'),
+        charArrayOf('V', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'B'),
+        charArrayOf('I', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'A'),
+        charArrayOf('E', 'U', 'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'R'),
+        charArrayOf('J', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'R'),
+        charArrayOf('A', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'E'),
+        charArrayOf('S', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'N'),
+        charArrayOf('O', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'A')
     )
 
     // ============================================================================
     // ESTADO DEL JUEGO
     // ============================================================================
 
-    /**
-     * Set de palabras ya encontradas por el jugador.
-     * Evita que se cuente la misma palabra dos veces.
-     */
     private val foundWords = mutableSetOf<String>()
-
-    /** Indica si el usuario está arrastrando el dedo para seleccionar */
     private var isDragging = false
-
-    /** Celda donde comenzó la selección (fila, columna) */
     private var startCell: Pair<Int, Int>? = null
-
-    /** Celda actual donde está el dedo (fila, columna) */
     private var currentCell: Pair<Int, Int>? = null
-
-    /** Lista de celdas actualmente seleccionadas durante el arrastre */
     private val selectedCells = mutableListOf<Pair<Int, Int>>()
 
     // ============================================================================
-    // COLORES Y ESTILOS
+    // COLORES Y ESTILOS - DISEÑO LIMPIO
     // ============================================================================
 
-    /**
-     * Paleta de colores para resaltar palabras encontradas.
-     * Cada palabra obtiene un color único de esta lista.
-     */
+    // Colores sutiles y profesionales
     private val wordColors = listOf(
-        Color.parseColor("#90EE90"),  // Verde claro
-        Color.parseColor("#FFB6C1"),  // Rosa claro
-        Color.parseColor("#87CEEB"),  // Azul cielo
-        Color.parseColor("#FFA07A"),  // Salmón claro
-        Color.parseColor("#DDA0DD"),  // Ciruela claro
-        Color.parseColor("#F0E68C"),  // Khaki
-        Color.parseColor("#98FB98")   // Verde menta
+        Color.parseColor("#C8E6C9"),  // Verde suave
+        Color.parseColor("#B3E5FC"),  // Azul claro
+        Color.parseColor("#FFE0B2"),  // Naranja claro
+        Color.parseColor("#F8BBD0"),  // Rosa suave
+        Color.parseColor("#D1C4E9"),  // Púrpura claro
+        Color.parseColor("#FFF9C4"),  // Amarillo suave
+        Color.parseColor("#DCEDC8")   // Lima claro
     )
 
-    /**
-     * Mapa que asocia cada celda encontrada con su color.
-     * Permite mantener el resaltado de palabras encontradas.
-     */
     private val foundCellColors = mutableMapOf<Pair<Int, Int>, Int>()
 
-    /** Paint para dibujar las líneas de la cuadrícula */
     private val gridPaint = Paint().apply {
-        color = Color.LTGRAY
-        strokeWidth = 2f
+        color = Color.parseColor("#E0E0E0")
+        strokeWidth = 1.5f
         style = Paint.Style.STROKE
     }
 
-    /** Paint para dibujar las letras en cada celda */
     private val textPaint = Paint().apply {
-        color = Color.BLACK
+        color = Color.parseColor("#424242")
         textAlign = Paint.Align.CENTER
-        textSize = 40f
         typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     }
 
-    /** Paint para resaltar celdas de palabras encontradas */
     private val highlightPaint = Paint().apply {
         style = Paint.Style.FILL
-        alpha = 180  // Semi-transparente
+        alpha = 200
     }
 
-    /** Paint para mostrar la selección actual del usuario */
     private val selectionPaint = Paint().apply {
-        color = Color.parseColor("#FFD700")  // Dorado
+        color = Color.parseColor("#FFEB3B")
         style = Paint.Style.FILL
-        alpha = 100  // Semi-transparente
+        alpha = 120
     }
 
-    // ============================================================================
-    // CALLBACK
-    // ============================================================================
-
-    /**
-     * Listener que se ejecuta cuando el usuario encuentra una palabra válida.
-     *
-     * @param word Palabra encontrada (en mayúsculas)
-     * @param count Número total de palabras encontradas hasta ahora
-     */
     var onWordFoundListener: ((String, Int) -> Unit)? = null
 
     // ============================================================================
     // MÉTODOS DEL CICLO DE VIDA
     // ============================================================================
 
-    /**
-     * Llamado cuando cambia el tamaño de la vista.
-     * Calcula el tamaño de las celdas y los desplazamientos para centrar la cuadrícula.
-     *
-     * @param w Nuevo ancho de la vista
-     * @param h Nuevo alto de la vista
-     * @param oldw Ancho anterior
-     * @param oldh Alto anterior
-     */
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        // Usar el lado más pequeño para mantener la cuadrícula cuadrada
-        val size = min(w, h)
-        cellSize = size / gridSize.toFloat()
+        val gridWidth = w - 32f
+        val gridHeight = h - 32f
 
-        // Calcular offsets para centrar
-        offsetX = (w - size) / 2f
-        offsetY = (h - size) / 2f
+        cellSize = min(gridWidth / gridCols, gridHeight / gridRows)
 
-        // Ajustar tamaño del texto
-        textPaint.textSize = cellSize * 0.5f
+        val totalWidth = cellSize * gridCols
+        val totalHeight = cellSize * gridRows
+        offsetX = (w - totalWidth) / 2f
+        offsetY = (h - totalHeight) / 2f
+
+        textPaint.textSize = cellSize * 0.45f
     }
 
-    /**
-     * Dibuja la cuadrícula, las letras y los resaltados en el canvas.
-     *
-     * Orden de dibujado:
-     * 1. Celdas de palabras encontradas (con colores)
-     * 2. Selección actual del usuario (dorado semi-transparente)
-     * 3. Líneas de la cuadrícula
-     * 4. Letras en cada celda
-     *
-     * @param canvas Canvas donde se dibuja la vista
-     */
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        // 1. Dibujar celdas de palabras encontradas
+        // 1. Palabras encontradas
         for ((cell, color) in foundCellColors) {
             highlightPaint.color = color
             val (row, col) = cell
@@ -226,7 +156,7 @@ class WordSearchView @JvmOverloads constructor(
             )
         }
 
-        // 2. Dibujar selección actual
+        // 2. Selección actual
         for (cell in selectedCells) {
             val (row, col) = cell
             canvas.drawRect(
@@ -238,21 +168,19 @@ class WordSearchView @JvmOverloads constructor(
             )
         }
 
-        // 3. Dibujar líneas de la cuadrícula
-        // Líneas verticales
-        for (i in 0..gridSize) {
+        // 3. Líneas de la cuadrícula
+        for (i in 0..gridCols) {
             val pos = offsetX + i * cellSize
-            canvas.drawLine(pos, offsetY, pos, offsetY + gridSize * cellSize, gridPaint)
+            canvas.drawLine(pos, offsetY, pos, offsetY + gridRows * cellSize, gridPaint)
         }
-        // Líneas horizontales
-        for (i in 0..gridSize) {
+        for (i in 0..gridRows) {
             val pos = offsetY + i * cellSize
-            canvas.drawLine(offsetX, pos, offsetX + gridSize * cellSize, pos, gridPaint)
+            canvas.drawLine(offsetX, pos, offsetX + gridCols * cellSize, pos, gridPaint)
         }
 
-        // 4. Dibujar letras
-        for (row in 0 until gridSize) {
-            for (col in 0 until gridSize) {
+        // 4. Letras
+        for (row in 0 until gridRows) {
+            for (col in 0 until gridCols) {
                 val x = offsetX + col * cellSize + cellSize / 2
                 val y = offsetY + row * cellSize + cellSize / 2 - (textPaint.descent() + textPaint.ascent()) / 2
                 canvas.drawText(grid[row][col].toString(), x, y, textPaint)
@@ -264,18 +192,9 @@ class WordSearchView @JvmOverloads constructor(
     // GESTIÓN DE EVENTOS TÁCTILES
     // ============================================================================
 
-    /**
-     * Maneja los eventos de toque del usuario.
-     *
-     * Flujo:
-     * 1. ACTION_DOWN: Usuario toca una celda → Inicia selección
-     * 2. ACTION_MOVE: Usuario arrastra → Actualiza selección
-     * 3. ACTION_UP: Usuario suelta → Verifica si formó una palabra válida
-     *
-     * @param event Evento de toque
-     * @return true si el evento fue manejado
-     */
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        parent.requestDisallowInterceptTouchEvent(true)
+
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 val cell = getCellFromTouch(event.x, event.y)
@@ -302,7 +221,7 @@ class WordSearchView @JvmOverloads constructor(
                 return true
             }
 
-            MotionEvent.ACTION_UP -> {
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 if (isDragging) {
                     checkForWord()
                     isDragging = false
@@ -311,33 +230,21 @@ class WordSearchView @JvmOverloads constructor(
                     currentCell = null
                     invalidate()
                 }
+                parent.requestDisallowInterceptTouchEvent(false)
                 return true
             }
         }
         return super.onTouchEvent(event)
     }
 
-    /**
-     * Convierte coordenadas de pantalla (x, y) a coordenadas de celda (fila, columna).
-     *
-     * @param x Coordenada X en píxeles
-     * @param y Coordenada Y en píxeles
-     * @return Par (fila, columna) o null si está fuera de la cuadrícula
-     */
     private fun getCellFromTouch(x: Float, y: Float): Pair<Int, Int>? {
         val col = ((x - offsetX) / cellSize).toInt()
         val row = ((y - offsetY) / cellSize).toInt()
-        return if (row in 0 until gridSize && col in 0 until gridSize) {
+        return if (row in 0 until gridRows && col in 0 until gridCols) {
             Pair(row, col)
         } else null
     }
 
-    /**
-     * Actualiza la lista de celdas seleccionadas entre startCell y currentCell.
-     *
-     * Calcula una línea recta entre ambos puntos (horizontal, vertical o diagonal)
-     * y añade todas las celdas intermedias a selectedCells.
-     */
     private fun updateSelection() {
         val start = startCell ?: return
         val current = currentCell ?: return
@@ -352,7 +259,6 @@ class WordSearchView @JvmOverloads constructor(
             return
         }
 
-        // Calcular dirección del movimiento
         val rowStep = when {
             rowDiff > 0 -> 1
             rowDiff < 0 -> -1
@@ -365,25 +271,14 @@ class WordSearchView @JvmOverloads constructor(
             else -> 0
         }
 
-        // Añadir todas las celdas en la línea
         for (i in 0..steps) {
             selectedCells.add(Pair(start.first + i * rowStep, start.second + i * colStep))
         }
     }
 
-    /**
-     * Verifica si las celdas seleccionadas forman una palabra válida.
-     *
-     * Pasos:
-     * 1. Construye la palabra con las letras seleccionadas
-     * 2. Verifica tanto la palabra como su reverso
-     * 3. Compara con la lista de palabras objetivo
-     * 4. Si es válida y no estaba encontrada, la marca y notifica
-     */
     private fun checkForWord() {
         if (selectedCells.isEmpty()) return
 
-        // Construir palabra seleccionada
         val selectedWord = buildString {
             for (cell in selectedCells) {
                 append(grid[cell.first][cell.second])
@@ -392,10 +287,6 @@ class WordSearchView @JvmOverloads constructor(
 
         val reversedWord = selectedWord.reversed()
 
-        /**
-         * Lista de palabras a encontrar en la sopa.
-         * Deben estar en MAYÚSCULAS y SIN ESPACIOS.
-         */
         val targetWords = listOf(
             "SOMERA",
             "ARTEKALE",
@@ -406,21 +297,14 @@ class WordSearchView @JvmOverloads constructor(
             "BARRENKALEBARRENA"
         )
 
-        // Verificar si coincide con alguna palabra objetivo
         for (word in targetWords) {
             if ((selectedWord == word || reversedWord == word) && !foundWords.contains(word)) {
                 foundWords.add(word)
-
-                // Asignar color único
                 val colorIndex = foundWords.size - 1
                 val color = wordColors[colorIndex % wordColors.size]
-
-                // Resaltar celdas
                 for (cell in selectedCells) {
                     foundCellColors[cell] = color
                 }
-
-                // Notificar al listener
                 onWordFoundListener?.invoke(word, foundWords.size)
                 break
             }
