@@ -10,45 +10,89 @@ import android.view.Gravity
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.salca.didaktikapp.R
 
+/**
+ * Actividad principal del juego del Ahorcado.
+ *
+ * Esta clase gestiona tanto la lógica del juego como la pantalla de explicación
+ * cultural que aparece al finalizar.
+ *
+ * @author Marco
+ * @version 1.0
+ */
 class AhorcadoActivity : AppCompatActivity() {
 
-    // --- Variables Fase JUEGO ---
+    // ==========================================
+    // VARIABLES DE LA FASE DE JUEGO
+    // ==========================================
+
+    /** Contenedor principal de la pantalla del juego. */
     private lateinit var contenedorFaseJuego: View
+    /** Layout con los elementos visuales de la partida. */
     private lateinit var layoutJuego: LinearLayout
+    /** Imagen que muestra el estado del muñeco ahorcado. */
     private lateinit var ivAhorcado: ImageView
+    /** TextView donde se pintan los guiones y las letras acertadas. */
     private lateinit var tvPalabra: TextView
+    /** Contenedor para los botones del teclado generado por código. */
     private lateinit var llTeclado: LinearLayout
+
+    /** Layout de la pantalla final (Ganar/Perder). */
     private lateinit var layoutFinal: LinearLayout
+    /** Imagen del Escudo (visible siempre al final). */
     private lateinit var ivFinalSuperior: ImageView
+    /** Mensaje principal (La palabra correcta o mensaje de error). */
     private lateinit var tvMensajePrincipal: TextView
+    /** Mensaje secundario ("Has ganado"). */
     private lateinit var tvMensajeSecundario: TextView
+    /** Imagen inferior (León feliz o triste). */
     private lateinit var ivFinalInferior: ImageView
+    /** Botón para avanzar a la explicación. */
     private lateinit var btnJarraituJuego: Button
 
+    /** Lista de palabras para el juego. */
     private val palabras = listOf("ATHLETIC-EN ARMARRIA")
+    /** Palabra actual que se está jugando. */
     private var palabraActual = ""
+    /** Lista de letras que el usuario ha acertado. */
     private var letrasAdivinadas = mutableListOf<Char>()
+    /** Contador de fallos. */
     private var errores = 0
 
-    // --- Variables Fase EXPLICACIÓN ---
+    // ==========================================
+    // VARIABLES DE LA FASE DE EXPLICACIÓN
+    // ==========================================
+
+    /** Contenedor de la pantalla de explicación (Texto + Audio). */
     private lateinit var contenedorFaseExplicacion: View
+    /** Botón para Play/Pause del audio. */
     private lateinit var btnPlayPause: ImageButton
+    /** Barra de progreso del audio. */
     private lateinit var seekBar: SeekBar
+    /** Botón para salir de la actividad. */
     private lateinit var btnJarraituExplicacion: Button
 
-    // Audio
+    /** Reproductor de audio. */
     private var mediaPlayer: MediaPlayer? = null
+    /** Handler para actualizar la barra de progreso en segundo plano. */
     private val handlerAudio = Handler(Looper.getMainLooper())
 
+    /**
+     * Se ejecuta al iniciar la actividad.
+     * Carga el layout y arranca el juego.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_ahorcado)
+        setContentView(R.layout.activity_ahorcado) // Asegúrate que el XML se llama así
 
         inicializarVistas()
         iniciarJuego()
     }
 
+    /**
+     * Vincula las variables con los IDs del XML y configura los botones.
+     */
     private fun inicializarVistas() {
         // --- JUEGO ---
         contenedorFaseJuego = findViewById(R.id.fase1_Juego)
@@ -63,7 +107,7 @@ class AhorcadoActivity : AppCompatActivity() {
         ivFinalInferior = findViewById(R.id.ivFinalInferior)
         btnJarraituJuego = findViewById(R.id.btnJarraituJuego)
 
-        // Al terminar el juego, pasamos a la explicación
+        // Botón "Jarraitu" del juego -> Ir a explicación
         btnJarraituJuego.setOnClickListener {
             mostrarFaseExplicacion()
         }
@@ -74,16 +118,17 @@ class AhorcadoActivity : AppCompatActivity() {
         seekBar = findViewById(R.id.seekBarAudio)
         btnJarraituExplicacion = findViewById(R.id.btnJarraituExplicacion)
 
-        // Botón final: Cierra la actividad
+        // Botón "Jarraitu" final -> Cerrar
         btnJarraituExplicacion.setOnClickListener {
             finish()
         }
 
-        // Control del Reproductor
+        // Lógica del botón Play/Pause
         btnPlayPause.setOnClickListener {
             if (mediaPlayer?.isPlaying == true) pausarAudio() else reproducirAudio()
         }
 
+        // Lógica para mover la barra de audio manualmente
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) mediaPlayer?.seekTo(progress)
@@ -94,23 +139,25 @@ class AhorcadoActivity : AppCompatActivity() {
     }
 
     // ==========================================
-    // TRANSICIÓN A FASE EXPLICACIÓN
+    // CAMBIO DE PANTALLA
     // ==========================================
 
+    /**
+     * Oculta el juego, muestra la explicación y prepara el audio.
+     */
     private fun mostrarFaseExplicacion() {
-        // Ocultamos el juego
         contenedorFaseJuego.visibility = View.GONE
-
-        // Mostramos la explicación (Audio + Texto juntos)
         contenedorFaseExplicacion.visibility = View.VISIBLE
-
-        // Preparamos el audio para que esté listo para darle al Play
         configurarAudio()
     }
 
     // ==========================================
     // LÓGICA DEL JUEGO
     // ==========================================
+
+    /**
+     * Resetea contadores, elige palabra y dibuja el teclado.
+     */
     private fun iniciarJuego() {
         errores = 0
         letrasAdivinadas.clear()
@@ -126,6 +173,9 @@ class AhorcadoActivity : AppCompatActivity() {
         actualizarTextoPantalla()
     }
 
+    /**
+     * Crea botones de la A a la Z y los añade al layout en filas de 7.
+     */
     private fun crearTeclado() {
         llTeclado.removeAllViews()
         var contador = 0
@@ -152,20 +202,28 @@ class AhorcadoActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Comprueba si la letra pulsada está en la palabra.
+     */
     private fun procesarLetra(letra: Char, boton: Button) {
         if (palabraActual.contains(letra)) {
+            // Acierto
             if (!letrasAdivinadas.contains(letra)) letrasAdivinadas.add(letra)
             boton.isEnabled = false
             boton.setBackgroundColor(Color.parseColor("#4CAF50"))
             actualizarTextoPantalla()
             verificarVictoria()
         } else {
+            // Fallo
             errores++
             actualizarImagenAhorcado()
             if (errores >= 7) mostrarPantallaFinal(gano = false)
         }
     }
 
+    /**
+     * Refresca el texto con guiones y letras acertadas.
+     */
     private fun actualizarTextoPantalla() {
         val sb = StringBuilder()
         for (c in palabraActual) {
@@ -178,6 +236,9 @@ class AhorcadoActivity : AppCompatActivity() {
         tvPalabra.text = sb.toString()
     }
 
+    /**
+     * Verifica si se ha completado la palabra.
+     */
     private fun verificarVictoria() {
         var gano = true
         for (c in palabraActual) {
@@ -191,6 +252,9 @@ class AhorcadoActivity : AppCompatActivity() {
         if (gano) mostrarPantallaFinal(gano = true)
     }
 
+    /**
+     * Actualiza la imagen del muñeco según los errores.
+     */
     private fun actualizarImagenAhorcado() {
         val res = when (errores) {
             0 -> R.drawable.ahorcado0
@@ -204,55 +268,49 @@ class AhorcadoActivity : AppCompatActivity() {
         ivAhorcado.setImageResource(res)
     }
 
+    /**
+     * Muestra la pantalla de resultado final.
+     * @param gano true si ganó, false si perdió.
+     */
     private fun mostrarPantallaFinal(gano: Boolean) {
         layoutJuego.visibility = View.GONE
         layoutFinal.visibility = View.VISIBLE
 
-        // CAMBIO: Ahora el escudo SIEMPRE es visible, ganes o pierdas
+        // Escudo visible siempre
         ivFinalSuperior.visibility = View.VISIBLE
         ivFinalSuperior.setImageResource(R.drawable.escudo)
 
         if (gano) {
             tvMensajePrincipal.text = palabraActual
             tvMensajePrincipal.setTextColor(Color.BLACK)
-
             tvMensajeSecundario.visibility = View.VISIBLE
             tvMensajeSecundario.text = "Oso ondo, irabazi duzu!"
-
             ivFinalInferior.setImageResource(R.drawable.leonfeliz)
-
-            // Botón Jarraitu lleva a la explicación
-            btnJarraituJuego.setOnClickListener { mostrarFaseExplicacion() }
-            btnJarraituJuego.text = "JARRAITU"
-            btnJarraituJuego.visibility = View.VISIBLE
         } else {
             tvMensajeSecundario.visibility = View.GONE
-
             tvMensajePrincipal.text = "Galdu duzu.\nHitza hau zen:\n$palabraActual"
             tvMensajePrincipal.setTextColor(Color.RED)
-
             ivFinalInferior.setImageResource(R.drawable.leontriste)
-
-            // Botón Jarraitu en este caso REINICIA el juego o CIERRA, según prefieras.
-            // Opción A: Dejar que vean la explicación igualmente:
-            btnJarraituJuego.setOnClickListener { mostrarFaseExplicacion() }
-            btnJarraituJuego.text = "JARRAITU"
-
-            // Opción B (Si prefieres que al perder vuelva a empezar):
-            // btnJarraituJuego.setOnClickListener { iniciarJuego() }
-            // btnJarraituJuego.text = "SAIATU BERRIRO"
-
-            btnJarraituJuego.visibility = View.VISIBLE
         }
+
+        // Botón visible para ir a la explicación
+        btnJarraituJuego.text = "JARRAITU"
+        btnJarraituJuego.visibility = View.VISIBLE
     }
 
     // ==========================================
     // LÓGICA DE AUDIO
     // ==========================================
+
+    /**
+     * Carga el audio y prepara los listeners.
+     */
     private fun configurarAudio() {
         if (mediaPlayer == null) {
             mediaPlayer = MediaPlayer.create(this, R.raw.audioahorcado)
             mediaPlayer?.let { seekBar.max = it.duration }
+
+            // Al terminar, reinicia iconos
             mediaPlayer?.setOnCompletionListener {
                 btnPlayPause.setImageResource(android.R.drawable.ic_media_play)
                 seekBar.progress = 0
@@ -261,18 +319,21 @@ class AhorcadoActivity : AppCompatActivity() {
         }
     }
 
+    /** Reproduce el audio. */
     private fun reproducirAudio() {
         mediaPlayer?.start()
         btnPlayPause.setImageResource(android.R.drawable.ic_media_pause)
         handlerAudio.postDelayed(actualizarSeekBarRunnable, 0)
     }
 
+    /** Pausa el audio. */
     private fun pausarAudio() {
         mediaPlayer?.pause()
         btnPlayPause.setImageResource(android.R.drawable.ic_media_play)
         handlerAudio.removeCallbacks(actualizarSeekBarRunnable)
     }
 
+    /** Hilo secundario para actualizar la barra de progreso. */
     private val actualizarSeekBarRunnable = object : Runnable {
         override fun run() {
             mediaPlayer?.let {
@@ -282,6 +343,9 @@ class AhorcadoActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Limpia la memoria al cerrar la actividad.
+     */
     override fun onDestroy() {
         super.onDestroy()
         handlerAudio.removeCallbacks(actualizarSeekBarRunnable)
