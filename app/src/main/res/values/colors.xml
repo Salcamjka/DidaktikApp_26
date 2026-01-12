@@ -2,4 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="mi_fondo_pantalla">#E3F2FD</color>
+
+    <color name="mi_boton_principal">#FF69B4</color>
+
+    <color name="mi_acierto">#4CAF50</color>
+
+    <color name="mi_error_texto">#FF0000</color>
+
 </resources>

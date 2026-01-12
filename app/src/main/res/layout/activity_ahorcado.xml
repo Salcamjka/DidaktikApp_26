@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#FFFFFF">
+    android:background="@color/mi_fondo_pantalla">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -63,7 +63,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:visibility="gone"
-                android:background="#FFFFFF"
+                android:background="@color/mi_fondo_pantalla"
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="16dp">
@@ -84,7 +84,7 @@
                     android:textSize="28sp"
                     android:textStyle="bold"
                     android:gravity="center"
-                    android:textColor="#000000"
+                    android:textColor="@color/black"
                     android:layout_marginBottom="8dp"/>
 
                 <TextView
@@ -94,7 +94,7 @@
                     android:text="Oso ondo, irabazi duzu!"
                     android:textSize="24sp"
                     android:gravity="center"
-                    android:textColor="#4CAF50"
+                    android:textColor="@color/mi_acierto"
                     android:layout_marginBottom="24dp"
                     android:visibility="gone"/>
 
@@ -111,7 +111,8 @@
                     android:layout_height="wrap_content"
                     android:text="JARRAITU"
                     android:textSize="18sp"
-                    android:paddingHorizontal="32dp"/>
+                    android:paddingHorizontal="32dp"
+                    app:backgroundTint="@color/mi_boton_principal"/>
             </LinearLayout>
         </FrameLayout>
 
@@ -213,7 +214,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/imgLeonComun"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintVertical_bias="0.0"
+                app:backgroundTint="@color/mi_boton_principal"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
