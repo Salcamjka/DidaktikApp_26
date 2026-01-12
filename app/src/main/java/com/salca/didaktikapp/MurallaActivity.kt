@@ -1,5 +1,6 @@
 package com.salca.didaktikapp
 
+import android.content.Context // Import necesario para guardar
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -8,7 +9,6 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
-// CUIDADO: Ahora la clase hereda directamente de AppCompatActivity
 class MurallaActivity : AppCompatActivity() {
 
     private lateinit var txtIntro: TextView
@@ -30,7 +30,10 @@ class MurallaActivity : AppCompatActivity() {
     private val audioHandler = Handler(Looper.getMainLooper())
     private var isPlaying = false
     private var indicePregunta = 0
-    private var progreso = 0
+    private var progreso = 0 // Piezas conseguidas
+
+    // --- NUEVA VARIABLE DE PUNTUACIÓN ---
+    private var puntuacionActual = 0
 
     private val preguntas = listOf(
         Pregunta("1. Zer funtzio betetzen zuen harresiak?", listOf("Babesteko.", "Dekoratzeko.", "Turistak erakartzeko."), 0),
@@ -72,7 +75,7 @@ class MurallaActivity : AppCompatActivity() {
 
         btnComenzar.visibility = View.GONE
 
-        txtIntro.text = "Orain dela urte asko, Bilbon harrizko harresi handi bat eraiki zen hiria babesteko asmoarekin..." // (Tu texto aquí)
+        txtIntro.text = "Orain dela urte asko, Bilbon harrizko harresi handi bat eraiki zen hiria babesteko asmoarekin..."
 
         mostrarTest(false)
 
@@ -145,14 +148,24 @@ class MurallaActivity : AppCompatActivity() {
             else -> -1
         }
 
-        if (seleccion == -1) return
+        if (seleccion == -1) {
+            Toast.makeText(this, "Aukeratu erantzun bat", Toast.LENGTH_SHORT).show()
+            return
+        }
 
+        // --- LÓGICA DE PUNTUACIÓN AÑADIDA ---
         if (seleccion == preguntas[indicePregunta].correcta) {
-            progreso++
+            progreso++ // Para mostrar la pieza visual
+            puntuacionActual += 100 // SUMA 100 PUNTOS
+
             if (indicePregunta < listaPiezas.size) listaPiezas[indicePregunta].visibility = View.VISIBLE
-            Toast.makeText(this, "Zuzena!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Zuzena! (+100 pts)", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this, "Ez da zuzena", Toast.LENGTH_SHORT).show()
+            puntuacionActual -= 50 // RESTA 50 PUNTOS
+            // PROTECCIÓN: No bajar de 0
+            if (puntuacionActual < 0) puntuacionActual = 0
+
+            Toast.makeText(this, "Ez da zuzena (-50 pts)", Toast.LENGTH_SHORT).show()
         }
 
         indicePregunta++
@@ -161,17 +174,39 @@ class MurallaActivity : AppCompatActivity() {
 
     private fun finalizarJuego() {
         btnResponder.isEnabled = false
+
+        // Mensaje final con los puntos
         if (progreso == preguntas.size) {
-            txtPregunta.text = "🏰 Zorionak! Harresia osatu da!"
+            txtPregunta.text = "🏰 Zorionak! Harresia osatu da!\nPuntuazioa: $puntuacionActual"
         } else {
-            txtPregunta.text = "Puntuazioa: $progreso/${preguntas.size}"
+            txtPregunta.text = "Amaiera!\nPuntuazioa: $puntuacionActual"
             btnReintentar.visibility = View.VISIBLE
+        }
+
+        // --- GUARDAR EN BASE DE DATOS ---
+        guardarPuntuacionEnBD(puntuacionActual)
+    }
+
+    // --- FUNCIÓN PARA GUARDAR EN LA COLUMNA "muralla" ---
+    private fun guardarPuntuacionEnBD(puntos: Int) {
+        val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
+        val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
+
+        val dbHelper = DatabaseHelper(this)
+
+        // Enviamos "Muralla" para que DatabaseHelper lo meta en la columna 'muralla'
+        val guardado = dbHelper.guardarPuntuacion(nombreAlumno, "Muralla", puntos)
+
+        if (guardado) {
+            Toast.makeText(this, "Gorde da: $nombreAlumno (Muralla: $puntos)", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun reintentar() {
         indicePregunta = 0
         progreso = 0
+        puntuacionActual = 0 // REINICIAMOS PUNTOS AL REINTENTAR
+
         btnResponder.isEnabled = true
         btnReintentar.visibility = View.GONE
         listaPiezas.forEach { it.visibility = View.INVISIBLE }

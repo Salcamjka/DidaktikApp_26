@@ -1,5 +1,6 @@
 package com.salca.didaktikapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -24,18 +25,19 @@ class LoginActivity : AppCompatActivity() {
             val studentName = etName.text.toString().trim()
 
             if (studentName.isNotEmpty()) {
+                // 1. Guardar en memoria del móvil
+                val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
+                val editor = prefs.edit()
+                editor.putString("nombre_alumno_actual", studentName)
+                editor.apply()
 
-                // CORRECTO: Ahora addStudent solo pide el nombre
-                val guardado = dbHelper.addStudent(studentName)
+                // 2. Crear fila en BD (Se crea con 0 en ahorcado, muralla, sopa, etc.)
+                dbHelper.crearUsuarioInicial(studentName)
 
-                if (guardado) {
-                    val intent = Intent(this, MapActivity::class.java)
-                    intent.putExtra("STUDENT_NAME", studentName)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    Toast.makeText(this, "Errorea datu-basean", Toast.LENGTH_SHORT).show()
-                }
+                // 3. Ir al Mapa (o Actividad Principal)
+                val intent = Intent(this, MapActivity::class.java)
+                startActivity(intent)
+                finish()
 
             } else {
                 Toast.makeText(this, "Mesedez, idatzi zure izena", Toast.LENGTH_SHORT).show()
