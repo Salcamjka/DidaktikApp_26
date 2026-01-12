@@ -147,8 +147,10 @@ class SopaActivity : AppCompatActivity() {
             btnPlayPause.text = "🔊 Entzun audioa"
         }
 
-        // Mantener color negro siempre
-        btnPlayPause.backgroundTintList = getColorStateList(android.R.color.black)
+        // Mantener color negro siempre usando ColorStateList directamente
+        btnPlayPause.backgroundTintList = android.content.res.ColorStateList.valueOf(
+            android.graphics.Color.BLACK
+        )
     }
 
     private fun animateMascotaInicial() {
