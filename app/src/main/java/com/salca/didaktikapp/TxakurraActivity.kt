@@ -25,14 +25,14 @@ import androidx.appcompat.app.AppCompatActivity
  *
  * Flujo:
  * 1. Se muestra el texto con las dos teorías
- * 2. Audio se reproduce automáticamente en loop
+ * 2. Audio se puede reproducir con botón único
  * 3. Mascota aparece con animación bounce
- * 4. Usuario puede reproducir/pausar el audio
+ * 4. Usuario puede reproducir/pausar el audio con un solo botón
  * 5. Al presionar "Jarraitu", se abre TxakurraTablaActivity
  *
  * @author Salca
- * @version 2.0
- * @since 2026-01-07
+ * @version 3.1 - Error corregido
+ * @since 2026-01-11
  */
 class TxakurraActivity : AppCompatActivity() {
 
@@ -113,21 +113,19 @@ class TxakurraActivity : AppCompatActivity() {
     }
 
     // ============================================================================
-    // GESTIÓN DE AUDIO
+    // GESTIÓN DE AUDIO SIMPLIFICADA
     // ============================================================================
 
     /**
-     * Configura y reproduce el audio narrativo en loop.
+     * Configura el reproductor de audio (sin reproducción automática).
      *
      * El audio (jarduera_4.m4a) narra la historia de la fuente y se reproduce
-     * automáticamente en bucle hasta que el usuario presiona "Jarraitu" o pausa.
+     * en bucle cuando el usuario presiona el botón.
      */
     private fun setupAudio() {
         try {
             mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_4)
             mediaPlayer?.isLooping = true
-            mediaPlayer?.start()
-            isPlaying = true
         } catch (e: Exception) {
             Toast.makeText(this, "Audio no disponible", Toast.LENGTH_SHORT).show()
         }
@@ -149,37 +147,42 @@ class TxakurraActivity : AppCompatActivity() {
 
     /**
      * Reproduce el audio narrativo.
-     * Cambia el ícono del botón a pausa (⏸).
-     *
-     * Si el audio termina, cambia automáticamente el ícono de vuelta a play (▶️).
+     * Cambia el texto del botón a "⏸️ Pausatu".
      */
     private fun playAudio() {
         try {
-            if (mediaPlayer == null) {
-                mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_4)
-                mediaPlayer?.isLooping = true
-            }
             mediaPlayer?.start()
             isPlaying = true
-            btnPlayAudio.text = "⏸"
-
-            mediaPlayer?.setOnCompletionListener {
-                isPlaying = false
-                btnPlayAudio.text = "▶️"
-            }
+            updateAudioButton()
         } catch (e: Exception) {
-            Toast.makeText(this, "Audio no disponible", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error al reproducir audio", Toast.LENGTH_SHORT).show()
         }
     }
 
     /**
      * Pausa el audio narrativo.
-     * Cambia el ícono del botón a play (▶️).
+     * Cambia el texto del botón a "🔊 Entzun audioa".
      */
     private fun pauseAudio() {
         mediaPlayer?.pause()
         isPlaying = false
-        btnPlayAudio.text = "▶️"
+        updateAudioButton()
+    }
+
+    /**
+     * Actualiza el texto del botón según el estado del audio.
+     */
+    private fun updateAudioButton() {
+        if (isPlaying) {
+            btnPlayAudio.text = "⏸️ Pausatu"
+        } else {
+            btnPlayAudio.text = "🔊 Entzun audioa"
+        }
+
+        // Mantener color negro siempre usando ColorStateList directamente
+        btnPlayAudio.backgroundTintList = android.content.res.ColorStateList.valueOf(
+            android.graphics.Color.BLACK
+        )
     }
 
     // ============================================================================
