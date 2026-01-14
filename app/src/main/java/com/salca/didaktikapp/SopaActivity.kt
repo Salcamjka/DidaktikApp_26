@@ -1,15 +1,15 @@
 package com.salca.didaktikapp
 
+import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
-import android.widget.ScrollView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
 class SopaActivity : AppCompatActivity() {
@@ -19,13 +19,18 @@ class SopaActivity : AppCompatActivity() {
     private lateinit var btnComenzarSopa: Button
     private lateinit var ivMascotaPantalla1: ImageView
 
-    // Botón de audio único (solo pantalla 1)
-    private lateinit var btnPlayPause: Button
+    // --- CAMBIO: NUEVOS CONTROLES DE AUDIO (Icono + Barra) ---
+    private lateinit var btnPlayPauseIcon: ImageButton
+    private lateinit var seekBarAudio: SeekBar
+    private lateinit var runnable: Runnable
+    private var handler = Handler(Looper.getMainLooper())
+    // ---------------------------------------------------------
 
+    private lateinit var sopaContainer: ScrollView
+    // Asegúrate de que esta clase existe en tu proyecto (WordSearchView)
     private lateinit var wordSearchView: WordSearchView
     private lateinit var tvProgress: TextView
     private lateinit var btnFinish: Button
-    private lateinit var sopaContainer: ScrollView
     private lateinit var ivMascotaPantalla2: ImageView
 
     private lateinit var cbBarrencalle: CheckBox
@@ -40,6 +45,9 @@ class SopaActivity : AppCompatActivity() {
     private var foundWordsCount = 0
     private val totalWords = 7
 
+    // --- VARIABLE DE PUNTUACIÓN ---
+    private var puntuacionActual = 0
+
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
 
@@ -47,39 +55,46 @@ class SopaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sopa)
 
-        initializeViews()
-        setupAudioControls()
-        setupWordSearchView()
-        setupFinishButton()
+        try {
+            initializeViews()
+            setupAudioControls() // Configurar el nuevo reproductor
+            setupWordSearchView()
+            setupFinishButton()
 
-        mostrarPantallaTexto()
-        animateMascotaInicial()
+            // Inicializar audio para la barra de progreso
+            setupAudio()
+
+            mostrarPantallaTexto()
+            animateMascotaInicial()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Errorea Sopa jokoan: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        if (::runnable.isInitialized) handler.removeCallbacks(runnable)
         mediaPlayer?.release()
         mediaPlayer = null
     }
 
     private fun initializeViews() {
-        // Pantalla 1
         scrollTextContainer = findViewById(R.id.scrollTextContainer)
         tvTextoIntroductorio = findViewById(R.id.tvTextoIntroductorio)
         btnComenzarSopa = findViewById(R.id.btnComenzarSopa)
         ivMascotaPantalla1 = findViewById(R.id.ivMascotaPantalla1)
 
-        // Botón de audio (solo pantalla 1)
-        btnPlayPause = findViewById(R.id.btnPlayPause)
+        // --- CAMBIO: Referencias a los nuevos controles ---
+        btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
+        seekBarAudio = findViewById(R.id.seekBarAudio)
+        // --------------------------------------------------
 
-        // Pantalla 2
         sopaContainer = findViewById(R.id.sopaContainer)
         wordSearchView = findViewById(R.id.wordSearchView)
         tvProgress = findViewById(R.id.tvProgress)
         btnFinish = findViewById(R.id.btnFinish)
         ivMascotaPantalla2 = findViewById(R.id.ivMascotaPantalla2)
 
-        // CheckBoxes
         cbBarrencalle = findViewById(R.id.cbBarrencalle)
         cbBelosticalle = findViewById(R.id.cbBelosticalle)
         cbCarniceriaVieja = findViewById(R.id.cbCarniceriaVieja)
@@ -98,80 +113,79 @@ class SopaActivity : AppCompatActivity() {
 
         updateProgress()
 
-        btnComenzarSopa.setOnClickListener {
-            mostrarSopaDeLetras()
-        }
+        btnComenzarSopa.setOnClickListener { mostrarSopaDeLetras() }
     }
 
-    // ========== CONTROL DE AUDIO SIMPLIFICADO (SOLO PANTALLA 1) ==========
-
-    private fun setupAudioControls() {
-        // Inicializar MediaPlayer
+    // --- LÓGICA DE AUDIO MEJORADA (CON BARRA) ---
+    private fun setupAudio() {
         try {
             mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_3)
-            mediaPlayer?.isLooping = true
-        } catch (e: Exception) {
-            Toast.makeText(this, "Audio no disponible", Toast.LENGTH_SHORT).show()
+
+            // Configurar el máximo de la barra al cargar el audio
+            mediaPlayer?.setOnPreparedListener { mp ->
+                seekBarAudio.max = mp.duration
+            }
+
+            // Al terminar
+            mediaPlayer?.setOnCompletionListener {
+                btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
+                seekBarAudio.progress = 0
+                isPlaying = false
+                if (::runnable.isInitialized) handler.removeCallbacks(runnable)
+            }
+        } catch (e: Exception) { }
+    }
+
+    private fun setupAudioControls() {
+        // Clic en el icono Play/Pause
+        btnPlayPauseIcon.setOnClickListener {
+            if (isPlaying) pauseAudio() else playAudio()
         }
 
-        // Botón Play/Pause - Solo Pantalla 1
-        btnPlayPause.setOnClickListener {
-            if (isPlaying) {
-                pauseAudio()
-            } else {
-                playAudio()
+        // Mover la barra con el dedo
+        seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) mediaPlayer?.seekTo(progress)
             }
-        }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
     }
 
     private fun playAudio() {
-        try {
-            mediaPlayer?.start()
-            isPlaying = true
-            updateAudioButton()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Error al reproducir audio", Toast.LENGTH_SHORT).show()
-        }
+        mediaPlayer?.start()
+        isPlaying = true
+        btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_pause)
+        updateSeekBar()
     }
 
     private fun pauseAudio() {
         mediaPlayer?.pause()
         isPlaying = false
-        updateAudioButton()
+        btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
+        if (::runnable.isInitialized) handler.removeCallbacks(runnable)
     }
 
-    private fun updateAudioButton() {
-        if (isPlaying) {
-            btnPlayPause.text = "⏸️ Pausatu"
-        } else {
-            btnPlayPause.text = "🔊 Entzun audioa"
+    private fun updateSeekBar() {
+        runnable = Runnable {
+            seekBarAudio.progress = mediaPlayer?.currentPosition ?: 0
+            handler.postDelayed(runnable, 500)
         }
-
-        // Mantener color negro siempre usando ColorStateList directamente
-        btnPlayPause.backgroundTintList = android.content.res.ColorStateList.valueOf(
-            android.graphics.Color.BLACK
-        )
+        handler.postDelayed(runnable, 0)
     }
+    // --------------------------------------------
 
     private fun animateMascotaInicial() {
-        val bounceAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
-        ivMascotaPantalla1.startAnimation(bounceAnim)
+        ivMascotaPantalla1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in))
     }
 
     private fun animateMascotaSaludando() {
-        val waveAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_wave)
-        ivMascotaPantalla2.startAnimation(waveAnim)
-    }
-
-    private fun animateMascotaPalabraEncontrada() {
-        val bounceAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
-        ivMascotaPantalla2.startAnimation(bounceAnim)
+        ivMascotaPantalla2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.mascot_wave))
     }
 
     private fun animateMascotaCelebracion() {
         ivMascotaPantalla2.setImageResource(R.drawable.mascota_celebrando)
-        val celebrateAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate)
-        ivMascotaPantalla2.startAnimation(celebrateAnim)
+        ivMascotaPantalla2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate))
     }
 
     private fun mostrarPantallaTexto() {
@@ -180,6 +194,9 @@ class SopaActivity : AppCompatActivity() {
     }
 
     private fun mostrarSopaDeLetras() {
+        // Pausar audio al cambiar de pantalla
+        if (isPlaying) pauseAudio()
+
         scrollTextContainer.visibility = View.GONE
         sopaContainer.visibility = View.VISIBLE
         animateMascotaSaludando()
@@ -189,9 +206,12 @@ class SopaActivity : AppCompatActivity() {
         wordSearchView.onWordFoundListener = { word, count ->
             foundWordsCount = count
             wordToCheckbox[word]?.isChecked = true
+
+            // --- PUNTUACIÓN: +50 por palabra ---
+            puntuacionActual += 50
+
             updateProgress()
-            showWordFoundMessage(word)
-            animateMascotaPalabraEncontrada()
+            Toast.makeText(this, "✓ $word (+50 pts)", Toast.LENGTH_SHORT).show()
 
             if (foundWordsCount == totalWords) {
                 onGameCompleted()
@@ -201,6 +221,8 @@ class SopaActivity : AppCompatActivity() {
 
     private fun setupFinishButton() {
         btnFinish.setOnClickListener {
+            // Guardamos los puntos que lleve hasta ahora y salimos
+            guardarPuntuacionEnBD(puntuacionActual)
             finish()
         }
     }
@@ -208,29 +230,35 @@ class SopaActivity : AppCompatActivity() {
     private fun updateProgress() {
         tvProgress.text = "$foundWordsCount/$totalWords"
         btnFinish.isEnabled = foundWordsCount == totalWords
-
         if (foundWordsCount == totalWords) {
-            btnFinish.backgroundTintList = getColorStateList(android.R.color.holo_green_light)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(Color.GREEN)
         }
-    }
-
-    private fun showWordFoundMessage(word: String) {
-        val displayName = when (word) {
-            "SOMERA" -> "Somera"
-            "ARTEKALE" -> "Artekale"
-            "TENDERIA" -> "Tendería"
-            "BELOSTIKALE" -> "Belostikale"
-            "CARNICERIAVIEJA" -> "Carnicería Vieja"
-            "BARRENKALE" -> "Barrenkale"
-            "BARRENKALEBARRENA" -> "Barrenkale Barrena"
-            else -> word
-        }
-
-        Toast.makeText(this, "✓ $displayName aurkituta!", Toast.LENGTH_SHORT).show()
     }
 
     private fun onGameCompleted() {
+        // --- BONUS DE VICTORIA: +150 ---
+        puntuacionActual += 150
+
         animateMascotaCelebracion()
-        Toast.makeText(this, "🎉 Zorionak! Hitz guztiak aurkitu dituzu!", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "🎉 Zorionak! (+150 Bonus)", Toast.LENGTH_LONG).show()
+
+        // Guardamos la puntuación final (Total esperado: 500)
+        guardarPuntuacionEnBD(puntuacionActual)
+    }
+
+    // --- FUNCIÓN PARA GUARDAR EN LA COLUMNA 'sopa' ---
+    private fun guardarPuntuacionEnBD(puntos: Int) {
+        val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
+        val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
+
+        val dbHelper = DatabaseHelper(this)
+
+        // Enviamos "Sopa" como nombre de actividad para que DatabaseHelper sepa dónde guardar
+        val guardado = dbHelper.guardarPuntuacion(nombreAlumno, "Sopa", puntos)
+
+        if (guardado) {
+            // Toast opcional para confirmar visualmente
+            // Toast.makeText(this, "Gordeta: Sopa ($puntos)", Toast.LENGTH_SHORT).show()
+        }
     }
 }

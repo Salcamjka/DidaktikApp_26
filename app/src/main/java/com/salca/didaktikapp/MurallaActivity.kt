@@ -1,6 +1,6 @@
 package com.salca.didaktikapp
 
-import android.content.Context // Import necesario para guardar
+import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -30,10 +30,21 @@ class MurallaActivity : AppCompatActivity() {
     private val audioHandler = Handler(Looper.getMainLooper())
     private var isPlaying = false
     private var indicePregunta = 0
-    private var progreso = 0 // Piezas conseguidas
-
-    // --- NUEVA VARIABLE DE PUNTUACIÓN ---
+    private var progreso = 0
     private var puntuacionActual = 0
+
+    // Runnable para actualizar la barra
+    private val updateSeekBarRunnable = object : Runnable {
+        override fun run() {
+            try {
+                if (audio != null && isPlaying) {
+                    seekBarAudio.progress = audio!!.currentPosition
+                }
+                // Se repite cada 500ms
+                audioHandler.postDelayed(this, 500)
+            } catch (e: Exception) { }
+        }
+    }
 
     private val preguntas = listOf(
         Pregunta("1. Zer funtzio betetzen zuen harresiak?", listOf("Babesteko.", "Dekoratzeko.", "Turistak erakartzeko."), 0),
@@ -74,49 +85,82 @@ class MurallaActivity : AppCompatActivity() {
         btnReintentar = findViewById(R.id.btnReintentar)
 
         btnComenzar.visibility = View.GONE
-
         txtIntro.text = "Orain dela urte asko, Bilbon harrizko harresi handi bat eraiki zen hiria babesteko asmoarekin..."
 
         mostrarTest(false)
 
+        // 1. PREPARAMOS EL AUDIO AL INICIO (para que la barra sepa la duración)
+        prepararAudio()
+
+        // 2. CONTROL DEL BOTÓN PLAY/PAUSE
         btnPlayPauseAudio.setOnClickListener {
-            if (audio == null) {
-                audio = MediaPlayer.create(this, R.raw.jarduera_2)
-                audio?.setOnCompletionListener {
-                    btnComenzar.visibility = View.VISIBLE
-                    btnPlayPauseAudio.setImageResource(android.R.drawable.ic_media_play)
-                    isPlaying = false
-                }
-                seekBarAudio.max = audio?.duration ?: 0
-                actualizarSeekBar()
-            }
             if (isPlaying) {
-                audio?.pause()
-                btnPlayPauseAudio.setImageResource(android.R.drawable.ic_media_play)
+                pauseAudio()
             } else {
-                audio?.start()
-                btnPlayPauseAudio.setImageResource(android.R.drawable.ic_media_pause)
+                playAudio()
             }
-            isPlaying = !isPlaying
         }
+
+        // 3. BARRA DE PROGRESO (CONTROL MANUAL)
+        seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                // Si el usuario mueve la barra, actualizamos el audio inmediatamente
+                if (fromUser) audio?.seekTo(progress)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                // AL TOCAR: Paramos la actualización automática para que no "tiemble"
+                audioHandler.removeCallbacks(updateSeekBarRunnable)
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                // AL SOLTAR: Volvemos a activar la actualización automática si está sonando
+                if (isPlaying) {
+                    audioHandler.postDelayed(updateSeekBarRunnable, 500)
+                }
+            }
+        })
 
         btnComenzar.setOnClickListener {
             mostrarTest(true)
             mostrarPregunta()
+            if (isPlaying) pauseAudio()
         }
 
         btnResponder.setOnClickListener { comprobarRespuesta() }
         btnReintentar.setOnClickListener { reintentar() }
     }
 
-    private fun actualizarSeekBar() {
-        val runnable = object : Runnable {
-            override fun run() {
-                audio?.let { seekBarAudio.progress = it.currentPosition }
-                audioHandler.postDelayed(this, 500)
+    private fun prepararAudio() {
+        try {
+            if (audio == null) {
+                audio = MediaPlayer.create(this, R.raw.jarduera_2)
+                audio?.setOnCompletionListener {
+                    pauseAudio()
+                    audio?.seekTo(0)
+                    seekBarAudio.progress = 0
+                    btnComenzar.visibility = View.VISIBLE
+                }
+                // Configuramos el máximo de la barra
+                seekBarAudio.max = audio?.duration ?: 0
             }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Errorea audioarekin", Toast.LENGTH_SHORT).show()
         }
-        audioHandler.post(runnable)
+    }
+
+    private fun playAudio() {
+        audio?.start()
+        isPlaying = true
+        btnPlayPauseAudio.setImageResource(android.R.drawable.ic_media_pause)
+        audioHandler.post(updateSeekBarRunnable)
+    }
+
+    private fun pauseAudio() {
+        audio?.pause()
+        isPlaying = false
+        btnPlayPauseAudio.setImageResource(android.R.drawable.ic_media_play)
+        audioHandler.removeCallbacks(updateSeekBarRunnable)
     }
 
     private fun mostrarTest(visible: Boolean) {
@@ -127,6 +171,7 @@ class MurallaActivity : AppCompatActivity() {
         btnResponder.visibility = vis
         txtIntro.visibility = if (visible) View.GONE else View.VISIBLE
         btnPlayPauseAudio.visibility = if (visible) View.GONE else View.VISIBLE
+        seekBarAudio.visibility = if (visible) View.GONE else View.VISIBLE
     }
 
     private fun mostrarPregunta() {
@@ -153,18 +198,15 @@ class MurallaActivity : AppCompatActivity() {
             return
         }
 
-        // --- LÓGICA DE PUNTUACIÓN AÑADIDA ---
         if (seleccion == preguntas[indicePregunta].correcta) {
-            progreso++ // Para mostrar la pieza visual
-            puntuacionActual += 100 // SUMA 100 PUNTOS
+            progreso++
+            puntuacionActual += 100
 
             if (indicePregunta < listaPiezas.size) listaPiezas[indicePregunta].visibility = View.VISIBLE
             Toast.makeText(this, "Zuzena! (+100 pts)", Toast.LENGTH_SHORT).show()
         } else {
-            puntuacionActual -= 50 // RESTA 50 PUNTOS
-            // PROTECCIÓN: No bajar de 0
+            puntuacionActual -= 50
             if (puntuacionActual < 0) puntuacionActual = 0
-
             Toast.makeText(this, "Ez da zuzena (-50 pts)", Toast.LENGTH_SHORT).show()
         }
 
@@ -174,39 +216,27 @@ class MurallaActivity : AppCompatActivity() {
 
     private fun finalizarJuego() {
         btnResponder.isEnabled = false
-
-        // Mensaje final con los puntos
         if (progreso == preguntas.size) {
             txtPregunta.text = "🏰 Zorionak! Harresia osatu da!\nPuntuazioa: $puntuacionActual"
         } else {
             txtPregunta.text = "Amaiera!\nPuntuazioa: $puntuacionActual"
             btnReintentar.visibility = View.VISIBLE
         }
-
-        // --- GUARDAR EN BASE DE DATOS ---
         guardarPuntuacionEnBD(puntuacionActual)
     }
 
-    // --- FUNCIÓN PARA GUARDAR EN LA COLUMNA "muralla" ---
     private fun guardarPuntuacionEnBD(puntos: Int) {
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
 
         val dbHelper = DatabaseHelper(this)
-
-        // Enviamos "Muralla" para que DatabaseHelper lo meta en la columna 'muralla'
         val guardado = dbHelper.guardarPuntuacion(nombreAlumno, "Muralla", puntos)
-
-        if (guardado) {
-            Toast.makeText(this, "Gorde da: $nombreAlumno (Muralla: $puntos)", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun reintentar() {
         indicePregunta = 0
         progreso = 0
-        puntuacionActual = 0 // REINICIAMOS PUNTOS AL REINTENTAR
-
+        puntuacionActual = 0
         btnResponder.isEnabled = true
         btnReintentar.visibility = View.GONE
         listaPiezas.forEach { it.visibility = View.INVISIBLE }
@@ -215,8 +245,9 @@ class MurallaActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        audioHandler.removeCallbacks(updateSeekBarRunnable)
         audio?.release()
-        audioHandler.removeCallbacksAndMessages(null)
+        audio = null
     }
 
     data class Pregunta(val enunciado: String, val opciones: List<String>, val correcta: Int)

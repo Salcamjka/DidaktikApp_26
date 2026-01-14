@@ -1,19 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Layout para la pantalla de introducción de "Txakurraren Iturria".
-
-    Contiene:
-    - Título de la actividad
-    - Mascota animada (león del Athletic)
-    - Texto histórico sobre la fuente
-    - Dos teorías sobre el origen del nombre
-    - Reproductor de audio con control simple
-    - Botón para continuar a la actividad de la tabla
-
-    @author Salca
-    @version 3.0 - Audio simplificado
-    @since 2026-01-11
--->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -25,15 +10,10 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- ============ TÍTULO ============ -->
-
-        <!-- ============ MASCOTA ============ -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-
-            android:drawablePadding="8dp"
             android:gravity="center"
             android:text="Txakurraren Iturria"
             android:textColor="#FF69B4"
@@ -51,7 +31,6 @@
             android:scaleType="fitCenter"
             android:contentDescription="Mascota del Athletic Club"/>
 
-        <!-- ============ TEXTO INTRODUCTORIO ============ -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,11 +40,6 @@
             android:lineSpacingExtra="3dp"
             android:paddingBottom="16dp"/>
 
-        <!-- ============ TEORÍA 1 ============ -->
-
-        <!-- ============ TEORÍA 2 ============ -->
-
-        <!-- ============ CONCLUSIÓN ============ -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -77,23 +51,35 @@
             android:paddingTop="8dp"
             android:paddingBottom="16dp"/>
 
-        <!-- ============ REPRODUCTOR DE AUDIO ============ -->
-        <Button
-            android:id="@+id/btnPlayAudio"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:text="🔊 Entzun audioa"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:backgroundTint="#000000"
-            android:textColor="#FFFFFF"
-            android:paddingHorizontal="24dp"
-            android:paddingVertical="12dp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            android:paddingHorizontal="16dp">
 
-        <!-- ============ BOTÓN CONTINUAR ============ -->
+            <ImageButton
+                android:id="@+id/btnPlayPauseIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_media_play"
+                android:tint="#000000"
+                android:contentDescription="Reproducir audio" />
+
+            <SeekBar
+                android:id="@+id/seekBarAudio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:progressTint="#808080"
+                android:thumbTint="#808080" />
+
+        </LinearLayout>
+
         <Button
             android:id="@+id/btnContinuar"
             android:layout_width="wrap_content"

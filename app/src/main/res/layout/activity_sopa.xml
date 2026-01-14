@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="#F5F5F5">
 
-    <!-- PANTALLA 1: TEXTO CON AUDIO -->
     <ScrollView
         android:id="@+id/scrollTextContainer"
         android:layout_width="match_parent"
@@ -50,21 +49,32 @@
                 android:lineSpacingExtra="3dp"
                 android:layout_marginBottom="16dp"/>
 
-            <!-- ========== CONTROL DE AUDIO SIMPLE ========== -->
-            <Button
-                android:id="@+id/btnPlayPause"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:backgroundTint="#A527B0"
-                android:paddingHorizontal="24dp"
-                android:paddingVertical="12dp"
-                android:text="🔊 Entzun audioa"
-                android:textColor="#FFFFFF"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="24dp"
+                android:paddingHorizontal="16dp">
 
-            <!-- Botón para empezar la sopa -->
+                <ImageButton
+                    android:id="@+id/btnPlayPauseIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_media_play"
+                    app:tint="#000000"
+                    android:contentDescription="Reproducir" />
+
+                <SeekBar
+                    android:id="@+id/seekBarAudio"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:progressTint="#808080"
+                    android:thumbTint="#808080" />
+            </LinearLayout>
             <Button
                 android:id="@+id/btnComenzarSopa"
                 android:layout_width="wrap_content"
@@ -81,7 +91,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- PANTALLA 2: SOPA DE LETRAS -->
     <ScrollView
         android:id="@+id/sopaContainer"
         android:layout_width="match_parent"
@@ -117,7 +126,6 @@
                 android:scaleType="fitCenter"
                 android:contentDescription="Mascota del Athletic Club"/>
 
-            <!-- CUADRÍCULA AMPLIADA -->
             <com.salca.didaktikapp.WordSearchView
                 android:id="@+id/wordSearchView"
                 android:layout_width="match_parent"
