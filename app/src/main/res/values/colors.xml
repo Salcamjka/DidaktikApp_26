@@ -11,4 +11,6 @@
 
     <color name="mi_error_texto">#FF0000</color>
 
+    <color name="boton_desactivado">#9E9E9E</color>
+
 </resources>

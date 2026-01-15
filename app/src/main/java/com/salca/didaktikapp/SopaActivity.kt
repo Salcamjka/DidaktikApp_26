@@ -19,15 +19,13 @@ class SopaActivity : AppCompatActivity() {
     private lateinit var btnComenzarSopa: Button
     private lateinit var ivMascotaPantalla1: ImageView
 
-    // --- CAMBIO: NUEVOS CONTROLES DE AUDIO (Icono + Barra) ---
+    // Controles de Audio
     private lateinit var btnPlayPauseIcon: ImageButton
     private lateinit var seekBarAudio: SeekBar
     private lateinit var runnable: Runnable
     private var handler = Handler(Looper.getMainLooper())
-    // ---------------------------------------------------------
 
     private lateinit var sopaContainer: ScrollView
-    // Asegúrate de que esta clase existe en tu proyecto (WordSearchView)
     private lateinit var wordSearchView: WordSearchView
     private lateinit var tvProgress: TextView
     private lateinit var btnFinish: Button
@@ -45,7 +43,7 @@ class SopaActivity : AppCompatActivity() {
     private var foundWordsCount = 0
     private val totalWords = 7
 
-    // --- VARIABLE DE PUNTUACIÓN ---
+    // Puntuación
     private var puntuacionActual = 0
 
     private var mediaPlayer: MediaPlayer? = null
@@ -57,11 +55,9 @@ class SopaActivity : AppCompatActivity() {
 
         try {
             initializeViews()
-            setupAudioControls() // Configurar el nuevo reproductor
+            setupAudioControls()
             setupWordSearchView()
             setupFinishButton()
-
-            // Inicializar audio para la barra de progreso
             setupAudio()
 
             mostrarPantallaTexto()
@@ -84,10 +80,8 @@ class SopaActivity : AppCompatActivity() {
         btnComenzarSopa = findViewById(R.id.btnComenzarSopa)
         ivMascotaPantalla1 = findViewById(R.id.ivMascotaPantalla1)
 
-        // --- CAMBIO: Referencias a los nuevos controles ---
         btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
         seekBarAudio = findViewById(R.id.seekBarAudio)
-        // --------------------------------------------------
 
         sopaContainer = findViewById(R.id.sopaContainer)
         wordSearchView = findViewById(R.id.wordSearchView)
@@ -111,22 +105,20 @@ class SopaActivity : AppCompatActivity() {
         wordToCheckbox["BARRENKALE"] = cbBarrencalle
         wordToCheckbox["BARRENKALEBARRENA"] = cbBarrenkaleBarrena
 
+        // Actualizamos estado inicial
         updateProgress()
 
         btnComenzarSopa.setOnClickListener { mostrarSopaDeLetras() }
     }
 
-    // --- LÓGICA DE AUDIO MEJORADA (CON BARRA) ---
     private fun setupAudio() {
         try {
             mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_3)
 
-            // Configurar el máximo de la barra al cargar el audio
             mediaPlayer?.setOnPreparedListener { mp ->
                 seekBarAudio.max = mp.duration
             }
 
-            // Al terminar
             mediaPlayer?.setOnCompletionListener {
                 btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
                 seekBarAudio.progress = 0
@@ -137,12 +129,10 @@ class SopaActivity : AppCompatActivity() {
     }
 
     private fun setupAudioControls() {
-        // Clic en el icono Play/Pause
         btnPlayPauseIcon.setOnClickListener {
             if (isPlaying) pauseAudio() else playAudio()
         }
 
-        // Mover la barra con el dedo
         seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) mediaPlayer?.seekTo(progress)
@@ -173,7 +163,6 @@ class SopaActivity : AppCompatActivity() {
         }
         handler.postDelayed(runnable, 0)
     }
-    // --------------------------------------------
 
     private fun animateMascotaInicial() {
         ivMascotaPantalla1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in))
@@ -194,9 +183,7 @@ class SopaActivity : AppCompatActivity() {
     }
 
     private fun mostrarSopaDeLetras() {
-        // Pausar audio al cambiar de pantalla
         if (isPlaying) pauseAudio()
-
         scrollTextContainer.visibility = View.GONE
         sopaContainer.visibility = View.VISIBLE
         animateMascotaSaludando()
@@ -207,7 +194,6 @@ class SopaActivity : AppCompatActivity() {
             foundWordsCount = count
             wordToCheckbox[word]?.isChecked = true
 
-            // --- PUNTUACIÓN: +50 por palabra ---
             puntuacionActual += 50
 
             updateProgress()
@@ -221,44 +207,38 @@ class SopaActivity : AppCompatActivity() {
 
     private fun setupFinishButton() {
         btnFinish.setOnClickListener {
-            // Guardamos los puntos que lleve hasta ahora y salimos
             guardarPuntuacionEnBD(puntuacionActual)
             finish()
         }
     }
 
+    // --- CAMBIO APLICADO AQUÍ ---
     private fun updateProgress() {
         tvProgress.text = "$foundWordsCount/$totalWords"
-        btnFinish.isEnabled = foundWordsCount == totalWords
-        if (foundWordsCount == totalWords) {
-            btnFinish.backgroundTintList = ColorStateList.valueOf(Color.GREEN)
+
+        val isComplete = foundWordsCount == totalWords
+        btnFinish.isEnabled = isComplete
+
+        if (isComplete) {
+            // ACTIVADO: Color ROSA (#FF69B4)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF69B4"))
+        } else {
+            // DESACTIVADO: Color GRIS (#9E9E9E)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#9E9E9E"))
         }
     }
 
     private fun onGameCompleted() {
-        // --- BONUS DE VICTORIA: +150 ---
         puntuacionActual += 150
-
         animateMascotaCelebracion()
         Toast.makeText(this, "🎉 Zorionak! (+150 Bonus)", Toast.LENGTH_LONG).show()
-
-        // Guardamos la puntuación final (Total esperado: 500)
         guardarPuntuacionEnBD(puntuacionActual)
     }
 
-    // --- FUNCIÓN PARA GUARDAR EN LA COLUMNA 'sopa' ---
     private fun guardarPuntuacionEnBD(puntos: Int) {
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
-
         val dbHelper = DatabaseHelper(this)
-
-        // Enviamos "Sopa" como nombre de actividad para que DatabaseHelper sepa dónde guardar
-        val guardado = dbHelper.guardarPuntuacion(nombreAlumno, "Sopa", puntos)
-
-        if (guardado) {
-            // Toast opcional para confirmar visualmente
-            // Toast.makeText(this, "Gordeta: Sopa ($puntos)", Toast.LENGTH_SHORT).show()
-        }
+        dbHelper.guardarPuntuacion(nombreAlumno, "Sopa", puntos)
     }
 }

@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
@@ -13,64 +15,82 @@ import androidx.appcompat.app.AppCompatActivity
 
 class PuzzleActivity : AppCompatActivity() {
 
-    // Contadores separados para cada puzzle
+    // Contadores del Puzzle
     private var aciertosLehenaldia = 0
     private var aciertosOrainaldia = 0
-
-    // Banderas para saber si ya hemos sumado los puntos de cada uno
     private var completadoLehenaldia = false
     private var completadoOrainaldia = false
 
     private val PIEZAS_POR_PUZZLE = 24
-    private val PUNTOS_POR_PUZZLE = 250 // 250 por cada uno (Total 500)
-
+    private val PUNTOS_POR_PUZZLE = 250
     private var puntuacionTotal = 0
+
+    // Variables de Audio
     private var mediaPlayer: MediaPlayer? = null
+    private var isPlaying = false
+    private lateinit var runnable: Runnable
+    private var handler = Handler(Looper.getMainLooper())
+    private lateinit var seekBarAudio: SeekBar
+    private lateinit var btnAudio: ImageButton
+
+    // Contenedores para el cambio de vista
+    private lateinit var contenedorJuego: LinearLayout
+    private lateinit var layoutFinal: LinearLayout
+    private lateinit var btnJarraitu: Button
+    private lateinit var txtTituloPrincipal: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_puzzle)
 
+        // Enlazamos vistas principales
+        contenedorJuego = findViewById(R.id.contenedorJuego)
+        layoutFinal = findViewById(R.id.layoutFinal)
+        txtTituloPrincipal = findViewById(R.id.txtTituloPrincipal)
+
         val gridPasado = findViewById<GridLayout>(R.id.gridPasado)
         val gridPresente = findViewById<GridLayout>(R.id.gridPresente)
         val gridPiezas = findViewById<GridLayout>(R.id.gridPiezas)
+        btnJarraitu = findViewById(R.id.btnJarraitu)
 
-        val btnJarraitu = findViewById<Button>(R.id.btnJarraitu)
-        btnJarraitu.visibility = View.GONE
+        // --- CAMBIO: Botón visible y ACTIVADO desde el principio ---
+        btnJarraitu.visibility = View.VISIBLE
+        btnJarraitu.isEnabled = true    // ACTIVADO (Se puede pulsar)
+        btnJarraitu.alpha = 1.0f        // OPACO (Color normal)
 
-        btnJarraitu.setOnClickListener { mostrarSeccionFinal() }
+        // Al pulsar, cambia de pantalla inmediatamente
+        btnJarraitu.setOnClickListener {
+            cambiarAPantallaFinal()
+        }
 
-        // Carga de imágenes
+        // Botón para cerrar la actividad al final
+        findViewById<Button>(R.id.btnFinalizarTotal).setOnClickListener {
+            finish()
+        }
+
+        // --- Carga de imágenes y lógica del Puzzle ---
         val imagenesPasado = Array(24) { i -> resources.getIdentifier("pasado$i", "drawable", packageName) }
         val imagenesPresente = Array(24) { i -> resources.getIdentifier("presente$i", "drawable", packageName) }
 
-        // Creamos los tableros vacíos
         crearTableroVacio(gridPasado, "lehenaldia")
         crearTableroVacio(gridPresente, "orainaldia")
 
-        // Creamos y mezclamos las piezas
         val todasLasPiezas = mutableListOf<PiezaPuzzle>()
         for (i in 0 until 24) todasLasPiezas.add(PiezaPuzzle(i, "lehenaldia", imagenesPasado[i]))
         for (i in 0 until 24) todasLasPiezas.add(PiezaPuzzle(i, "orainaldia", imagenesPresente[i]))
         todasLasPiezas.shuffle()
 
-        // Añadimos las piezas al grid inferior
         for (pieza in todasLasPiezas) {
             val img = ImageView(this)
             img.setImageResource(pieza.imagenID)
             img.tag = pieza
-
-            // Que la pieza ocupe todo su espacio disponible
             img.scaleType = ImageView.ScaleType.FIT_XY
-
             val params = GridLayout.LayoutParams()
             params.width = 130
             params.height = 90
-            // Margen para las piezas de abajo (para que sea fácil cogerlas)
             params.setMargins(5, 5, 5, 5)
             img.layoutParams = params
 
-            // USO DE onTouchListener (Agarre instantáneo)
             img.setOnTouchListener { view, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {
                     val data = ClipData.newPlainText("mota", pieza.tipo)
@@ -90,18 +110,11 @@ class PuzzleActivity : AppCompatActivity() {
         for (i in 0 until 24) {
             val hueco = ImageView(this)
             hueco.setBackgroundColor(Color.LTGRAY)
-
-            // 1. Esto asegura que la imagen rellene el hueco
             hueco.scaleType = ImageView.ScaleType.FIT_XY
-
             val params = GridLayout.LayoutParams()
             params.width = 130
             params.height = 90
-
-            // 2. RESTAURAMOS LOS MÁRGENES (Para mantener la cuadrícula visible)
             params.setMargins(2, 2, 2, 2)
-            // ---------------------------------------------------------------
-
             hueco.layoutParams = params
             hueco.tag = i
 
@@ -114,15 +127,11 @@ class PuzzleActivity : AppCompatActivity() {
                         val idEsperado = huecoDestino.tag as Int
 
                         if (datosPieza.tipo == tipoTablero && datosPieza.id == idEsperado) {
-                            // Colocar pieza
                             huecoDestino.setImageResource(datosPieza.imagenID)
                             huecoDestino.setBackgroundColor(Color.TRANSPARENT)
                             huecoDestino.setOnDragListener(null)
                             (piezaArrastrada.parent as GridLayout).removeView(piezaArrastrada)
-
-                            // Sumar acierto
                             verificarProgreso(datosPieza.tipo)
-
                         } else {
                             piezaArrastrada.visibility = View.VISIBLE
                             Toast.makeText(this, "Hori ez doa hor!", Toast.LENGTH_SHORT).show()
@@ -159,9 +168,22 @@ class PuzzleActivity : AppCompatActivity() {
             }
         }
 
+        // Aunque el botón ya esté activado, mostramos el aviso de completado
         if (completadoLehenaldia && completadoOrainaldia) {
-            findViewById<Button>(R.id.btnJarraitu).visibility = View.VISIBLE
-            mostrarSeccionFinal()
+            Toast.makeText(this, "Puzzleak osatuta!", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun cambiarAPantallaFinal() {
+        if (layoutFinal.visibility != View.VISIBLE) {
+            contenedorJuego.visibility = View.GONE
+            txtTituloPrincipal.visibility = View.GONE
+            layoutFinal.visibility = View.VISIBLE
+
+            val scrollView = findViewById<ScrollView>(R.id.scrollViewMain)
+            scrollView.post { scrollView.fullScroll(View.FOCUS_UP) }
+
+            setupAudioPlayer()
         }
     }
 
@@ -169,37 +191,71 @@ class PuzzleActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
         val dbHelper = DatabaseHelper(this)
-
         dbHelper.guardarPuntuacion(nombreAlumno, "Puzzle", puntos)
     }
 
-    private fun mostrarSeccionFinal() {
-        val layoutFinal = findViewById<LinearLayout>(R.id.layoutFinal)
-        layoutFinal.visibility = View.VISIBLE
+    private fun setupAudioPlayer() {
+        btnAudio = findViewById(R.id.btnAudio)
+        seekBarAudio = findViewById(R.id.seekBarAudio)
 
-        val scrollView = findViewById<ScrollView>(R.id.scrollViewMain)
-        scrollView.post { scrollView.fullScroll(View.FOCUS_DOWN) }
+        try {
+            mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_5)
 
-        // AUDIO SIMPLE (SIN CAMBIOS)
-        val btnAudio = findViewById<ImageButton>(R.id.btnAudio)
-        btnAudio.setOnClickListener {
-            if (mediaPlayer == null) {
-                mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_5)
-                mediaPlayer?.setOnCompletionListener { btnAudio.setImageResource(android.R.drawable.ic_media_play) }
+            mediaPlayer?.setOnPreparedListener { mp ->
+                seekBarAudio.max = mp.duration
             }
-            if (mediaPlayer?.isPlaying == true) {
-                mediaPlayer?.pause()
+
+            mediaPlayer?.setOnCompletionListener {
                 btnAudio.setImageResource(android.R.drawable.ic_media_play)
-            } else {
-                mediaPlayer?.start()
-                btnAudio.setImageResource(android.R.drawable.ic_media_pause)
+                seekBarAudio.progress = 0
+                isPlaying = false
+                if (::runnable.isInitialized) handler.removeCallbacks(runnable)
             }
+
+            seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    if (fromUser) mediaPlayer?.seekTo(progress)
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
+
+            btnAudio.setOnClickListener {
+                if (isPlaying) pauseAudio() else playAudio()
+            }
+
+        } catch (e: Exception) {
+            Toast.makeText(this, "Errorea audioarekin", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun playAudio() {
+        mediaPlayer?.start()
+        isPlaying = true
+        btnAudio.setImageResource(android.R.drawable.ic_media_pause)
+        updateSeekBar()
+    }
+
+    private fun pauseAudio() {
+        mediaPlayer?.pause()
+        isPlaying = false
+        btnAudio.setImageResource(android.R.drawable.ic_media_play)
+        if (::runnable.isInitialized) handler.removeCallbacks(runnable)
+    }
+
+    private fun updateSeekBar() {
+        runnable = Runnable {
+            seekBarAudio.progress = mediaPlayer?.currentPosition ?: 0
+            handler.postDelayed(runnable, 500)
+        }
+        handler.postDelayed(runnable, 0)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        if (::runnable.isInitialized) handler.removeCallbacks(runnable)
         mediaPlayer?.release()
+        mediaPlayer = null
     }
 
     data class PiezaPuzzle(val id: Int, val tipo: String, val imagenID: Int)

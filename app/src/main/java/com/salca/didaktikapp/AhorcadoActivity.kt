@@ -1,6 +1,7 @@
 package com.salca.didaktikapp
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -10,21 +11,17 @@ import android.view.Gravity
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 
 class AhorcadoActivity : AppCompatActivity() {
 
     // --- Variables UI ---
     private lateinit var contenedorFaseJuego: View
-    private lateinit var layoutJuego: LinearLayout
     private lateinit var ivAhorcado: ImageView
     private lateinit var tvPalabra: TextView
+    private lateinit var tvResultado: TextView
     private lateinit var llTeclado: LinearLayout
-    private lateinit var layoutFinal: LinearLayout
-    private lateinit var ivFinalSuperior: ImageView
-    private lateinit var tvMensajePrincipal: TextView
-    private lateinit var tvMensajeSecundario: TextView
-    private lateinit var ivFinalInferior: ImageView
-    private lateinit var btnJarraituJuego: Button
+    private lateinit var btnJarraituJuego: Button // El botón de abajo
 
     // --- Variables Lógica Juego ---
     private val palabras = listOf("ATHLETIC-EN ARMARRIA")
@@ -51,20 +48,20 @@ class AhorcadoActivity : AppCompatActivity() {
     }
 
     private fun inicializarVistas() {
+        // Fase Juego
         contenedorFaseJuego = findViewById(R.id.fase1_Juego)
-        layoutJuego = findViewById(R.id.layoutJuego)
         ivAhorcado = findViewById(R.id.ivAhorcado)
         tvPalabra = findViewById(R.id.tvPalabra)
+        tvResultado = findViewById(R.id.tvResultado)
         llTeclado = findViewById(R.id.llTeclado)
-        layoutFinal = findViewById(R.id.layoutFinal)
-        ivFinalSuperior = findViewById(R.id.ivFinalSuperior)
-        tvMensajePrincipal = findViewById(R.id.tvMensajePrincipal)
-        tvMensajeSecundario = findViewById(R.id.tvMensajeSecundario)
-        ivFinalInferior = findViewById(R.id.ivFinalInferior)
         btnJarraituJuego = findViewById(R.id.btnJarraituJuego)
 
+        // Configuración inicial del botón Jarraitu (DESACTIVADO)
+        btnJarraituJuego.isEnabled = false
+        btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#9E9E9E")) // Gris
         btnJarraituJuego.setOnClickListener { mostrarFaseExplicacion() }
 
+        // Fase Explicación
         contenedorFaseExplicacion = findViewById(R.id.fase_Explicacion)
         btnPlayPause = findViewById(R.id.btnPlayPause)
         seekBar = findViewById(R.id.seekBarAudio)
@@ -92,9 +89,12 @@ class AhorcadoActivity : AppCompatActivity() {
 
         contenedorFaseJuego.visibility = View.VISIBLE
         contenedorFaseExplicacion.visibility = View.GONE
-        layoutFinal.visibility = View.GONE
-        layoutJuego.visibility = View.VISIBLE
+        tvResultado.visibility = View.GONE
+
+        // Reset imagen y botón
         ivAhorcado.setImageResource(R.drawable.ahorcado0)
+        btnJarraituJuego.isEnabled = false
+        btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#9E9E9E"))
 
         crearTeclado()
         actualizarTextoPantalla()
@@ -147,7 +147,7 @@ class AhorcadoActivity : AppCompatActivity() {
             if (puntuacionActual < 0) puntuacionActual = 0
 
             actualizarImagenAhorcado()
-            if (errores >= 7) mostrarPantallaFinal(gano = false)
+            if (errores >= 7) mostrarResultadoFinal(gano = false)
         }
     }
 
@@ -173,7 +173,7 @@ class AhorcadoActivity : AppCompatActivity() {
                 }
             }
         }
-        if (gano) mostrarPantallaFinal(gano = true)
+        if (gano) mostrarResultadoFinal(gano = true)
     }
 
     private fun actualizarImagenAhorcado() {
@@ -189,57 +189,58 @@ class AhorcadoActivity : AppCompatActivity() {
         ivAhorcado.setImageResource(res)
     }
 
-    private fun mostrarPantallaFinal(gano: Boolean) {
-        layoutJuego.visibility = View.GONE
-        layoutFinal.visibility = View.VISIBLE
+    // --- FUNCIÓN CLAVE: SE ACTIVA AL TERMINAR EL JUEGO ---
+    private fun mostrarResultadoFinal(gano: Boolean) {
+        // 1. Desactivar todo el teclado (ya no se puede jugar)
+        desactivarTeclado()
 
-        ivFinalSuperior.visibility = View.VISIBLE
-        ivFinalSuperior.setImageResource(R.drawable.escudo)
-
+        // 2. Mostrar mensaje y cambiar imagen
+        tvResultado.visibility = View.VISIBLE
         if (gano) {
             val bonusVictoria = 100
             val vidasRestantes = 7 - errores
             val bonusVidas = vidasRestantes * 20
             puntuacionActual += (bonusVictoria + bonusVidas)
 
-            tvMensajePrincipal.text = palabraActual
-            tvMensajePrincipal.setTextColor(Color.BLACK)
-
-            tvMensajeSecundario.visibility = View.VISIBLE
-            tvMensajeSecundario.text = "Oso ondo, irabazi duzu!\nPuntuazioa: $puntuacionActual"
-
-            ivFinalInferior.setImageResource(R.drawable.leonfeliz)
+            tvResultado.text = "OSO ONDO! IRABAZI DUZU!"
+            tvResultado.setTextColor(Color.parseColor("#4CAF50")) // Verde
+            ivAhorcado.setImageResource(R.drawable.leonfeliz)
         } else {
-            tvMensajeSecundario.visibility = View.VISIBLE
-            tvMensajeSecundario.text = "Puntuazioa: $puntuacionActual"
+            tvResultado.text = "GALDU DUZU... HITZ: $palabraActual"
+            tvResultado.setTextColor(Color.RED)
+            ivAhorcado.setImageResource(R.drawable.leontriste)
 
-            tvMensajePrincipal.text = "Galdu duzu.\nHitza hau zen:\n$palabraActual"
-            tvMensajePrincipal.setTextColor(Color.RED)
-            ivFinalInferior.setImageResource(R.drawable.leontriste)
+            // Mostrar la palabra entera
+            tvPalabra.text = palabraActual.replace(" ", "\n")
         }
 
-        // LLAMADA A LA BASE DE DATOS
+        // 3. Guardar puntos
         guardarPuntuacionEnBD(puntuacionActual)
 
-        btnJarraituJuego.text = "JARRAITU"
-        btnJarraituJuego.visibility = View.VISIBLE
+        // 4. ACTIVAR BOTÓN JARRAITU Y PONERLO ROSA
+        btnJarraituJuego.isEnabled = true
+        btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF69B4"))
+
+        Toast.makeText(this, "Jokoa amaitu da. Sakatu Jarraitu.", Toast.LENGTH_SHORT).show()
     }
 
-    // --- AQUÍ ESTÁ EL CAMBIO FINAL ---
+    private fun desactivarTeclado() {
+        // Recorremos las filas y los botones para desactivarlos
+        for (i in 0 until llTeclado.childCount) {
+            val fila = llTeclado.getChildAt(i) as LinearLayout
+            for (j in 0 until fila.childCount) {
+                val boton = fila.getChildAt(j)
+                boton.isEnabled = false
+            }
+        }
+    }
+
     private fun guardarPuntuacionEnBD(puntos: Int) {
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
 
         val dbHelper = DatabaseHelper(this)
-
-        // PASAMOS "Ahorcado" para que guarde en SU columna
-        val guardado = dbHelper.guardarPuntuacion(nombreAlumno, "Ahorcado", puntos)
-
-        if (guardado) {
-            Toast.makeText(this, "Guardado Ahorcado: $puntos", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show()
-        }
+        dbHelper.guardarPuntuacion(nombreAlumno, "Ahorcado", puntos)
     }
 
     // --- TRANSICIÓN Y AUDIO ---

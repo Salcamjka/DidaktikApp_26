@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="@color/mi_fondo_pantalla">
 
     <ScrollView
         android:id="@+id/scrollTextContainer"
@@ -25,7 +25,7 @@
                 android:text="Zazpi Kaleak"
                 android:textSize="28sp"
                 android:textStyle="bold"
-                android:textColor="#FF69B4"
+                android:textColor="@color/mi_boton_principal"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="12dp"/>
 
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:text="Bilbo 1300. urtean sortu zen itsasadarraren ertzean, merkataritza bultzatzeko diseinatua. Herria zazpi kale nagusiren inguruan egituratzen zen (Somera, Artekale, Tendería, Belostikale, Carnicería Vieja, Barrenkale eta Barrenkale Barrena). Kale horiek hiriaren merkataritza eta artisau bihotza ziren, eta merkatariak, zapatariak, arrantzaleak, artisauak, errementariak eta beste lanbide batzuk hartzen zituzten.\n\nBilboko Alde Zaharreko kaleek antzinako lanbideen izenak jasotzen dituzte: Somera (barazkiak eta frutak saltzen ziren), Artekale (erdikoa), Tendería (dendariengatik/ohialeengatik), Belostikale (larru sailtzaileengatik), Carniceria Vieja (harategiengatik), Barrenkale eta Barrenkale Barrena (kalerik baxuenak), jatorriz zapatariak eta beste artisau batzuk hartzen."
                 android:textSize="15sp"
-                android:textColor="#424242"
+                android:textColor="@color/black"
                 android:lineSpacingExtra="3dp"
                 android:layout_marginBottom="16dp"/>
 
@@ -63,7 +63,7 @@
                     android:layout_height="40dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@android:drawable/ic_media_play"
-                    app:tint="#000000"
+                    app:tint="@color/black"
                     android:contentDescription="Reproducir" />
 
                 <SeekBar
@@ -72,18 +72,19 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="12dp"
-                    android:progressTint="#808080"
-                    android:thumbTint="#808080" />
+                    android:progressTint="@color/mi_boton_principal"
+                    android:thumbTint="@color/mi_boton_principal" />
             </LinearLayout>
+
             <Button
                 android:id="@+id/btnComenzarSopa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hasi Sopa de Letras"
+                android:text="Hasi Letra-Sopa"
                 android:textSize="17sp"
                 android:textStyle="bold"
-                android:backgroundTint="#FF69B4"
-                android:textColor="#FFFFFF"
+                android:backgroundTint="@color/mi_boton_principal"
+                android:textColor="@color/white"
                 android:paddingHorizontal="32dp"
                 android:paddingVertical="12dp"
                 android:layout_marginBottom="16dp"/>
@@ -97,7 +98,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true"
         android:visibility="gone"
-        android:background="#F5F5F5">
+        android:background="@color/mi_fondo_pantalla">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -112,7 +113,7 @@
                 android:text="Zazpi Kaleak"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                android:textColor="#FF69B4"
+                android:textColor="@color/mi_boton_principal"
                 android:gravity="center"
                 android:layout_marginBottom="6dp"/>
 
@@ -132,7 +133,7 @@
                 android:layout_height="540dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
-                android:background="#FFFFFF"
+                android:background="@color/white"
                 android:elevation="1dp"/>
 
             <TextView
@@ -141,7 +142,7 @@
                 android:text="Aurkitu beharreko hitzak:"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="#424242"
+                android:textColor="@color/black"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"/>
 
@@ -158,7 +159,7 @@
                     android:layout_columnWeight="1"
                     android:text="Somera"
                     android:textSize="13sp"
-                    android:textColor="#424242"
+                    android:textColor="@color/black"
                     android:enabled="false"/>
 
                 <CheckBox
@@ -168,7 +169,7 @@
                     android:layout_columnWeight="1"
                     android:text="Artekale"
                     android:textSize="13sp"
-                    android:textColor="#424242"
+                    android:textColor="@color/black"
                     android:enabled="false"/>
 
                 <CheckBox
@@ -178,7 +179,7 @@
                     android:layout_columnWeight="1"
                     android:text="Tendería"
                     android:textSize="13sp"
-                    android:textColor="#424242"
+                    android:textColor="@color/black"
                     android:enabled="false"/>
 
                 <CheckBox
@@ -188,7 +189,7 @@
                     android:layout_columnWeight="1"
                     android:text="Belostikale"
                     android:textSize="13sp"
-                    android:textColor="#424242"
+                    android:textColor="@color/black"
                     android:enabled="false"/>
 
                 <CheckBox
@@ -198,7 +199,7 @@
                     android:layout_columnWeight="1"
                     android:text="C. Vieja"
                     android:textSize="13sp"
-                    android:textColor="#424242"
+                    android:textColor="@color/black"
                     android:enabled="false"/>
 
                 <CheckBox
@@ -208,7 +209,7 @@
                     android:layout_columnWeight="1"
                     android:text="Barrenkale"
                     android:textSize="13sp"
-                    android:textColor="#424242"
+                    android:textColor="@color/black"
                     android:enabled="false"/>
 
                 <CheckBox
@@ -218,7 +219,7 @@
                     android:layout_columnSpan="2"
                     android:text="Barrenkale Barrena"
                     android:textSize="13sp"
-                    android:textColor="#424242"
+                    android:textColor="@color/black"
                     android:enabled="false"/>
 
             </GridLayout>
@@ -231,7 +232,7 @@
                 android:text="0/7"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:textColor="#FF6F00"
+                android:textColor="@color/mi_boton_principal"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="10dp"/>
 
@@ -244,8 +245,8 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:enabled="false"
-                android:backgroundTint="#9E9E9E"
-                android:textColor="#FFFFFF"
+                android:backgroundTint="@color/boton_desactivado"
+                android:textColor="@color/white"
                 android:paddingHorizontal="40dp"
                 android:paddingVertical="10dp"
                 android:layout_marginBottom="16dp"/>

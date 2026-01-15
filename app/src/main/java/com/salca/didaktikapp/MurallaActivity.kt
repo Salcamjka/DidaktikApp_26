@@ -40,7 +40,6 @@ class MurallaActivity : AppCompatActivity() {
                 if (audio != null && isPlaying) {
                     seekBarAudio.progress = audio!!.currentPosition
                 }
-                // Se repite cada 500ms
                 audioHandler.postDelayed(this, 500)
             } catch (e: Exception) { }
         }
@@ -58,7 +57,7 @@ class MurallaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_muralla)
 
-        // Inicialización
+        // Inicialización de Vistas
         txtTitulo = findViewById(R.id.txtTitulo)
         txtIntro = findViewById(R.id.txtIntro)
         btnComenzar = findViewById(R.id.btnComenzar)
@@ -84,47 +83,53 @@ class MurallaActivity : AppCompatActivity() {
         btnResponder = findViewById(R.id.btnResponder)
         btnReintentar = findViewById(R.id.btnReintentar)
 
-        btnComenzar.visibility = View.GONE
-        txtIntro.text = "Orain dela urte asko, Bilbon harrizko harresi handi bat eraiki zen hiria babesteko asmoarekin..."
+        // --- CORRECCIÓN: Botón visible desde el principio ---
+        btnComenzar.visibility = View.VISIBLE
 
+        txtIntro.text = "Orain dela urte asko, Bilbon harrizko harresi handi bat eraiki zen hiria babesteko asmoarekin.\n" +
+                "Bertan familia garrantzitsuenak bizi ziren, euren etxe, denda eta Katedralarekin. Harresitik\n" +
+                "kanpo, berriz, herri giroa zegoen, Pelota eta Ronda izeneko kaleetan.\n" +
+                "\n" +
+                "Denboraren poderioz, hiria hazi egin zen eta harresia ez zen hain beharrezkoa. Zati batzuk,\n" +
+                "gainean etxeak eraikitzeko erabili ziren, eta beste batzuk eraitsiz joan ziren, nahiz eta gaur\n" +
+                "egun ere egon zela gogorarazten diguten aztarnak dauden. Erronda kalean, esaterako,\n" +
+                "harresiaren gainean egindako fatxadak ikus daitezke, eta San Anton elizaren azpian ere\n" +
+                "aztarna garrantzitsuak daude.\n" +
+                "\n" +
+                "Harresiak bere oroitzapena utzi zuen Alde Zaharreko bi kaleren izenean. Pelota kaleari\n" +
+                "horrela deitzen zaio jendeak frontoi bat bezala erabiltzen zuelako harresia. Erronda kaleari,\n" +
+                "aldiz, harresia zaintzen zuten soldaduek guardiako txandak egiten zituztelako. Horregatik,\n" +
+                "gaur egun ere kale honek zaintza garai hura gogorarazten digu."
+
+        // Ocultamos el test al principio
         mostrarTest(false)
 
-        // 1. PREPARAMOS EL AUDIO AL INICIO (para que la barra sepa la duración)
+        // Preparamos el audio
         prepararAudio()
 
-        // 2. CONTROL DEL BOTÓN PLAY/PAUSE
+        // Listeners
         btnPlayPauseAudio.setOnClickListener {
-            if (isPlaying) {
-                pauseAudio()
-            } else {
-                playAudio()
-            }
+            if (isPlaying) pauseAudio() else playAudio()
         }
 
-        // 3. BARRA DE PROGRESO (CONTROL MANUAL)
         seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                // Si el usuario mueve la barra, actualizamos el audio inmediatamente
                 if (fromUser) audio?.seekTo(progress)
             }
-
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                // AL TOCAR: Paramos la actualización automática para que no "tiemble"
                 audioHandler.removeCallbacks(updateSeekBarRunnable)
             }
-
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                // AL SOLTAR: Volvemos a activar la actualización automática si está sonando
-                if (isPlaying) {
-                    audioHandler.postDelayed(updateSeekBarRunnable, 500)
-                }
+                if (isPlaying) audioHandler.postDelayed(updateSeekBarRunnable, 500)
             }
         })
 
+        // --- LÓGICA BOTÓN COMENZAR ---
         btnComenzar.setOnClickListener {
+            btnComenzar.visibility = View.GONE // Se oculta al pulsar
             mostrarTest(true)
             mostrarPregunta()
-            if (isPlaying) pauseAudio()
+            if (isPlaying) pauseAudio() // Pausa el audio si estaba sonando
         }
 
         btnResponder.setOnClickListener { comprobarRespuesta() }
@@ -139,9 +144,7 @@ class MurallaActivity : AppCompatActivity() {
                     pauseAudio()
                     audio?.seekTo(0)
                     seekBarAudio.progress = 0
-                    btnComenzar.visibility = View.VISIBLE
                 }
-                // Configuramos el máximo de la barra
                 seekBarAudio.max = audio?.duration ?: 0
             }
         } catch (e: Exception) {
@@ -169,6 +172,8 @@ class MurallaActivity : AppCompatActivity() {
         txtPregunta.visibility = vis
         grupoOpciones.visibility = vis
         btnResponder.visibility = vis
+
+        // Lo que se oculta al empezar el test
         txtIntro.visibility = if (visible) View.GONE else View.VISIBLE
         btnPlayPauseAudio.visibility = if (visible) View.GONE else View.VISIBLE
         seekBarAudio.visibility = if (visible) View.GONE else View.VISIBLE
@@ -201,7 +206,6 @@ class MurallaActivity : AppCompatActivity() {
         if (seleccion == preguntas[indicePregunta].correcta) {
             progreso++
             puntuacionActual += 100
-
             if (indicePregunta < listaPiezas.size) listaPiezas[indicePregunta].visibility = View.VISIBLE
             Toast.makeText(this, "Zuzena! (+100 pts)", Toast.LENGTH_SHORT).show()
         } else {
@@ -228,9 +232,8 @@ class MurallaActivity : AppCompatActivity() {
     private fun guardarPuntuacionEnBD(puntos: Int) {
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
-
         val dbHelper = DatabaseHelper(this)
-        val guardado = dbHelper.guardarPuntuacion(nombreAlumno, "Muralla", puntos)
+        dbHelper.guardarPuntuacion(nombreAlumno, "Muralla", puntos)
     }
 
     private fun reintentar() {

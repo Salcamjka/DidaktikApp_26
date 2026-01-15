@@ -4,178 +4,184 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/mi_fondo_pantalla"> <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:gravity="center_horizontal">
-
-    <TextView
-        android:id="@+id/txtTitulo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2.JARDUERA\n-Antzinako Harresia-"
-        android:textSize="22sp"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:layout_marginBottom="12dp"/>
-
-    <TextView
-        android:id="@+id/txtIntro"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Texto introductorio"
-        android:textSize="18sp"
-        android:gravity="center"
-        android:textColor="@color/black"
-        android:layout_marginBottom="12dp"/>
+    android:background="@color/mi_fondo_pantalla">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/btnPlayPauseAudio"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_media_play"
-            android:contentDescription="Reproducir/Pausar Audio"
-            app:tint="@color/black"/> <SeekBar
-        android:id="@+id/seekBarAudio"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="12dp"/>
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/btnComenzar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hasi Testa"
-        android:layout_gravity="center"
-        android:layout_marginBottom="16dp"
-        app:backgroundTint="@color/mi_boton_principal"/>
-
-    <LinearLayout
-        android:id="@+id/layoutMuralla"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:orientation="horizontal"
-        android:weightSum="5"
-        android:layout_marginBottom="16dp">
-
-        <ImageView
-            android:id="@+id/pieza0"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:src="@drawable/muralla_0"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/pieza1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:src="@drawable/muralla_1"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/pieza2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:src="@drawable/muralla_2"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/pieza3"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:src="@drawable/muralla_3"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/pieza4"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:src="@drawable/muralla_4"
-            android:visibility="invisible" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/txtPregunta"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Pregunta"
-        android:textSize="16sp"
-        android:textColor="@color/black"
-        android:layout_marginBottom="8dp"/>
-
-    <RadioGroup
-        android:id="@+id/grupoOpciones"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginBottom="16dp">
+        android:padding="16dp"
+        android:gravity="center_horizontal">
 
-        <RadioButton
-            android:id="@+id/op1"
+        <TextView
+            android:id="@+id/txtTitulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Opción 1"
-            android:textColor="@color/black"
-            android:buttonTint="@color/mi_boton_principal"/>
+            android:text="2.JARDUERA\n-Antzinako Harresia-"
+            android:textSize="22sp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/mi_boton_principal"
+            android:layout_marginBottom="12dp"/>
 
-        <RadioButton
-            android:id="@+id/op2"
+        <TextView
+            android:id="@+id/txtIntro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Texto introductorio"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:layout_marginBottom="12dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btnPlayPauseAudio"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_media_play"
+                android:contentDescription="Reproducir/Pausar Audio"
+                app:tint="@color/black"/>
+
+            <SeekBar
+                android:id="@+id/seekBarAudio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:progressTint="@color/mi_boton_principal"
+                android:thumbTint="@color/mi_boton_principal"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnComenzar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Opción 2"
-            android:textColor="@color/black"
-            android:buttonTint="@color/mi_boton_principal"/>
+            android:text="Hasi Testa"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            app:backgroundTint="@color/mi_boton_principal"/>
 
-        <RadioButton
-            android:id="@+id/op3"
+        <LinearLayout
+            android:id="@+id/layoutMuralla"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/pieza0"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/muralla_0"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/pieza1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/muralla_1"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/pieza2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/muralla_2"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/pieza3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/muralla_3"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/pieza4"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/muralla_4"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtPregunta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pregunta"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <RadioGroup
+            android:id="@+id/grupoOpciones"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp">
+
+            <RadioButton
+                android:id="@+id/op1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Opción 1"
+                android:textColor="@color/black"
+                android:buttonTint="@color/mi_boton_principal"/>
+
+            <RadioButton
+                android:id="@+id/op2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Opción 2"
+                android:textColor="@color/black"
+                android:buttonTint="@color/mi_boton_principal"/>
+
+            <RadioButton
+                android:id="@+id/op3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Opción 3"
+                android:textColor="@color/black"
+                android:buttonTint="@color/mi_boton_principal"/>
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/btnResponder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Opción 3"
-            android:textColor="@color/black"
-            android:buttonTint="@color/mi_boton_principal"/>
-    </RadioGroup>
+            android:text="Erantzun"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            app:backgroundTint="@color/mi_boton_principal"/>
 
-    <Button
-        android:id="@+id/btnResponder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Erantzun"
-        android:layout_gravity="center"
-        android:layout_marginBottom="16dp"
-        app:backgroundTint="@color/mi_boton_principal"/>
-
-    <Button
-        android:id="@+id/btnReintentar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Saiatu berriz"
-        android:layout_gravity="center"
-        android:layout_marginBottom="20dp"
-        android:visibility="gone"
-        app:backgroundTint="@color/mi_boton_principal"/>
-</LinearLayout>
+        <Button
+            android:id="@+id/btnReintentar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Saiatu berriz"
+            android:layout_gravity="center"
+            android:layout_marginBottom="20dp"
+            android:visibility="gone"
+            app:backgroundTint="@color/mi_boton_principal"/>
+    </LinearLayout>
 </ScrollView>

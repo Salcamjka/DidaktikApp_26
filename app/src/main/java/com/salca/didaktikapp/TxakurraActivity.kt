@@ -10,7 +10,6 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
@@ -42,7 +41,6 @@ class TxakurraActivity : AppCompatActivity() {
     }
 
     private fun initializeViews() {
-        // Enlazamos con los nuevos IDs del XML
         btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
         seekBarAudio = findViewById(R.id.seekBarAudio)
         btnContinuar = findViewById(R.id.btnContinuar)
@@ -58,17 +56,17 @@ class TxakurraActivity : AppCompatActivity() {
         try {
             mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_4)
 
-            // Configurar duración máxima de la barra
             mediaPlayer?.setOnPreparedListener { mp ->
                 seekBarAudio.max = mp.duration
             }
 
-            // Al terminar el audio
             mediaPlayer?.setOnCompletionListener {
                 btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
                 seekBarAudio.progress = 0
                 isPlaying = false
-                handler.removeCallbacks(runnable)
+                if (::runnable.isInitialized) {
+                    handler.removeCallbacks(runnable)
+                }
             }
         } catch (e: Exception) {
             Toast.makeText(this, "Errorea audioarekin", Toast.LENGTH_SHORT).show()
@@ -76,12 +74,10 @@ class TxakurraActivity : AppCompatActivity() {
     }
 
     private fun setupAudioControls() {
-        // Botón Play/Pause
         btnPlayPauseIcon.setOnClickListener {
             if (isPlaying) pauseAudio() else playAudio()
         }
 
-        // Mover la barra manualmente
         seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) mediaPlayer?.seekTo(progress)
@@ -102,7 +98,9 @@ class TxakurraActivity : AppCompatActivity() {
         mediaPlayer?.pause()
         isPlaying = false
         btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
-        handler.removeCallbacks(runnable)
+        if (::runnable.isInitialized) {
+            handler.removeCallbacks(runnable)
+        }
     }
 
     private fun updateSeekBar() {
@@ -115,9 +113,20 @@ class TxakurraActivity : AppCompatActivity() {
 
     private fun setupContinuarButton() {
         btnContinuar.setOnClickListener {
-            // Parar todo antes de cambiar de pantalla
-            handler.removeCallbacks(runnable)
-            mediaPlayer?.stop()
+            // CORRECCIÓN PRINCIPAL AQUÍ:
+            // Comprobar si runnable está inicializado antes de eliminar callbacks
+            if (::runnable.isInitialized) {
+                handler.removeCallbacks(runnable)
+            }
+
+            try {
+                if (mediaPlayer?.isPlaying == true) {
+                    mediaPlayer?.stop()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
             mediaPlayer?.release()
             mediaPlayer = null
 

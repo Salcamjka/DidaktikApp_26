@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="@color/mi_fondo_pantalla">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,7 +17,7 @@
             android:layout_marginBottom="8dp"
             android:gravity="center"
             android:text="Txakurraren Iturria"
-            android:textColor="#FF69B4"
+            android:textColor="@color/mi_boton_principal"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -36,7 +37,7 @@
             android:layout_height="wrap_content"
             android:text="Iturri hau izen bera duen kalean aurkitzen da; zehazki, Txakur kalean. Orain dela urte asko eraiki zen iturria dugu aurrean. Ikusten duzuenez, iturriak lehoi buru forma duen brontzezko hiru txorrota ditu. Baina, zergatik deitzen da, beraz, Txakur Iturria?\n\nHistorian zehar eztabaida handiak sortu dira jendearen artean eta guztien artean 2 kondaira desberdintzen dira:"
             android:textSize="15sp"
-            android:textColor="#424242"
+            android:textColor="@color/black"
             android:lineSpacingExtra="3dp"
             android:paddingBottom="16dp"/>
 
@@ -45,7 +46,7 @@
             android:layout_height="wrap_content"
             android:text="Modu horretan, denboraren poderioz, iritzi desberdinak sortu dira."
             android:textSize="14sp"
-            android:textColor="#424242"
+            android:textColor="@color/black"
             android:textStyle="italic"
             android:gravity="center"
             android:paddingTop="8dp"
@@ -66,7 +67,7 @@
                 android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@android:drawable/ic_media_play"
-                android:tint="#000000"
+                app:tint="@color/black"
                 android:contentDescription="Reproducir audio" />
 
             <SeekBar
@@ -75,8 +76,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="12dp"
-                android:progressTint="#808080"
-                android:thumbTint="#808080" />
+                android:progressTint="@color/mi_boton_principal"
+                android:thumbTint="@color/mi_boton_principal" />
 
         </LinearLayout>
 
@@ -86,11 +87,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="8dp"
-            android:backgroundTint="#FF69B4"
+            android:backgroundTint="@color/mi_boton_principal"
             android:paddingHorizontal="32dp"
             android:paddingVertical="12dp"
-            android:text="Jarraitu"
-            android:textColor="#FFFFFF"
+            android:text="Hasi Taula"
+            android:textColor="@color/white"
             android:textSize="17sp"
             android:textStyle="bold" />
 
