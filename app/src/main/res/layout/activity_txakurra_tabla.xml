@@ -11,13 +11,21 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Txakurraren Iturria"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:gravity="center"/>
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Txakurraren Iturria"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:layout_centerInParent="true"
+                android:gravity="center"/>
+
+        </RelativeLayout>
 
         <ImageView
             android:id="@+id/ivMascota"
@@ -264,7 +272,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
-            android:text="Osatu Taula"
+            android:text="Jarritu"
             android:textSize="16sp"
             android:textStyle="bold"
             android:enabled="false"

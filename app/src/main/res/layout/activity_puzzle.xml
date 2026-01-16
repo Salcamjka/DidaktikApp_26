@@ -33,6 +33,7 @@
             android:text="Bilboko Arenala"
             android:textSize="28sp"
             android:textStyle="bold"
+            android:textColor="@color/black"
             android:layout_centerInParent="true"
             android:gravity="center"/>
 
@@ -191,7 +192,8 @@
                     android:id="@+id/btnFinalizarTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Amaitu Jarduera"
+                    android:text="Jarraitu"
+                    android:textStyle="bold"
                     app:backgroundTint="@color/mi_boton_principal"
                     android:textColor="@color/white"/>
 
