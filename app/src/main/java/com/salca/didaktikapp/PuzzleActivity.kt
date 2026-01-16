@@ -39,6 +39,9 @@ class PuzzleActivity : AppCompatActivity() {
     private lateinit var btnJarraitu: Button
     private lateinit var txtTituloPrincipal: TextView
 
+    // NUEVO: Botón Mapa
+    private lateinit var btnVolverMapa: ImageButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_puzzle)
@@ -48,15 +51,21 @@ class PuzzleActivity : AppCompatActivity() {
         layoutFinal = findViewById(R.id.layoutFinal)
         txtTituloPrincipal = findViewById(R.id.txtTituloPrincipal)
 
+        // --- CONFIGURACIÓN BOTÓN VOLVER AL MAPA ---
+        btnVolverMapa = findViewById(R.id.btnVolverMapa)
+        btnVolverMapa.setOnClickListener {
+            finish()
+        }
+
         val gridPasado = findViewById<GridLayout>(R.id.gridPasado)
         val gridPresente = findViewById<GridLayout>(R.id.gridPresente)
         val gridPiezas = findViewById<GridLayout>(R.id.gridPiezas)
         btnJarraitu = findViewById(R.id.btnJarraitu)
 
-        // --- CAMBIO: Botón visible y ACTIVADO desde el principio ---
+        // --- Botón visible y ACTIVADO desde el principio (según tu código anterior) ---
         btnJarraitu.visibility = View.VISIBLE
-        btnJarraitu.isEnabled = true    // ACTIVADO (Se puede pulsar)
-        btnJarraitu.alpha = 1.0f        // OPACO (Color normal)
+        btnJarraitu.isEnabled = true
+        btnJarraitu.alpha = 1.0f
 
         // Al pulsar, cambia de pantalla inmediatamente
         btnJarraitu.setOnClickListener {
@@ -168,7 +177,6 @@ class PuzzleActivity : AppCompatActivity() {
             }
         }
 
-        // Aunque el botón ya esté activado, mostramos el aviso de completado
         if (completadoLehenaldia && completadoOrainaldia) {
             Toast.makeText(this, "Puzzleak osatuta!", Toast.LENGTH_LONG).show()
         }
@@ -177,7 +185,11 @@ class PuzzleActivity : AppCompatActivity() {
     private fun cambiarAPantallaFinal() {
         if (layoutFinal.visibility != View.VISIBLE) {
             contenedorJuego.visibility = View.GONE
+
+            // --- NUEVO: Ocultamos también el botón del mapa y el título inicial ---
+            btnVolverMapa.visibility = View.GONE
             txtTituloPrincipal.visibility = View.GONE
+
             layoutFinal.visibility = View.VISIBLE
 
             val scrollView = findViewById<ScrollView>(R.id.scrollViewMain)

@@ -11,7 +11,7 @@ import android.view.Gravity
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.children
+import androidx.core.content.ContextCompat
 
 class AhorcadoActivity : AppCompatActivity() {
 
@@ -21,7 +21,10 @@ class AhorcadoActivity : AppCompatActivity() {
     private lateinit var tvPalabra: TextView
     private lateinit var tvResultado: TextView
     private lateinit var llTeclado: LinearLayout
-    private lateinit var btnJarraituJuego: Button // El botón de abajo
+    private lateinit var btnJarraituJuego: Button
+
+    // NUEVO: Variable para el botón del mapa
+    private lateinit var btnVolverMapa: ImageButton
 
     // --- Variables Lógica Juego ---
     private val palabras = listOf("ATHLETIC-EN ARMARRIA")
@@ -48,6 +51,16 @@ class AhorcadoActivity : AppCompatActivity() {
     }
 
     private fun inicializarVistas() {
+        // --- CONFIGURACIÓN BOTÓN VOLVER AL MAPA ---
+        btnVolverMapa = findViewById(R.id.btnVolverMapa)
+        btnVolverMapa.visibility = View.VISIBLE // Aseguramos que se ve al principio
+        btnVolverMapa.setOnClickListener {
+            if (mediaPlayer?.isPlaying == true) {
+                mediaPlayer?.stop()
+            }
+            finish()
+        }
+
         // Fase Juego
         contenedorFaseJuego = findViewById(R.id.fase1_Juego)
         ivAhorcado = findViewById(R.id.ivAhorcado)
@@ -56,9 +69,11 @@ class AhorcadoActivity : AppCompatActivity() {
         llTeclado = findViewById(R.id.llTeclado)
         btnJarraituJuego = findViewById(R.id.btnJarraituJuego)
 
-        // Configuración inicial del botón Jarraitu (DESACTIVADO)
+        // Configuración inicial del botón Jarraitu (DESACTIVADO - Color Gris)
         btnJarraituJuego.isEnabled = false
-        btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#9E9E9E")) // Gris
+        val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
+        btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
+
         btnJarraituJuego.setOnClickListener { mostrarFaseExplicacion() }
 
         // Fase Explicación
@@ -94,7 +109,8 @@ class AhorcadoActivity : AppCompatActivity() {
         // Reset imagen y botón
         ivAhorcado.setImageResource(R.drawable.ahorcado0)
         btnJarraituJuego.isEnabled = false
-        btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#9E9E9E"))
+        val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
+        btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
 
         crearTeclado()
         actualizarTextoPantalla()
@@ -137,7 +153,8 @@ class AhorcadoActivity : AppCompatActivity() {
                 puntuacionActual += 10
             }
             boton.isEnabled = false
-            boton.setBackgroundColor(Color.parseColor("#4CAF50"))
+            // Color Acierto (Verde)
+            boton.setBackgroundColor(ContextCompat.getColor(this, R.color.mi_acierto))
             actualizarTextoPantalla()
             verificarVictoria()
         } else {
@@ -189,43 +206,33 @@ class AhorcadoActivity : AppCompatActivity() {
         ivAhorcado.setImageResource(res)
     }
 
-    // --- FUNCIÓN CLAVE: SE ACTIVA AL TERMINAR EL JUEGO ---
     private fun mostrarResultadoFinal(gano: Boolean) {
-        // 1. Desactivar todo el teclado (ya no se puede jugar)
         desactivarTeclado()
-
-        // 2. Mostrar mensaje y cambiar imagen
         tvResultado.visibility = View.VISIBLE
         if (gano) {
             val bonusVictoria = 100
             val vidasRestantes = 7 - errores
             val bonusVidas = vidasRestantes * 20
             puntuacionActual += (bonusVictoria + bonusVidas)
-
             tvResultado.text = "OSO ONDO! IRABAZI DUZU!"
-            tvResultado.setTextColor(Color.parseColor("#4CAF50")) // Verde
+            tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_acierto))
             ivAhorcado.setImageResource(R.drawable.leonfeliz)
         } else {
             tvResultado.text = "GALDU DUZU... HITZ: $palabraActual"
-            tvResultado.setTextColor(Color.RED)
+            tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
             ivAhorcado.setImageResource(R.drawable.leontriste)
-
-            // Mostrar la palabra entera
             tvPalabra.text = palabraActual.replace(" ", "\n")
         }
-
-        // 3. Guardar puntos
         guardarPuntuacionEnBD(puntuacionActual)
 
-        // 4. ACTIVAR BOTÓN JARRAITU Y PONERLO ROSA
         btnJarraituJuego.isEnabled = true
-        btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF69B4"))
+        val colorActivo = ContextCompat.getColor(this, R.color.mi_boton_principal)
+        btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(colorActivo)
 
         Toast.makeText(this, "Jokoa amaitu da. Sakatu Jarraitu.", Toast.LENGTH_SHORT).show()
     }
 
     private fun desactivarTeclado() {
-        // Recorremos las filas y los botones para desactivarlos
         for (i in 0 until llTeclado.childCount) {
             val fila = llTeclado.getChildAt(i) as LinearLayout
             for (j in 0 until fila.childCount) {
@@ -238,15 +245,18 @@ class AhorcadoActivity : AppCompatActivity() {
     private fun guardarPuntuacionEnBD(puntos: Int) {
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
-
         val dbHelper = DatabaseHelper(this)
         dbHelper.guardarPuntuacion(nombreAlumno, "Ahorcado", puntos)
     }
 
-    // --- TRANSICIÓN Y AUDIO ---
+    // --- AQUÍ HACEMOS EL CAMBIO ---
     private fun mostrarFaseExplicacion() {
         contenedorFaseJuego.visibility = View.GONE
         contenedorFaseExplicacion.visibility = View.VISIBLE
+
+        // OCULTAMOS EL BOTÓN DEL MAPA AL PASAR A LA EXPLICACIÓN
+        btnVolverMapa.visibility = View.GONE
+
         configurarAudio()
     }
 

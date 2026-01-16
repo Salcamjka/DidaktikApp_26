@@ -8,15 +8,35 @@
     android:gravity="center_horizontal"
     android:background="@color/mi_fondo_pantalla">
 
-    <TextView
-        android:id="@+id/txtTituloPrincipal"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="PUZZLE: BILBOKO ARENALA"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp"
+        android:paddingHorizontal="8dp">
+
+        <ImageButton
+            android:id="@+id/btnVolverMapa"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="fitCenter"
+            android:src="@drawable/mapaimg"
+            android:contentDescription="Volver al mapa"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/txtTituloPrincipal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bilboko Arenala"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_centerInParent="true"
+            android:gravity="center"/>
+
+    </RelativeLayout>
 
     <ScrollView
         android:id="@+id/scrollViewMain"
@@ -125,10 +145,9 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="5.JARDUERA\n-Bilboko Areatza-"
-                    android:textSize="20sp"
+                    android:text="Bilboko Areatza"
+                    android:textSize="28sp"
                     android:textStyle="bold"
-                    android:textColor="@color/black"
                     android:gravity="center"
                     android:layout_marginBottom="20dp"/>
 
@@ -138,6 +157,7 @@
                     android:text="Areatza Bilboko leku garrantzitsu eta ezagunenetako bat da, Alde Zaharrean kokatua.\n\nIraganean, Areatza, izenak dioen bezala, hondartza bat zen, Bilboko hiriaren kanpoaldean, harresietatik haratago, kokatutako eremu bat. Leku hau arrantza-auzoa zen, Nerbioi ibaiaren sarreran kai gisa balio zuen harezko eremu batean kokatua.\n\nPixkanaka garrantzia hartu zuen portu naturala bilakatu zen, non itsasontziak karga deskargatzeko atrakatzen ziren. Urteetan zehar, Bilbo hazi egin zen, eta Areatza bilbotarrek paseatzera joaten ziren leku bihurtu zen. Horregatik hartzen da hiriko parkerik zaharrena bezala."
                     android:textSize="18sp"
                     android:textColor="@color/black"
+                    android:gravity="center"
                     android:lineSpacingExtra="6dp"
                     android:layout_marginBottom="25dp"/>
 
@@ -163,8 +183,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginStart="8dp"
-                        android:progressTint="@color/mi_boton_principal"
-                        android:thumbTint="@color/mi_boton_principal"/>
+                        android:progressTint="@color/black"
+                        android:thumbTint="@color/black"/>
                 </LinearLayout>
 
                 <Button

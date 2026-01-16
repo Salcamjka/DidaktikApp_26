@@ -12,6 +12,17 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <ImageButton
+            android:id="@+id/btnVolverMapa"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_margin="16dp"
+            android:layout_gravity="start"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="fitCenter"
+            android:src="@drawable/mapaimg"
+            android:contentDescription="Volver al mapa" />
+
         <LinearLayout
             android:id="@+id/fase1_Juego"
             android:layout_width="match_parent"
@@ -19,7 +30,8 @@
             android:orientation="vertical"
             android:gravity="center_horizontal"
             android:visibility="visible"
-            android:padding="16dp">
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="16dp">
 
             <ImageView
                 android:id="@+id/ivAhorcado"
@@ -90,7 +102,7 @@
                 android:layout_marginTop="16dp"
                 android:text="San Anton Eliza"
                 android:textAlignment="center"
-                android:textSize="48sp"
+                android:textSize="28sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -121,7 +133,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="8dp" />
+                    android:layout_marginStart="8dp"
+                    android:progressTint="@color/black"
+                    android:thumbTint="@color/black"/>
             </LinearLayout>
 
             <TextView
@@ -132,7 +146,6 @@
                 android:text="San Anton Eliza Bilboko eraikin ezagunetako bat da. Alde Zaharrean dago, izen bereko zubiaren eta itsasadarraren ondoan. Zubi hori hiriko armarrian ikusi dezakegu, elizaren ondoan. Gainera, zer ikusi dugu jolasean? San Anton zubia Athletic Cluben armarrian agertzen dela baita ere."
                 android:textAlignment="center"
                 android:textSize="18sp"
-                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/layoutAudioPlayer" />

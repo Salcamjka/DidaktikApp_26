@@ -26,6 +26,9 @@ class MurallaActivity : AppCompatActivity() {
     private lateinit var btnResponder: Button
     private lateinit var btnReintentar: Button
 
+    // NUEVO: Botón mapa
+    private lateinit var btnVolverMapa: ImageButton
+
     private var audio: MediaPlayer? = null
     private val audioHandler = Handler(Looper.getMainLooper())
     private var isPlaying = false
@@ -65,6 +68,15 @@ class MurallaActivity : AppCompatActivity() {
         seekBarAudio = findViewById(R.id.seekBarAudio)
         layoutMuralla = findViewById(R.id.layoutMuralla)
 
+        // --- CONFIGURACIÓN BOTÓN VOLVER AL MAPA ---
+        btnVolverMapa = findViewById(R.id.btnVolverMapa)
+        btnVolverMapa.visibility = View.VISIBLE // Visible al inicio
+        btnVolverMapa.setOnClickListener {
+            // Si está sonando el audio, lo paramos antes de salir
+            if (isPlaying) pauseAudio()
+            finish()
+        }
+
         listaPiezas = listOf(
             findViewById(R.id.pieza0),
             findViewById(R.id.pieza1),
@@ -83,7 +95,6 @@ class MurallaActivity : AppCompatActivity() {
         btnResponder = findViewById(R.id.btnResponder)
         btnReintentar = findViewById(R.id.btnReintentar)
 
-        // --- CORRECCIÓN: Botón visible desde el principio ---
         btnComenzar.visibility = View.VISIBLE
 
         txtIntro.text = "Orain dela urte asko, Bilbon harrizko harresi handi bat eraiki zen hiria babesteko asmoarekin.\n" +
@@ -127,6 +138,10 @@ class MurallaActivity : AppCompatActivity() {
         // --- LÓGICA BOTÓN COMENZAR ---
         btnComenzar.setOnClickListener {
             btnComenzar.visibility = View.GONE // Se oculta al pulsar
+
+            // --- NUEVO: OCULTAMOS EL BOTÓN MAPA ---
+            btnVolverMapa.visibility = View.GONE
+
             mostrarTest(true)
             mostrarPregunta()
             if (isPlaying) pauseAudio() // Pausa el audio si estaba sonando

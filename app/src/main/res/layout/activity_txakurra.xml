@@ -76,8 +76,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="12dp"
-                android:progressTint="@color/mi_boton_principal"
-                android:thumbTint="@color/mi_boton_principal" />
+                android:progressTint="@color/black"
+                android:thumbTint="@color/black" />
 
         </LinearLayout>
 

@@ -11,6 +11,7 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 
 class SopaActivity : AppCompatActivity() {
 
@@ -18,6 +19,9 @@ class SopaActivity : AppCompatActivity() {
     private lateinit var tvTextoIntroductorio: TextView
     private lateinit var btnComenzarSopa: Button
     private lateinit var ivMascotaPantalla1: ImageView
+
+    // NUEVO: Botón Mapa
+    private lateinit var btnVolverMapa: ImageButton
 
     // Controles de Audio
     private lateinit var btnPlayPauseIcon: ImageButton
@@ -79,6 +83,14 @@ class SopaActivity : AppCompatActivity() {
         tvTextoIntroductorio = findViewById(R.id.tvTextoIntroductorio)
         btnComenzarSopa = findViewById(R.id.btnComenzarSopa)
         ivMascotaPantalla1 = findViewById(R.id.ivMascotaPantalla1)
+
+        // --- CONFIGURACIÓN BOTÓN VOLVER AL MAPA ---
+        btnVolverMapa = findViewById(R.id.btnVolverMapa)
+        btnVolverMapa.setOnClickListener {
+            // Paramos audio si está sonando
+            if (isPlaying) pauseAudio()
+            finish()
+        }
 
         btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
         seekBarAudio = findViewById(R.id.seekBarAudio)
@@ -184,7 +196,11 @@ class SopaActivity : AppCompatActivity() {
 
     private fun mostrarSopaDeLetras() {
         if (isPlaying) pauseAudio()
+
+        // --- AQUÍ EL CAMBIO: OCULTAMOS EL BOTÓN MAPA ---
+        // (Como está en el scrollTextContainer, al ocultar ese layout se oculta solo)
         scrollTextContainer.visibility = View.GONE
+
         sopaContainer.visibility = View.VISIBLE
         animateMascotaSaludando()
     }
@@ -212,7 +228,6 @@ class SopaActivity : AppCompatActivity() {
         }
     }
 
-    // --- CAMBIO APLICADO AQUÍ ---
     private fun updateProgress() {
         tvProgress.text = "$foundWordsCount/$totalWords"
 
@@ -220,11 +235,13 @@ class SopaActivity : AppCompatActivity() {
         btnFinish.isEnabled = isComplete
 
         if (isComplete) {
-            // ACTIVADO: Color ROSA (#FF69B4)
-            btnFinish.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF69B4"))
+            // ACTIVADO: Color ROSA
+            val colorActivo = ContextCompat.getColor(this, R.color.mi_boton_principal)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(colorActivo)
         } else {
-            // DESACTIVADO: Color GRIS (#9E9E9E)
-            btnFinish.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#9E9E9E"))
+            // DESACTIVADO: Color GRIS
+            val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
         }
     }
 

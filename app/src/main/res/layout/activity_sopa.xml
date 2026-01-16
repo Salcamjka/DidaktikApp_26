@@ -19,15 +19,33 @@
             android:padding="16dp"
             android:gravity="center_horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Zazpi Kaleak"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="@color/mi_boton_principal"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="12dp">
+
+                <ImageButton
+                    android:id="@+id/btnVolverMapa"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/mapaimg"
+                    android:contentDescription="Volver al mapa"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/tvTituloIntro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Zazpi Kaleak"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:layout_centerInParent="true"/>
+
+            </RelativeLayout>
 
             <ImageView
                 android:id="@+id/ivMascotaPantalla1"
@@ -46,6 +64,7 @@
                 android:text="Bilbo 1300. urtean sortu zen itsasadarraren ertzean, merkataritza bultzatzeko diseinatua. Herria zazpi kale nagusiren inguruan egituratzen zen (Somera, Artekale, Tendería, Belostikale, Carnicería Vieja, Barrenkale eta Barrenkale Barrena). Kale horiek hiriaren merkataritza eta artisau bihotza ziren, eta merkatariak, zapatariak, arrantzaleak, artisauak, errementariak eta beste lanbide batzuk hartzen zituzten.\n\nBilboko Alde Zaharreko kaleek antzinako lanbideen izenak jasotzen dituzte: Somera (barazkiak eta frutak saltzen ziren), Artekale (erdikoa), Tendería (dendariengatik/ohialeengatik), Belostikale (larru sailtzaileengatik), Carniceria Vieja (harategiengatik), Barrenkale eta Barrenkale Barrena (kalerik baxuenak), jatorriz zapatariak eta beste artisau batzuk hartzen."
                 android:textSize="15sp"
                 android:textColor="@color/black"
+                android:textAlignment="center"
                 android:lineSpacingExtra="3dp"
                 android:layout_marginBottom="16dp"/>
 
@@ -72,8 +91,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="12dp"
-                    android:progressTint="@color/mi_boton_principal"
-                    android:thumbTint="@color/mi_boton_principal" />
+                    android:progressTint="@color/black"
+                    android:thumbTint="@color/black" />
             </LinearLayout>
 
             <Button
@@ -111,9 +130,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Zazpi Kaleak"
-                android:textSize="22sp"
+                android:textSize="28sp"
                 android:textStyle="bold"
-                android:textColor="@color/mi_boton_principal"
                 android:gravity="center"
                 android:layout_marginBottom="6dp"/>
 
