@@ -39,18 +39,6 @@
             android:scaleType="fitCenter"
             android:contentDescription="Mascota del Athletic Club"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Lehoia ala txakurra?"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:gravity="center"
-            android:padding="12dp"
-            android:background="#FFF9C4"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -82,7 +70,7 @@
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:gravity="center"
-                    android:background="@color/mi_acierto"
+                    android:background="@color/txakurra"
                     android:textColor="@color/white"
                     android:padding="8dp"/>
 
@@ -112,7 +100,7 @@
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:gravity="center"
-                    android:background="#FFB74D"
+                    android:background="@color/txakurra"
                     android:textColor="@color/white"
                     android:padding="8dp"/>
 
