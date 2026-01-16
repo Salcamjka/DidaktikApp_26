@@ -34,6 +34,7 @@
                 android:text="Txakurraren Iturria"
                 android:textSize="28sp"
                 android:textStyle="bold"
+                android:textColor="@color/txakurra"
                 android:layout_centerInParent="true"
                 android:gravity="center" />
 
@@ -95,8 +96,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="12dp"
-                android:progressTint="@color/black"
-                android:thumbTint="@color/black" />
+                android:progressTint="@color/txakurra"
+                android:thumbTint="@color/txakurra" />
 
         </LinearLayout>
 
@@ -106,7 +107,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="8dp"
-            android:backgroundTint="@color/mi_boton_principal"
+            android:backgroundTint="@color/txakurra"
             android:paddingHorizontal="32dp"
             android:paddingVertical="12dp"
             android:text="Hasi Taula"

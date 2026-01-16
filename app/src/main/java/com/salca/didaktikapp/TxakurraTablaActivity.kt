@@ -1,6 +1,7 @@
 package com.salca.didaktikapp
 
 import android.content.Context
+import android.content.Intent // <--- IMPORTANTE: Necesario para ir al Mapa
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -14,6 +15,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 
 class TxakurraTablaActivity : AppCompatActivity() {
 
@@ -96,44 +98,57 @@ class TxakurraTablaActivity : AppCompatActivity() {
         btnFinish.isEnabled = estaCompleto
 
         if (estaCompleto) {
-            // ACTIVADO: Color Rosa
-            btnFinish.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF69B4"))
+            // ACTIVADO: Usamos el color txakurra (Rojo suave)
+            val colorActivo = ContextCompat.getColor(this, R.color.txakurra)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(colorActivo)
         } else {
             // DESACTIVADO: Color Gris
-            btnFinish.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#9E9E9E"))
+            val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
         }
     }
 
     private fun animateInitialElements() {
-        val waveAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_wave)
-        ivMascota.startAnimation(waveAnim)
+        // Usamos try-catch por seguridad si no existen las animaciones
+        try {
+            val waveAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_wave)
+            ivMascota.startAnimation(waveAnim)
 
-        val bounceAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
-        ivPerro.startAnimation(bounceAnim)
+            val bounceAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
+            ivPerro.startAnimation(bounceAnim)
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            ivLeon.startAnimation(bounceAnim)
-        }, 300)
+            Handler(Looper.getMainLooper()).postDelayed({
+                ivLeon.startAnimation(bounceAnim)
+            }, 300)
+        } catch (e: Exception) { }
     }
 
     private fun animateMascotaCelebracion() {
-        ivMascota.setImageResource(R.drawable.mascota_celebrando)
-        val celebrateAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate)
-        ivMascota.startAnimation(celebrateAnim)
+        try {
+            ivMascota.setImageResource(R.drawable.mascota_celebrando)
+            val celebrateAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate)
+            ivMascota.startAnimation(celebrateAnim)
+        } catch (e: Exception) { }
     }
 
     private fun setupFinishButton() {
         btnFinish.setOnClickListener {
-            // Si el botón se puede pulsar, significa que todo está relleno.
-            // No hace falta comprobar campos vacíos aquí.
-
+            // Animación y guardado
             animateMascotaCelebracion()
             guardarPuntuacionEnBD(100)
 
             Toast.makeText(this, "🎉 Bikain! Taula osatu duzu! (+100 pts)", Toast.LENGTH_LONG).show()
 
+            // Esperar 2 segundos y volver al MAPA
             Handler(Looper.getMainLooper()).postDelayed({
-                finish()
+
+                // --- CAMBIO AQUÍ: IR AL MAPA ---
+                val intent = Intent(this, MapActivity::class.java)
+                // Esto limpia la pila para que no puedas volver atrás a la tabla
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                startActivity(intent)
+                finish() // Cierra la actividad de la tabla
+
             }, 2000)
         }
     }

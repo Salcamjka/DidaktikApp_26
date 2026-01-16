@@ -236,7 +236,7 @@ class SopaActivity : AppCompatActivity() {
 
         if (isComplete) {
             // ACTIVADO: Color ROSA
-            val colorActivo = ContextCompat.getColor(this, R.color.mi_boton_principal)
+            val colorActivo = ContextCompat.getColor(this, R.color.sopa)
             btnFinish.backgroundTintList = ColorStateList.valueOf(colorActivo)
         } else {
             // DESACTIVADO: Color GRIS

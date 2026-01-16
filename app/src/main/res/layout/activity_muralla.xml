@@ -38,6 +38,7 @@
                 android:textSize="28sp"
                 android:gravity="center"
                 android:textStyle="bold"
+                android:textColor="@color/muralla"
                 android:layout_centerInParent="true"/>
 
         </RelativeLayout>
@@ -74,8 +75,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="12dp"
-                android:progressTint="@color/black"
-                android:thumbTint="@color/black"/>
+                android:progressTint="@color/muralla"
+                android:thumbTint="@color/muralla"/>
         </LinearLayout>
 
         <Button
@@ -86,7 +87,7 @@
             android:textStyle="bold"
             android:layout_gravity="center"
             android:layout_marginBottom="16dp"
-            app:backgroundTint="@color/mi_boton_principal"/>
+            app:backgroundTint="@color/muralla"/>
 
         <LinearLayout
             android:id="@+id/layoutMuralla"
@@ -165,7 +166,7 @@
                 android:layout_height="wrap_content"
                 android:text="Opción 1"
                 android:textColor="@color/black"
-                android:buttonTint="@color/mi_boton_principal"/>
+                android:buttonTint="@color/muralla"/>
 
             <RadioButton
                 android:id="@+id/op2"
@@ -173,7 +174,7 @@
                 android:layout_height="wrap_content"
                 android:text="Opción 2"
                 android:textColor="@color/black"
-                android:buttonTint="@color/mi_boton_principal"/>
+                android:buttonTint="@color/muralla"/>
 
             <RadioButton
                 android:id="@+id/op3"
@@ -181,7 +182,7 @@
                 android:layout_height="wrap_content"
                 android:text="Opción 3"
                 android:textColor="@color/black"
-                android:buttonTint="@color/mi_boton_principal"/>
+                android:buttonTint="@color/muralla"/>
         </RadioGroup>
 
         <Button
@@ -192,18 +193,18 @@
             android:textStyle="bold"
             android:layout_gravity="center"
             android:layout_marginBottom="16dp"
-            app:backgroundTint="@color/mi_boton_principal"/>
+            app:backgroundTint="@color/muralla"/>
 
         <Button
             android:id="@+id/btnFinalizar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Jarraitu"
+            android:text="Amaitu Jarduera"
             android:layout_gravity="center"
             android:layout_marginBottom="20dp"
             android:visibility="gone"
             android:textColor="@color/white"
-            app:backgroundTint="@color/mi_boton_principal"/>
+            app:backgroundTint="@color/muralla"/>
 
     </LinearLayout>
 </ScrollView>

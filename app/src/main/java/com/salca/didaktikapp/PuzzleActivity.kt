@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 
 class PuzzleActivity : AppCompatActivity() {
 
@@ -62,12 +63,15 @@ class PuzzleActivity : AppCompatActivity() {
         val gridPiezas = findViewById<GridLayout>(R.id.gridPiezas)
         btnJarraitu = findViewById(R.id.btnJarraitu)
 
-        // --- Botón visible y ACTIVADO desde el principio (según tu código anterior) ---
+        // --- CAMBIO 1: Botón INICIALMENTE DESACTIVADO ---
         btnJarraitu.visibility = View.VISIBLE
-        btnJarraitu.isEnabled = true
-        btnJarraitu.alpha = 1.0f
+        btnJarraitu.isEnabled = false // No se puede pulsar
 
-        // Al pulsar, cambia de pantalla inmediatamente
+        // Color GRIS (Desactivado)
+        btnJarraitu.backgroundTintList = ContextCompat.getColorStateList(this, R.color.boton_desactivado)
+        btnJarraitu.setTextColor(Color.WHITE) // O el color que prefieras para desactivado
+
+        // Al pulsar, cambia de pantalla inmediatamente (pero solo funcionará cuando se active)
         btnJarraitu.setOnClickListener {
             cambiarAPantallaFinal()
         }
@@ -177,8 +181,18 @@ class PuzzleActivity : AppCompatActivity() {
             }
         }
 
+        // --- CAMBIO 2: Lógica para activar el botón ---
         if (completadoLehenaldia && completadoOrainaldia) {
-            Toast.makeText(this, "Puzzleak osatuta!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Puzzleak osatuta! Jarraitu dezakezu.", Toast.LENGTH_LONG).show()
+
+            // ACTIVAMOS EL BOTÓN
+            btnJarraitu.isEnabled = true
+
+            // CAMBIAMOS AL COLOR 'PUZZLE' (Coral)
+            btnJarraitu.backgroundTintList = ContextCompat.getColorStateList(this, R.color.puzzle)
+
+            // Texto NEGRO para contraste
+            btnJarraitu.setTextColor(Color.BLACK)
         }
     }
 
@@ -186,7 +200,7 @@ class PuzzleActivity : AppCompatActivity() {
         if (layoutFinal.visibility != View.VISIBLE) {
             contenedorJuego.visibility = View.GONE
 
-            // --- NUEVO: Ocultamos también el botón del mapa y el título inicial ---
+            // Ocultamos también el botón del mapa y el título inicial
             btnVolverMapa.visibility = View.GONE
             txtTituloPrincipal.visibility = View.GONE
 

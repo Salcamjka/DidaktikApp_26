@@ -22,6 +22,7 @@
                 android:text="Txakurraren Iturria"
                 android:textSize="28sp"
                 android:textStyle="bold"
+                android:textColor="@color/txakurra"
                 android:layout_centerInParent="true"
                 android:gravity="center"/>
 
@@ -272,7 +273,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
-            android:text="Jarritu"
+            android:text="Amaitu Jarduera"
             android:textSize="16sp"
             android:textStyle="bold"
             android:enabled="false"

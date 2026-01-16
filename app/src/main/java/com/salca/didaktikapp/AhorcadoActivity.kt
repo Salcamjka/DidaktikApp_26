@@ -226,7 +226,9 @@ class AhorcadoActivity : AppCompatActivity() {
         guardarPuntuacionEnBD(puntuacionActual)
 
         btnJarraituJuego.isEnabled = true
-        val colorActivo = ContextCompat.getColor(this, R.color.mi_boton_principal)
+
+        // --- CORRECCIÓN AQUÍ: Usamos el color 'ahorcado' (Morado) ---
+        val colorActivo = ContextCompat.getColor(this, R.color.ahorcado)
         btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(colorActivo)
 
         Toast.makeText(this, "Jokoa amaitu da. Sakatu Jarraitu.", Toast.LENGTH_SHORT).show()
@@ -249,7 +251,6 @@ class AhorcadoActivity : AppCompatActivity() {
         dbHelper.guardarPuntuacion(nombreAlumno, "Ahorcado", puntos)
     }
 
-    // --- AQUÍ HACEMOS EL CAMBIO ---
     private fun mostrarFaseExplicacion() {
         contenedorFaseJuego.visibility = View.GONE
         contenedorFaseExplicacion.visibility = View.VISIBLE

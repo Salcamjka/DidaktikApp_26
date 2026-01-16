@@ -13,4 +13,14 @@
 
     <color name="boton_desactivado">#9E9E9E</color>
 
+    <color name="ahorcado">#B49FDC</color>
+
+    <color name="muralla">#FEC9A7</color>
+
+    <color name="sopa">#F197C0</color>
+
+    <color name="puzzle">#FFAB91</color>
+
+    <color name="txakurra">#E57373</color>
+
 </resources>
