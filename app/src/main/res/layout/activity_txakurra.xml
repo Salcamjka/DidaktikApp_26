@@ -11,15 +11,33 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:gravity="center"
-            android:text="Txakurraren Iturria"
-            android:textColor="@color/mi_boton_principal"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:layout_marginBottom="8dp">
+
+            <ImageButton
+                android:id="@+id/btnVolverMapa"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="fitCenter"
+                android:src="@drawable/mapaimg"
+                android:contentDescription="Volver al mapa"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Txakurraren Iturria"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:layout_centerInParent="true"
+                android:gravity="center" />
+
+        </RelativeLayout>
 
         <ImageView
             android:id="@+id/ivMascota"
@@ -38,6 +56,7 @@
             android:text="Iturri hau izen bera duen kalean aurkitzen da; zehazki, Txakur kalean. Orain dela urte asko eraiki zen iturria dugu aurrean. Ikusten duzuenez, iturriak lehoi buru forma duen brontzezko hiru txorrota ditu. Baina, zergatik deitzen da, beraz, Txakur Iturria?\n\nHistorian zehar eztabaida handiak sortu dira jendearen artean eta guztien artean 2 kondaira desberdintzen dira:"
             android:textSize="15sp"
             android:textColor="@color/black"
+            android:textAlignment="center"
             android:lineSpacingExtra="3dp"
             android:paddingBottom="16dp"/>
 

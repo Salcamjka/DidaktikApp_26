@@ -15,9 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Txakurraren Iturria"
-            android:textSize="24sp"
+            android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="@color/mi_boton_principal"
             android:gravity="center"/>
 
         <ImageView
