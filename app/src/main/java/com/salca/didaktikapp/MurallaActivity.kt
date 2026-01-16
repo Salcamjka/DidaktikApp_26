@@ -24,9 +24,10 @@ class MurallaActivity : AppCompatActivity() {
     private lateinit var op2: RadioButton
     private lateinit var op3: RadioButton
     private lateinit var btnResponder: Button
-    private lateinit var btnReintentar: Button
 
-    // NUEVO: Botón mapa
+    // NUEVO: Botón Finalizar (Jarraitu)
+    private lateinit var btnFinalizar: Button
+
     private lateinit var btnVolverMapa: ImageButton
 
     private var audio: MediaPlayer? = null
@@ -36,7 +37,6 @@ class MurallaActivity : AppCompatActivity() {
     private var progreso = 0
     private var puntuacionActual = 0
 
-    // Runnable para actualizar la barra
     private val updateSeekBarRunnable = object : Runnable {
         override fun run() {
             try {
@@ -68,11 +68,13 @@ class MurallaActivity : AppCompatActivity() {
         seekBarAudio = findViewById(R.id.seekBarAudio)
         layoutMuralla = findViewById(R.id.layoutMuralla)
 
-        // --- CONFIGURACIÓN BOTÓN VOLVER AL MAPA ---
+        // Inicializamos el botón finalizar
+        btnFinalizar = findViewById(R.id.btnFinalizar)
+
+        // Botón Mapa
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
-        btnVolverMapa.visibility = View.VISIBLE // Visible al inicio
+        btnVolverMapa.visibility = View.VISIBLE
         btnVolverMapa.setOnClickListener {
-            // Si está sonando el audio, lo paramos antes de salir
             if (isPlaying) pauseAudio()
             finish()
         }
@@ -93,9 +95,9 @@ class MurallaActivity : AppCompatActivity() {
         op2 = findViewById(R.id.op2)
         op3 = findViewById(R.id.op3)
         btnResponder = findViewById(R.id.btnResponder)
-        btnReintentar = findViewById(R.id.btnReintentar)
 
         btnComenzar.visibility = View.VISIBLE
+        btnFinalizar.visibility = View.GONE // Aseguramos que esté oculto
 
         txtIntro.text = "Orain dela urte asko, Bilbon harrizko harresi handi bat eraiki zen hiria babesteko asmoarekin.\n" +
                 "Bertan familia garrantzitsuenak bizi ziren, euren etxe, denda eta Katedralarekin. Harresitik\n" +
@@ -112,13 +114,9 @@ class MurallaActivity : AppCompatActivity() {
                 "aldiz, harresia zaintzen zuten soldaduek guardiako txandak egiten zituztelako. Horregatik,\n" +
                 "gaur egun ere kale honek zaintza garai hura gogorarazten digu."
 
-        // Ocultamos el test al principio
         mostrarTest(false)
-
-        // Preparamos el audio
         prepararAudio()
 
-        // Listeners
         btnPlayPauseAudio.setOnClickListener {
             if (isPlaying) pauseAudio() else playAudio()
         }
@@ -135,20 +133,20 @@ class MurallaActivity : AppCompatActivity() {
             }
         })
 
-        // --- LÓGICA BOTÓN COMENZAR ---
         btnComenzar.setOnClickListener {
-            btnComenzar.visibility = View.GONE // Se oculta al pulsar
-
-            // --- NUEVO: OCULTAMOS EL BOTÓN MAPA ---
+            btnComenzar.visibility = View.GONE
             btnVolverMapa.visibility = View.GONE
-
             mostrarTest(true)
             mostrarPregunta()
-            if (isPlaying) pauseAudio() // Pausa el audio si estaba sonando
+            if (isPlaying) pauseAudio()
         }
 
         btnResponder.setOnClickListener { comprobarRespuesta() }
-        btnReintentar.setOnClickListener { reintentar() }
+
+        // Listener para el botón final Jarraitu
+        btnFinalizar.setOnClickListener {
+            finish() // Volver al mapa
+        }
     }
 
     private fun prepararAudio() {
@@ -188,7 +186,6 @@ class MurallaActivity : AppCompatActivity() {
         grupoOpciones.visibility = vis
         btnResponder.visibility = vis
 
-        // Lo que se oculta al empezar el test
         txtIntro.visibility = if (visible) View.GONE else View.VISIBLE
         btnPlayPauseAudio.visibility = if (visible) View.GONE else View.VISIBLE
         seekBarAudio.visibility = if (visible) View.GONE else View.VISIBLE
@@ -234,13 +231,19 @@ class MurallaActivity : AppCompatActivity() {
     }
 
     private fun finalizarJuego() {
+        // Desactivamos el botón de responder y lo ocultamos para dar paso al nuevo botón
         btnResponder.isEnabled = false
+        btnResponder.visibility = View.GONE
+
         if (progreso == preguntas.size) {
             txtPregunta.text = "🏰 Zorionak! Harresia osatu da!\nPuntuazioa: $puntuacionActual"
         } else {
-            txtPregunta.text = "Amaiera!\nPuntuazioa: $puntuacionActual"
-            btnReintentar.visibility = View.VISIBLE
+            txtPregunta.text = "Jokoa amaitu da.\nPuntuazioa: $puntuacionActual"
         }
+
+        // MOSTRAR BOTÓN JARRAITU
+        btnFinalizar.visibility = View.VISIBLE
+
         guardarPuntuacionEnBD(puntuacionActual)
     }
 
@@ -249,16 +252,6 @@ class MurallaActivity : AppCompatActivity() {
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
         val dbHelper = DatabaseHelper(this)
         dbHelper.guardarPuntuacion(nombreAlumno, "Muralla", puntos)
-    }
-
-    private fun reintentar() {
-        indicePregunta = 0
-        progreso = 0
-        puntuacionActual = 0
-        btnResponder.isEnabled = true
-        btnReintentar.visibility = View.GONE
-        listaPiezas.forEach { it.visibility = View.INVISIBLE }
-        mostrarPregunta()
     }
 
     override fun onDestroy() {

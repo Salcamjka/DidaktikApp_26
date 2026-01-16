@@ -29,6 +29,9 @@ class TxakurraActivity : AppCompatActivity() {
     private lateinit var btnContinuar: Button
     private lateinit var ivMascota: ImageView
 
+    // NUEVO: Botón Mapa
+    private lateinit var btnVolverMapa: ImageButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_txakurra)
@@ -45,6 +48,16 @@ class TxakurraActivity : AppCompatActivity() {
         seekBarAudio = findViewById(R.id.seekBarAudio)
         btnContinuar = findViewById(R.id.btnContinuar)
         ivMascota = findViewById(R.id.ivMascota)
+
+        // --- CONFIGURACIÓN BOTÓN VOLVER AL MAPA ---
+        btnVolverMapa = findViewById(R.id.btnVolverMapa)
+        btnVolverMapa.setOnClickListener {
+            // Parar audio si está sonando
+            if (::runnable.isInitialized) handler.removeCallbacks(runnable)
+            mediaPlayer?.stop()
+            // Volver al mapa
+            finish()
+        }
     }
 
     private fun animateMascota() {
@@ -113,8 +126,7 @@ class TxakurraActivity : AppCompatActivity() {
 
     private fun setupContinuarButton() {
         btnContinuar.setOnClickListener {
-            // CORRECCIÓN PRINCIPAL AQUÍ:
-            // Comprobar si runnable está inicializado antes de eliminar callbacks
+            // Detener y liberar audio al cambiar de pantalla
             if (::runnable.isInitialized) {
                 handler.removeCallbacks(runnable)
             }
@@ -130,6 +142,7 @@ class TxakurraActivity : AppCompatActivity() {
             mediaPlayer?.release()
             mediaPlayer = null
 
+            // Cambiar a la actividad de la Tabla (allí no habrá botón de mapa)
             val intent = Intent(this, TxakurraTablaActivity::class.java)
             startActivity(intent)
         }

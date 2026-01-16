@@ -193,13 +193,15 @@
             app:backgroundTint="@color/mi_boton_principal"/>
 
         <Button
-            android:id="@+id/btnReintentar"
+            android:id="@+id/btnFinalizar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Saiatu berriz"
+            android:text="Jarraitu"
             android:layout_gravity="center"
             android:layout_marginBottom="20dp"
             android:visibility="gone"
+            android:textColor="@color/white"
             app:backgroundTint="@color/mi_boton_principal"/>
+
     </LinearLayout>
 </ScrollView>
