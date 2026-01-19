@@ -16,6 +16,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import kotlin.jvm.java
 
 class TxakurraTablaActivity : AppCompatActivity() {
 
@@ -125,7 +126,7 @@ class TxakurraTablaActivity : AppCompatActivity() {
 
     private fun animateMascotaCelebracion() {
         try {
-            ivMascota.setImageResource(R.drawable.mascota_celebrando)
+            ivMascota.setImageResource(R.drawable.leonfeliz)
             val celebrateAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate)
             ivMascota.startAnimation(celebrateAnim)
         } catch (e: Exception) { }
