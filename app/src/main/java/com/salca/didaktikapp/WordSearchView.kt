@@ -16,7 +16,7 @@ import kotlin.math.min
  * Diseño limpio con colores sutiles y profesionales
  *
  * @author Salca - TXO Team
- * @version 4.0 - DISEÑO LIMPIO
+
  * @since 2026-01-11
  */
 class WordSearchView @JvmOverloads constructor(

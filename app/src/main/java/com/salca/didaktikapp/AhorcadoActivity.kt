@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -25,6 +26,9 @@ class AhorcadoActivity : AppCompatActivity() {
 
     // NUEVO: Variable para el botón del mapa
     private lateinit var btnVolverMapa: ImageButton
+
+    // NUEVO: Variable para la mascota animada
+    private lateinit var ivMascotaAnimada: ImageView
 
     // --- Variables Lógica Juego ---
     private val palabras = listOf("ATHLETIC-EN ARMARRIA")
@@ -60,6 +64,10 @@ class AhorcadoActivity : AppCompatActivity() {
             }
             finish()
         }
+
+        // NUEVO: Inicializar y animar mascota
+        ivMascotaAnimada = findViewById(R.id.ivMascotaAnimada)
+        animarMascota()
 
         // Fase Juego
         contenedorFaseJuego = findViewById(R.id.fase1_Juego)
@@ -292,6 +300,25 @@ class AhorcadoActivity : AppCompatActivity() {
                 handlerAudio.postDelayed(this, 500)
             }
         }
+    }
+
+    private fun animarMascota() {
+        try {
+            ivMascotaAnimada.setImageResource(R.drawable.leonexplicacion)
+            val bounceAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
+
+            bounceAnim.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
+                override fun onAnimationStart(animation: android.view.animation.Animation?) {}
+
+                override fun onAnimationEnd(animation: android.view.animation.Animation?) {
+                    ivMascotaAnimada.clearAnimation()
+                }
+
+                override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
+            })
+
+            ivMascotaAnimada.startAnimation(bounceAnim)
+        } catch (e: Exception) { }
     }
 
     override fun onDestroy() {

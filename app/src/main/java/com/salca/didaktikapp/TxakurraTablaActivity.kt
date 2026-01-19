@@ -1,7 +1,7 @@
 package com.salca.didaktikapp
 
 import android.content.Context
-import android.content.Intent // <--- IMPORTANTE: Necesario para ir al Mapa
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -45,7 +45,7 @@ class TxakurraTablaActivity : AppCompatActivity() {
         setContentView(R.layout.activity_txakurra_tabla)
 
         initializeViews()
-        setupTextWatchers() // Configurar la vigilancia del texto
+        setupTextWatchers()
         setupFinishButton()
         animateInitialElements()
     }
@@ -82,7 +82,7 @@ class TxakurraTablaActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
             override fun afterTextChanged(s: Editable?) {
-                validarTabla() // Comprobar estado cada vez que se escribe
+                validarTabla()
             }
         }
 
@@ -101,14 +101,23 @@ class TxakurraTablaActivity : AppCompatActivity() {
             // ACTIVADO: Usamos el color txakurra (Rojo suave)
             val colorActivo = ContextCompat.getColor(this, R.color.txakurra)
             btnFinish.backgroundTintList = ColorStateList.valueOf(colorActivo)
+
+            // Mascota FELIZ cuando completa la tabla
+            mostrarMascotaFeliz()
         } else {
             // DESACTIVADO: Color Gris
             val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
             btnFinish.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
+
+            // Mascota EXPLICANDO mientras completa
+            mostrarMascotaExplicando()
         }
     }
 
     private fun animateInitialElements() {
+        // Mascota explicando al inicio
+        mostrarMascotaExplicando()
+
         // Usamos try-catch por seguridad si no existen las animaciones
         try {
             val waveAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_wave)
@@ -123,32 +132,40 @@ class TxakurraTablaActivity : AppCompatActivity() {
         } catch (e: Exception) { }
     }
 
-    private fun animateMascotaCelebracion() {
+    // --- FUNCIONES PARA CAMBIAR LA MASCOTA ---
+    private fun mostrarMascotaFeliz() {
         try {
-            ivMascota.setImageResource(R.drawable.mascota_celebrando)
-            val celebrateAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate)
-            ivMascota.startAnimation(celebrateAnim)
+            ivMascota.setImageResource(R.drawable.mascota_correcto)
         } catch (e: Exception) { }
     }
 
+    private fun mostrarMascotaTriste() {
+        try {
+            ivMascota.setImageResource(R.drawable.mascota_incorrecto)
+        } catch (e: Exception) { }
+    }
+
+    private fun mostrarMascotaExplicando() {
+        try {
+            ivMascota.setImageResource(R.drawable.mascota_explicando)
+        } catch (e: Exception) { }
+    }
+
+
+
     private fun setupFinishButton() {
         btnFinish.setOnClickListener {
-            // Animación y guardado
-            animateMascotaCelebracion()
+
             guardarPuntuacionEnBD(100)
 
             Toast.makeText(this, "🎉 Bikain! Taula osatu duzu! (+100 pts)", Toast.LENGTH_LONG).show()
 
             // Esperar 2 segundos y volver al MAPA
             Handler(Looper.getMainLooper()).postDelayed({
-
-                // --- CAMBIO AQUÍ: IR AL MAPA ---
                 val intent = Intent(this, MapActivity::class.java)
-                // Esto limpia la pila para que no puedas volver atrás a la tabla
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                 startActivity(intent)
-                finish() // Cierra la actividad de la tabla
-
+                finish()
             }, 2000)
         }
     }

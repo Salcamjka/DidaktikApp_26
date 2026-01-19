@@ -185,7 +185,7 @@ class SopaActivity : AppCompatActivity() {
     }
 
     private fun animateMascotaCelebracion() {
-        ivMascotaPantalla2.setImageResource(R.drawable.mascota_celebrando)
+        ivMascotaPantalla2.setImageResource(R.drawable.leonfeliz)
         ivMascotaPantalla2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate))
     }
 
