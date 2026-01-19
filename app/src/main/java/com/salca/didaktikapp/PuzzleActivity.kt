@@ -2,6 +2,8 @@ package com.salca.didaktikapp
 
 import android.content.ClipData
 import android.content.Context
+import android.content.Intent // Necesario para ir al Mapa
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -22,11 +24,12 @@ class PuzzleActivity : AppCompatActivity() {
     private var completadoLehenaldia = false
     private var completadoOrainaldia = false
 
-    private val PIEZAS_POR_PUZZLE = 24
+    // CAMBIO IMPORTANTE: 12 piezas (4x3)
+    private val PIEZAS_POR_PUZZLE = 12
     private val PUNTOS_POR_PUZZLE = 250
     private var puntuacionTotal = 0
 
-    // Variables de Audio
+    // Variables de Audio (Se mantienen para que compile sin errores)
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
     private lateinit var runnable: Runnable
@@ -34,13 +37,13 @@ class PuzzleActivity : AppCompatActivity() {
     private lateinit var seekBarAudio: SeekBar
     private lateinit var btnAudio: ImageButton
 
-    // Contenedores para el cambio de vista
+    // Contenedores
     private lateinit var contenedorJuego: LinearLayout
     private lateinit var layoutFinal: LinearLayout
     private lateinit var btnJarraitu: Button
     private lateinit var txtTituloPrincipal: TextView
 
-    // NUEVO: Botón Mapa
+    // Botón Mapa
     private lateinit var btnVolverMapa: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,34 +66,35 @@ class PuzzleActivity : AppCompatActivity() {
         val gridPiezas = findViewById<GridLayout>(R.id.gridPiezas)
         btnJarraitu = findViewById(R.id.btnJarraitu)
 
-        // --- CAMBIO 1: Botón INICIALMENTE DESACTIVADO ---
+        // --- ESTADO INICIAL: BOTÓN DESACTIVADO ---
         btnJarraitu.visibility = View.VISIBLE
-        btnJarraitu.isEnabled = false // No se puede pulsar
+        btnJarraitu.isEnabled = false
 
         // Color GRIS (Desactivado)
         btnJarraitu.backgroundTintList = ContextCompat.getColorStateList(this, R.color.boton_desactivado)
-        btnJarraitu.setTextColor(Color.WHITE) // O el color que prefieras para desactivado
+        btnJarraitu.setTextColor(Color.WHITE)
 
-        // Al pulsar, cambia de pantalla inmediatamente (pero solo funcionará cuando se active)
+        // --- ACCIÓN DEL BOTÓN: IR AL MAPA ---
         btnJarraitu.setOnClickListener {
-            cambiarAPantallaFinal()
+            val intent = Intent(this, MapActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            startActivity(intent)
+            finish() // Cerramos el puzzle
         }
 
-        // Botón para cerrar la actividad al final
-        findViewById<Button>(R.id.btnFinalizarTotal).setOnClickListener {
-            finish()
-        }
+        // Botón auxiliar de la pantalla final (por si acaso)
+        findViewById<Button>(R.id.btnFinalizarTotal)?.setOnClickListener { finish() }
 
-        // --- Carga de imágenes y lógica del Puzzle ---
-        val imagenesPasado = Array(24) { i -> resources.getIdentifier("pasado$i", "drawable", packageName) }
-        val imagenesPresente = Array(24) { i -> resources.getIdentifier("presente$i", "drawable", packageName) }
+        // --- CARGA DE IMÁGENES (Solo cargamos 12: pasado0 a pasado11) ---
+        val imagenesPasado = Array(PIEZAS_POR_PUZZLE) { i -> resources.getIdentifier("pasado$i", "drawable", packageName) }
+        val imagenesPresente = Array(PIEZAS_POR_PUZZLE) { i -> resources.getIdentifier("presente$i", "drawable", packageName) }
 
         crearTableroVacio(gridPasado, "lehenaldia")
         crearTableroVacio(gridPresente, "orainaldia")
 
         val todasLasPiezas = mutableListOf<PiezaPuzzle>()
-        for (i in 0 until 24) todasLasPiezas.add(PiezaPuzzle(i, "lehenaldia", imagenesPasado[i]))
-        for (i in 0 until 24) todasLasPiezas.add(PiezaPuzzle(i, "orainaldia", imagenesPresente[i]))
+        for (i in 0 until PIEZAS_POR_PUZZLE) todasLasPiezas.add(PiezaPuzzle(i, "lehenaldia", imagenesPasado[i]))
+        for (i in 0 until PIEZAS_POR_PUZZLE) todasLasPiezas.add(PiezaPuzzle(i, "orainaldia", imagenesPresente[i]))
         todasLasPiezas.shuffle()
 
         for (pieza in todasLasPiezas) {
@@ -98,9 +102,11 @@ class PuzzleActivity : AppCompatActivity() {
             img.setImageResource(pieza.imagenID)
             img.tag = pieza
             img.scaleType = ImageView.ScaleType.FIT_XY
+
             val params = GridLayout.LayoutParams()
-            params.width = 130
-            params.height = 90
+            // TAMAÑO DE PIEZAS (Ajustado para 4 columnas)
+            params.width = 180
+            params.height = 130
             params.setMargins(5, 5, 5, 5)
             img.layoutParams = params
 
@@ -120,13 +126,15 @@ class PuzzleActivity : AppCompatActivity() {
     }
 
     private fun crearTableroVacio(grid: GridLayout, tipoTablero: String) {
-        for (i in 0 until 24) {
+        for (i in 0 until PIEZAS_POR_PUZZLE) {
             val hueco = ImageView(this)
             hueco.setBackgroundColor(Color.LTGRAY)
             hueco.scaleType = ImageView.ScaleType.FIT_XY
+
             val params = GridLayout.LayoutParams()
-            params.width = 130
-            params.height = 90
+            // TAMAÑO DE HUECOS (Igual que las piezas)
+            params.width = 180
+            params.height = 130
             params.setMargins(2, 2, 2, 2)
             hueco.layoutParams = params
             hueco.tag = i
@@ -181,7 +189,7 @@ class PuzzleActivity : AppCompatActivity() {
             }
         }
 
-        // --- CAMBIO 2: Lógica para activar el botón ---
+        // --- ACTIVAR BOTÓN AL COMPLETAR AMBOS ---
         if (completadoLehenaldia && completadoOrainaldia) {
             Toast.makeText(this, "Puzzleak osatuta! Jarraitu dezakezu.", Toast.LENGTH_LONG).show()
 
@@ -189,21 +197,20 @@ class PuzzleActivity : AppCompatActivity() {
             btnJarraitu.isEnabled = true
 
             // CAMBIAMOS AL COLOR 'PUZZLE' (Coral)
-            btnJarraitu.backgroundTintList = ContextCompat.getColorStateList(this, R.color.puzzle)
+            val colorActivo = ContextCompat.getColor(this, R.color.puzzle)
+            btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorActivo)
 
             // Texto NEGRO para contraste
             btnJarraitu.setTextColor(Color.BLACK)
         }
     }
 
+    // Esta función ya no se llama desde el botón, pero se deja por compatibilidad
     private fun cambiarAPantallaFinal() {
         if (layoutFinal.visibility != View.VISIBLE) {
             contenedorJuego.visibility = View.GONE
-
-            // Ocultamos también el botón del mapa y el título inicial
             btnVolverMapa.visibility = View.GONE
             txtTituloPrincipal.visibility = View.GONE
-
             layoutFinal.visibility = View.VISIBLE
 
             val scrollView = findViewById<ScrollView>(R.id.scrollViewMain)
@@ -251,7 +258,7 @@ class PuzzleActivity : AppCompatActivity() {
             }
 
         } catch (e: Exception) {
-            Toast.makeText(this, "Errorea audioarekin", Toast.LENGTH_SHORT).show()
+            // Manejo de error si falta el audio
         }
     }
 
