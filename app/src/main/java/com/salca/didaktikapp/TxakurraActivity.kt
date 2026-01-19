@@ -61,8 +61,19 @@ class TxakurraActivity : AppCompatActivity() {
     }
 
     private fun animateMascota() {
-        val bounceAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
-        ivMascota.startAnimation(bounceAnim)
+        val waveAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_wave)
+
+        waveAnim.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
+            override fun onAnimationStart(animation: android.view.animation.Animation?) {}
+
+            override fun onAnimationEnd(animation: android.view.animation.Animation?) {
+                ivMascota.clearAnimation()
+            }
+
+            override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
+        })
+
+        ivMascota.startAnimation(waveAnim)
     }
 
     private fun setupAudio() {

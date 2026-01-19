@@ -47,7 +47,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="12dp"
-            android:src="@drawable/mascota_normal"
+            android:src="@drawable/leonexplicacion"
             android:scaleType="fitCenter"
             android:contentDescription="Mascota del Athletic Club"/>
 

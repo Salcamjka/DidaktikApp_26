@@ -53,6 +53,14 @@
                 android:visibility="gone"
                 android:layout_marginBottom="10dp"/>
 
+            <!-- NUEVO: Mascota animada -->
+            <ImageView
+                android:id="@+id/ivMascotaAnimada"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/leonexplicacion"/>
+
             <TextView
                 android:id="@+id/tvPalabra"
                 android:layout_width="match_parent"
