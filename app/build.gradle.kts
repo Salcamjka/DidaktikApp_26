@@ -46,7 +46,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
     // google el mapa
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.android.gms:play-services-location:21.1.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
