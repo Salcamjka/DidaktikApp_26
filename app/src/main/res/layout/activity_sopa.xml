@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:background="@color/mi_fondo_pantalla">
 
-    <ScrollView
-        android:id="@+id/scrollTextContainer"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:visibility="visible">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/contenedorIntro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -45,7 +46,6 @@
                     android:textStyle="bold"
                     android:textColor="@color/sopa"
                     android:layout_centerInParent="true"/>
-
             </RelativeLayout>
 
             <ImageView
@@ -107,24 +107,16 @@
                 android:textColor="@color/white"
                 android:paddingHorizontal="32dp"
                 android:paddingVertical="12dp"
-                android:layout_marginBottom="16dp"/>
-
-        </LinearLayout>
-    </ScrollView>
-
-    <ScrollView
-        android:id="@+id/sopaContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:visibility="gone"
-        android:background="@color/mi_fondo_pantalla">
+                android:layout_marginBottom="32dp"/> </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/sopaContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="10dp">
+            android:padding="10dp"
+            android:visibility="gone"
+            android:background="@color/mi_fondo_pantalla">
 
             <TextView
                 android:id="@+id/tvTitle"
@@ -272,6 +264,5 @@
                 android:layout_marginBottom="16dp"/>
 
         </LinearLayout>
-    </ScrollView>
-
-</FrameLayout>
+    </LinearLayout>
+</ScrollView>

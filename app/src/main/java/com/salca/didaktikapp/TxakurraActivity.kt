@@ -1,36 +1,47 @@
 package com.salca.didaktikapp
 
+import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View // Importante
 import android.view.animation.AnimationUtils
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.SeekBar
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 
 class TxakurraActivity : AppCompatActivity() {
 
-    // Componentes de Audio
+    // Contenedores Principales
+    private lateinit var mainScrollView: ScrollView
+    private lateinit var contenedorIntro: LinearLayout
+    private lateinit var contenedorTabla: LinearLayout
+
+    // Componentes Intro (Parte 1)
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
     private lateinit var btnPlayPauseIcon: ImageButton
     private lateinit var seekBarAudio: SeekBar
+    private lateinit var btnVolverMapa: ImageButton
+    private lateinit var btnContinuar: Button
+    private lateinit var ivMascotaIntro: ImageView
 
-    // Para actualizar la barra
+    // Audio Handler
     private lateinit var runnable: Runnable
     private var handler = Handler(Looper.getMainLooper())
 
-    // Otros componentes
-    private lateinit var btnContinuar: Button
-    private lateinit var ivMascota: ImageView
+    // Componentes Tabla (Parte 2)
+    private lateinit var btnFinish: Button
+    private lateinit var ivMascotaTabla: ImageView
+    private lateinit var ivPerro: ImageView
+    private lateinit var ivLeon: ImageView
 
-    // NUEVO: Botón Mapa
-    private lateinit var btnVolverMapa: ImageButton
+    private val allEditTexts = mutableListOf<EditText>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,48 +49,50 @@ class TxakurraActivity : AppCompatActivity() {
 
         initializeViews()
         setupAudioControls()
-        setupContinuarButton()
         setupAudio()
-        animateMascota()
+        animateMascotaIntro()
+        setupTextWatchers()
+        setupNavigationButtons()
     }
 
     private fun initializeViews() {
+        mainScrollView = findViewById(R.id.mainScrollView)
+        contenedorIntro = findViewById(R.id.contenedorIntro)
+        contenedorTabla = findViewById(R.id.contenedorTabla)
+
+        // Intro
         btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
         seekBarAudio = findViewById(R.id.seekBarAudio)
         btnContinuar = findViewById(R.id.btnContinuar)
-        ivMascota = findViewById(R.id.ivMascota)
-
-        // --- CONFIGURACIÓN BOTÓN VOLVER AL MAPA ---
+        ivMascotaIntro = findViewById(R.id.ivMascotaIntro)
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
-        btnVolverMapa.setOnClickListener {
-            // Parar audio si está sonando
-            if (::runnable.isInitialized) handler.removeCallbacks(runnable)
-            mediaPlayer?.stop()
-            // Volver al mapa
-            finish()
-        }
+
+        // Tabla
+        btnFinish = findViewById(R.id.btnFinish)
+        ivMascotaTabla = findViewById(R.id.ivMascotaTabla)
+        ivPerro = findViewById(R.id.ivPerro)
+        ivLeon = findViewById(R.id.ivLeon)
+
+        // EditTexts
+        val ids = listOf(
+            R.id.etLehoia1, R.id.etLehoia2, R.id.etLehoia3, R.id.etLehoia4, R.id.etLehoia5,
+            R.id.etTxakurra1, R.id.etTxakurra2, R.id.etTxakurra3, R.id.etTxakurra4, R.id.etTxakurra5
+        )
+        ids.forEach { id -> allEditTexts.add(findViewById(id)) }
     }
 
-    private fun animateMascota() {
-        val bounceAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
-        ivMascota.startAnimation(bounceAnim)
-    }
-
+    // ==========================================
+    // AUDIO
+    // ==========================================
     private fun setupAudio() {
         try {
             mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_4)
-
-            mediaPlayer?.setOnPreparedListener { mp ->
-                seekBarAudio.max = mp.duration
-            }
-
+            mediaPlayer?.setOnPreparedListener { mp -> seekBarAudio.max = mp.duration }
             mediaPlayer?.setOnCompletionListener {
                 btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
                 seekBarAudio.progress = 0
                 isPlaying = false
-                if (::runnable.isInitialized) {
-                    handler.removeCallbacks(runnable)
-                }
+                if (::runnable.isInitialized) handler.removeCallbacks(runnable)
             }
         } catch (e: Exception) {
             Toast.makeText(this, "Errorea audioarekin", Toast.LENGTH_SHORT).show()
@@ -87,9 +100,7 @@ class TxakurraActivity : AppCompatActivity() {
     }
 
     private fun setupAudioControls() {
-        btnPlayPauseIcon.setOnClickListener {
-            if (isPlaying) pauseAudio() else playAudio()
-        }
+        btnPlayPauseIcon.setOnClickListener { if (isPlaying) pauseAudio() else playAudio() }
 
         seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -111,9 +122,7 @@ class TxakurraActivity : AppCompatActivity() {
         mediaPlayer?.pause()
         isPlaying = false
         btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
-        if (::runnable.isInitialized) {
-            handler.removeCallbacks(runnable)
-        }
+        if (::runnable.isInitialized) handler.removeCallbacks(runnable)
     }
 
     private fun updateSeekBar() {
@@ -124,28 +133,97 @@ class TxakurraActivity : AppCompatActivity() {
         handler.postDelayed(runnable, 0)
     }
 
-    private fun setupContinuarButton() {
-        btnContinuar.setOnClickListener {
-            // Detener y liberar audio al cambiar de pantalla
-            if (::runnable.isInitialized) {
-                handler.removeCallbacks(runnable)
-            }
+    private fun animateMascotaIntro() {
+        val bounceAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
+        ivMascotaIntro.startAnimation(bounceAnim)
+    }
 
-            try {
-                if (mediaPlayer?.isPlaying == true) {
-                    mediaPlayer?.stop()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+    // ==========================================
+    // NAVEGACIÓN Y TABLA
+    // ==========================================
 
-            mediaPlayer?.release()
-            mediaPlayer = null
-
-            // Cambiar a la actividad de la Tabla (allí no habrá botón de mapa)
-            val intent = Intent(this, TxakurraTablaActivity::class.java)
-            startActivity(intent)
+    private fun setupNavigationButtons() {
+        btnVolverMapa.setOnClickListener {
+            if (isPlaying) pauseAudio()
+            finish()
         }
+
+        // --- BOTÓN HASI TAULA (Transición) ---
+        btnContinuar.setOnClickListener {
+            // 1. Parar audio
+            if (::runnable.isInitialized) handler.removeCallbacks(runnable)
+            mediaPlayer?.stop()
+            isPlaying = false
+            btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
+
+            // 2. CAMBIO DE VISIBILIDAD (El truco)
+            contenedorIntro.visibility = View.GONE  // Ocultamos la intro
+            contenedorTabla.visibility = View.VISIBLE // Mostramos la tabla
+
+            // 3. Resetear scroll (ir arriba)
+            mainScrollView.scrollTo(0, 0)
+
+            // 4. Animar elementos de la tabla
+            animateTablaElements()
+        }
+
+        btnFinish.setOnClickListener {
+            animateMascotaCelebracion()
+            guardarPuntuacionEnBD(100)
+            SyncHelper.subirInmediatamente(this)
+            Toast.makeText(this, "🎉 Bikain! Taula osatu duzu! (+100 pts)", Toast.LENGTH_LONG).show()
+            Handler(Looper.getMainLooper()).postDelayed({ finish() }, 2000)
+        }
+    }
+
+    private fun setupTextWatchers() {
+        val watcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) { validarTabla() }
+        }
+        allEditTexts.forEach { it.addTextChangedListener(watcher) }
+    }
+
+    private fun validarTabla() {
+        val estaCompleto = allEditTexts.all { it.text.toString().trim().isNotEmpty() }
+        btnFinish.isEnabled = estaCompleto
+        if (estaCompleto) {
+            val colorActivo = ContextCompat.getColor(this, R.color.txakurra)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(colorActivo)
+        } else {
+            val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
+        }
+    }
+
+    private fun animateTablaElements() {
+        try {
+            val waveAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_wave)
+            ivMascotaTabla.startAnimation(waveAnim)
+
+            val bounceAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
+            ivPerro.startAnimation(bounceAnim)
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                ivLeon.startAnimation(bounceAnim)
+            }, 300)
+        } catch (e: Exception) { }
+    }
+
+    private fun animateMascotaCelebracion() {
+        try {
+            ivMascotaTabla.setImageResource(R.drawable.leonfeliz)
+            val celebrateAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate)
+            ivMascotaTabla.startAnimation(celebrateAnim)
+        } catch (e: Exception) { }
+    }
+
+    private fun guardarPuntuacionEnBD(puntos: Int) {
+        val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
+        val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
+        val dbHelper = DatabaseHelper(this)
+        dbHelper.guardarPuntuacion(nombreAlumno, "Txakurra", puntos)
     }
 
     override fun onDestroy() {
