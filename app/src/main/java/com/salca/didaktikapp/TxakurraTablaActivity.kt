@@ -1,180 +1,253 @@
 package com.salca.didaktikapp
 
 import android.content.Context
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
+import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 
-class TxakurraTablaActivity : AppCompatActivity() {
+class SopaActivity : AppCompatActivity() {
 
+    private lateinit var scrollTextContainer: ScrollView
+    private lateinit var tvTextoIntroductorio: TextView
+    private lateinit var btnComenzarSopa: Button
+    private lateinit var ivMascotaPantalla1: ImageView
+
+    private lateinit var btnVolverMapa: ImageButton
+
+    private lateinit var btnPlayPauseIcon: ImageButton
+    private lateinit var seekBarAudio: SeekBar
+    private lateinit var runnable: Runnable
+    private var handler = Handler(Looper.getMainLooper())
+
+    private lateinit var sopaContainer: ScrollView
+    private lateinit var wordSearchView: WordSearchView
+    private lateinit var tvProgress: TextView
     private lateinit var btnFinish: Button
-    private lateinit var ivMascota: ImageView
-    private lateinit var ivPerro: ImageView
-    private lateinit var ivLeon: ImageView
+    private lateinit var ivMascotaPantalla2: ImageView
 
-    // Campos de texto
-    private lateinit var etLehoia1: EditText
-    private lateinit var etLehoia2: EditText
-    private lateinit var etLehoia3: EditText
-    private lateinit var etLehoia4: EditText
-    private lateinit var etLehoia5: EditText
+    private lateinit var cbBarrencalle: CheckBox
+    private lateinit var cbBelosticalle: CheckBox
+    private lateinit var cbCarniceriaVieja: CheckBox
+    private lateinit var cbSomera: CheckBox
+    private lateinit var cbArtecalle: CheckBox
+    private lateinit var cbTenderia: CheckBox
+    private lateinit var cbBarrenkaleBarrena: CheckBox
 
-    private lateinit var etTxakurra1: EditText
-    private lateinit var etTxakurra2: EditText
-    private lateinit var etTxakurra3: EditText
-    private lateinit var etTxakurra4: EditText
-    private lateinit var etTxakurra5: EditText
+    private val wordToCheckbox = mutableMapOf<String, CheckBox>()
+    private var foundWordsCount = 0
+    private val totalWords = 7
 
-    // Lista para gestionar todos los campos de golpe
-    private val allEditTexts = mutableListOf<EditText>()
+    private var puntuacionActual = 0
+    private var mediaPlayer: MediaPlayer? = null
+    private var isPlaying = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_txakurra_tabla)
+        setContentView(R.layout.activity_sopa)
 
-        initializeViews()
-        setupTextWatchers()
-        setupFinishButton()
-        animateInitialElements()
+        try {
+            initializeViews()
+            setupAudioControls()
+            setupWordSearchView()
+            setupFinishButton()
+            setupAudio()
+
+            mostrarPantallaTexto()
+            animateMascotaInicial()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Errorea Sopa jokoan: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::runnable.isInitialized) handler.removeCallbacks(runnable)
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 
     private fun initializeViews() {
+        scrollTextContainer = findViewById(R.id.scrollTextContainer)
+        tvTextoIntroductorio = findViewById(R.id.tvTextoIntroductorio)
+        btnComenzarSopa = findViewById(R.id.btnComenzarSopa)
+        ivMascotaPantalla1 = findViewById(R.id.ivMascotaPantalla1)
+
+        btnVolverMapa = findViewById(R.id.btnVolverMapa)
+        btnVolverMapa.setOnClickListener {
+            if (isPlaying) pauseAudio()
+            finish()
+        }
+
+        btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
+        seekBarAudio = findViewById(R.id.seekBarAudio)
+
+        sopaContainer = findViewById(R.id.sopaContainer)
+        wordSearchView = findViewById(R.id.wordSearchView)
+        tvProgress = findViewById(R.id.tvProgress)
         btnFinish = findViewById(R.id.btnFinish)
-        ivMascota = findViewById(R.id.ivMascota)
-        ivPerro = findViewById(R.id.ivPerro)
-        ivLeon = findViewById(R.id.ivLeon)
+        ivMascotaPantalla2 = findViewById(R.id.ivMascotaPantalla2)
 
-        etLehoia1 = findViewById(R.id.etLehoia1)
-        etLehoia2 = findViewById(R.id.etLehoia2)
-        etLehoia3 = findViewById(R.id.etLehoia3)
-        etLehoia4 = findViewById(R.id.etLehoia4)
-        etLehoia5 = findViewById(R.id.etLehoia5)
+        cbBarrencalle = findViewById(R.id.cbBarrencalle)
+        cbBelosticalle = findViewById(R.id.cbBelosticalle)
+        cbCarniceriaVieja = findViewById(R.id.cbCarniceriaVieja)
+        cbSomera = findViewById(R.id.cbSomera)
+        cbArtecalle = findViewById(R.id.cbArtecalle)
+        cbTenderia = findViewById(R.id.cbTenderia)
+        cbBarrenkaleBarrena = findViewById(R.id.cbBarrenkaleBarrena)
 
-        etTxakurra1 = findViewById(R.id.etTxakurra1)
-        etTxakurra2 = findViewById(R.id.etTxakurra2)
-        etTxakurra3 = findViewById(R.id.etTxakurra3)
-        etTxakurra4 = findViewById(R.id.etTxakurra4)
-        etTxakurra5 = findViewById(R.id.etTxakurra5)
+        wordToCheckbox["SOMERA"] = cbSomera
+        wordToCheckbox["ARTEKALE"] = cbArtecalle
+        wordToCheckbox["TENDERIA"] = cbTenderia
+        wordToCheckbox["BELOSTIKALE"] = cbBelosticalle
+        wordToCheckbox["CARNICERIAVIEJA"] = cbCarniceriaVieja
+        wordToCheckbox["BARRENKALE"] = cbBarrencalle
+        wordToCheckbox["BARRENKALEBARRENA"] = cbBarrenkaleBarrena
 
-        // Metemos todos en la lista
-        allEditTexts.addAll(listOf(
-            etLehoia1, etLehoia2, etLehoia3, etLehoia4, etLehoia5,
-            etTxakurra1, etTxakurra2, etTxakurra3, etTxakurra4, etTxakurra5
-        ))
+        updateProgress()
+        btnComenzarSopa.setOnClickListener { mostrarSopaDeLetras() }
     }
 
-    // --- VIGILAR SI ESCRIBEN ---
-    private fun setupTextWatchers() {
-        val watcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+    // --- SECCIÓN DE ANIMACIONES MODIFICADA ---
 
-            override fun afterTextChanged(s: Editable?) {
-                validarTabla()
+    private fun animateMascotaInicial() {
+        // Usamos la imagen de explicación para el saludo inicial
+        ivMascotaPantalla1.setImageResource(R.drawable.leonexplicacion)
+        val anim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
+        ivMascotaPantalla1.startAnimation(anim)
+    }
+
+    private fun animateMascotaSaludando() {
+        // Al entrar a la sopa, el león saluda
+        ivMascotaPantalla2.setImageResource(R.drawable.leonexplicacion)
+        val anim = AnimationUtils.loadAnimation(this, R.anim.mascot_wave)
+        ivMascotaPantalla2.startAnimation(anim)
+    }
+
+    private fun animateMascotaCelebracion() {
+        // Cambia a cara feliz y salta de alegría
+        ivMascotaPantalla2.setImageResource(R.drawable.leonfeliz)
+        val anim = AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate)
+        ivMascotaPantalla2.startAnimation(anim)
+    }
+
+    // --- FIN SECCIÓN ANIMACIONES ---
+
+    private fun setupAudio() {
+        try {
+            mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_3)
+            mediaPlayer?.setOnPreparedListener { mp -> seekBarAudio.max = mp.duration }
+            mediaPlayer?.setOnCompletionListener {
+                btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
+                seekBarAudio.progress = 0
+                isPlaying = false
+                if (::runnable.isInitialized) handler.removeCallbacks(runnable)
+            }
+        } catch (e: Exception) { }
+    }
+
+    private fun setupAudioControls() {
+        btnPlayPauseIcon.setOnClickListener { if (isPlaying) pauseAudio() else playAudio() }
+        seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) mediaPlayer?.seekTo(progress)
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
+
+    private fun playAudio() {
+        mediaPlayer?.start()
+        isPlaying = true
+        btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_pause)
+        updateSeekBar()
+    }
+
+    private fun pauseAudio() {
+        mediaPlayer?.pause()
+        isPlaying = false
+        btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
+        if (::runnable.isInitialized) handler.removeCallbacks(runnable)
+    }
+
+    private fun updateSeekBar() {
+        runnable = Runnable {
+            seekBarAudio.progress = mediaPlayer?.currentPosition ?: 0
+            handler.postDelayed(runnable, 500)
+        }
+        handler.postDelayed(runnable, 0)
+    }
+
+    private fun mostrarPantallaTexto() {
+        scrollTextContainer.visibility = View.VISIBLE
+        sopaContainer.visibility = View.GONE
+    }
+
+    private fun mostrarSopaDeLetras() {
+        if (isPlaying) pauseAudio()
+        scrollTextContainer.visibility = View.GONE
+        sopaContainer.visibility = View.VISIBLE
+        // Llama al saludo al cambiar de pantalla
+        animateMascotaSaludando()
+    }
+
+    private fun setupWordSearchView() {
+        wordSearchView.onWordFoundListener = { word, count ->
+            foundWordsCount = count
+            wordToCheckbox[word]?.isChecked = true
+            puntuacionActual += 50
+
+            // Animación de alegría cada vez que se encuentra una palabra
+            animateMascotaCelebracion()
+
+            updateProgress()
+            Toast.makeText(this, "✓ $word (+50 pts)", Toast.LENGTH_SHORT).show()
+            if (foundWordsCount == totalWords) {
+                onGameCompleted()
             }
         }
-
-        // Añadir el vigilante a cada campo
-        allEditTexts.forEach { it.addTextChangedListener(watcher) }
     }
-
-    // --- ACTIVAR / DESACTIVAR BOTÓN ---
-    private fun validarTabla() {
-        // Comprobar si TODOS tienen texto (quitando espacios en blanco)
-        val estaCompleto = allEditTexts.all { it.text.toString().trim().isNotEmpty() }
-
-        btnFinish.isEnabled = estaCompleto
-
-        if (estaCompleto) {
-            // ACTIVADO: Usamos el color txakurra (Rojo suave)
-            val colorActivo = ContextCompat.getColor(this, R.color.txakurra)
-            btnFinish.backgroundTintList = ColorStateList.valueOf(colorActivo)
-
-            // Mascota FELIZ cuando completa la tabla
-            mostrarMascotaFeliz()
-        } else {
-            // DESACTIVADO: Color Gris
-            val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
-            btnFinish.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
-
-            // Mascota EXPLICANDO mientras completa
-            mostrarMascotaExplicando()
-        }
-    }
-
-    private fun animateInitialElements() {
-        // Mascota explicando al inicio
-        mostrarMascotaExplicando()
-
-        // Usamos try-catch por seguridad si no existen las animaciones
-        try {
-            val waveAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_wave)
-            ivMascota.startAnimation(waveAnim)
-
-            val bounceAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
-            ivPerro.startAnimation(bounceAnim)
-
-            Handler(Looper.getMainLooper()).postDelayed({
-                ivLeon.startAnimation(bounceAnim)
-            }, 300)
-        } catch (e: Exception) { }
-    }
-
-    // --- FUNCIONES PARA CAMBIAR LA MASCOTA ---
-    private fun mostrarMascotaFeliz() {
-        try {
-            ivMascota.setImageResource(R.drawable.mascota_correcto)
-        } catch (e: Exception) { }
-    }
-
-    private fun mostrarMascotaTriste() {
-        try {
-            ivMascota.setImageResource(R.drawable.mascota_incorrecto)
-        } catch (e: Exception) { }
-    }
-
-    private fun mostrarMascotaExplicando() {
-        try {
-            ivMascota.setImageResource(R.drawable.mascota_explicando)
-        } catch (e: Exception) { }
-    }
-
-
 
     private fun setupFinishButton() {
         btnFinish.setOnClickListener {
-
-            guardarPuntuacionEnBD(100)
-
-            Toast.makeText(this, "🎉 Bikain! Taula osatu duzu! (+100 pts)", Toast.LENGTH_LONG).show()
-
-            // Esperar 2 segundos y volver al MAPA
-            Handler(Looper.getMainLooper()).postDelayed({
-                val intent = Intent(this, MapActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                startActivity(intent)
-                finish()
-            }, 2000)
+            guardarPuntuacionEnBD(puntuacionActual)
+            finish()
         }
+    }
+
+    private fun updateProgress() {
+        tvProgress.text = "$foundWordsCount/$totalWords"
+        val isComplete = foundWordsCount == totalWords
+        btnFinish.isEnabled = isComplete
+        if (isComplete) {
+            val colorActivo = ContextCompat.getColor(this, R.color.sopa)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(colorActivo)
+        } else {
+            val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
+        }
+    }
+
+    private fun onGameCompleted() {
+        puntuacionActual += 150
+        // Gran animación final
+        animateMascotaCelebracion()
+        Toast.makeText(this, "🎉 Zorionak! (+150 Bonus)", Toast.LENGTH_LONG).show()
+        guardarPuntuacionEnBD(puntuacionActual)
     }
 
     private fun guardarPuntuacionEnBD(puntos: Int) {
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
-
         val dbHelper = DatabaseHelper(this)
-        dbHelper.guardarPuntuacion(nombreAlumno, "TxakurraTabla", puntos)
+        dbHelper.guardarPuntuacion(nombreAlumno, "Sopa", puntos)
     }
 }

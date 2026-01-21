@@ -20,10 +20,8 @@ class SopaActivity : AppCompatActivity() {
     private lateinit var btnComenzarSopa: Button
     private lateinit var ivMascotaPantalla1: ImageView
 
-    // NUEVO: Botón Mapa
     private lateinit var btnVolverMapa: ImageButton
 
-    // Controles de Audio
     private lateinit var btnPlayPauseIcon: ImageButton
     private lateinit var seekBarAudio: SeekBar
     private lateinit var runnable: Runnable
@@ -47,9 +45,7 @@ class SopaActivity : AppCompatActivity() {
     private var foundWordsCount = 0
     private val totalWords = 7
 
-    // Puntuación
     private var puntuacionActual = 0
-
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
 
@@ -84,10 +80,8 @@ class SopaActivity : AppCompatActivity() {
         btnComenzarSopa = findViewById(R.id.btnComenzarSopa)
         ivMascotaPantalla1 = findViewById(R.id.ivMascotaPantalla1)
 
-        // --- CONFIGURACIÓN BOTÓN VOLVER AL MAPA ---
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
         btnVolverMapa.setOnClickListener {
-            // Paramos audio si está sonando
             if (isPlaying) pauseAudio()
             finish()
         }
@@ -117,20 +111,39 @@ class SopaActivity : AppCompatActivity() {
         wordToCheckbox["BARRENKALE"] = cbBarrencalle
         wordToCheckbox["BARRENKALEBARRENA"] = cbBarrenkaleBarrena
 
-        // Actualizamos estado inicial
         updateProgress()
-
         btnComenzarSopa.setOnClickListener { mostrarSopaDeLetras() }
     }
+
+    // --- SECCIÓN DE ANIMACIONES MODIFICADA ---
+
+    private fun animateMascotaInicial() {
+        // Usamos la imagen de explicación para el saludo inicial
+        ivMascotaPantalla1.setImageResource(R.drawable.leonexplicacion)
+        val anim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
+        ivMascotaPantalla1.startAnimation(anim)
+    }
+
+    private fun animateMascotaSaludando() {
+        // Al entrar a la sopa, el león saluda
+        ivMascotaPantalla2.setImageResource(R.drawable.leonexplicacion)
+        val anim = AnimationUtils.loadAnimation(this, R.anim.mascot_wave)
+        ivMascotaPantalla2.startAnimation(anim)
+    }
+
+    private fun animateMascotaCelebracion() {
+        // Cambia a cara feliz y salta de alegría
+        ivMascotaPantalla2.setImageResource(R.drawable.leonfeliz)
+        val anim = AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate)
+        ivMascotaPantalla2.startAnimation(anim)
+    }
+
+    // --- FIN SECCIÓN ANIMACIONES ---
 
     private fun setupAudio() {
         try {
             mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_3)
-
-            mediaPlayer?.setOnPreparedListener { mp ->
-                seekBarAudio.max = mp.duration
-            }
-
+            mediaPlayer?.setOnPreparedListener { mp -> seekBarAudio.max = mp.duration }
             mediaPlayer?.setOnCompletionListener {
                 btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
                 seekBarAudio.progress = 0
@@ -141,10 +154,7 @@ class SopaActivity : AppCompatActivity() {
     }
 
     private fun setupAudioControls() {
-        btnPlayPauseIcon.setOnClickListener {
-            if (isPlaying) pauseAudio() else playAudio()
-        }
-
+        btnPlayPauseIcon.setOnClickListener { if (isPlaying) pauseAudio() else playAudio() }
         seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) mediaPlayer?.seekTo(progress)
@@ -176,19 +186,6 @@ class SopaActivity : AppCompatActivity() {
         handler.postDelayed(runnable, 0)
     }
 
-    private fun animateMascotaInicial() {
-        ivMascotaPantalla1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in))
-    }
-
-    private fun animateMascotaSaludando() {
-        ivMascotaPantalla2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.mascot_wave))
-    }
-
-    private fun animateMascotaCelebracion() {
-        ivMascotaPantalla2.setImageResource(R.drawable.leonfeliz)
-        ivMascotaPantalla2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate))
-    }
-
     private fun mostrarPantallaTexto() {
         scrollTextContainer.visibility = View.VISIBLE
         sopaContainer.visibility = View.GONE
@@ -196,12 +193,9 @@ class SopaActivity : AppCompatActivity() {
 
     private fun mostrarSopaDeLetras() {
         if (isPlaying) pauseAudio()
-
-        // --- AQUÍ EL CAMBIO: OCULTAMOS EL BOTÓN MAPA ---
-        // (Como está en el scrollTextContainer, al ocultar ese layout se oculta solo)
         scrollTextContainer.visibility = View.GONE
-
         sopaContainer.visibility = View.VISIBLE
+        // Llama al saludo al cambiar de pantalla
         animateMascotaSaludando()
     }
 
@@ -209,12 +203,13 @@ class SopaActivity : AppCompatActivity() {
         wordSearchView.onWordFoundListener = { word, count ->
             foundWordsCount = count
             wordToCheckbox[word]?.isChecked = true
-
             puntuacionActual += 50
+
+            // Animación de alegría cada vez que se encuentra una palabra
+            animateMascotaCelebracion()
 
             updateProgress()
             Toast.makeText(this, "✓ $word (+50 pts)", Toast.LENGTH_SHORT).show()
-
             if (foundWordsCount == totalWords) {
                 onGameCompleted()
             }
@@ -230,16 +225,12 @@ class SopaActivity : AppCompatActivity() {
 
     private fun updateProgress() {
         tvProgress.text = "$foundWordsCount/$totalWords"
-
         val isComplete = foundWordsCount == totalWords
         btnFinish.isEnabled = isComplete
-
         if (isComplete) {
-            // ACTIVADO: Color ROSA
             val colorActivo = ContextCompat.getColor(this, R.color.sopa)
             btnFinish.backgroundTintList = ColorStateList.valueOf(colorActivo)
         } else {
-            // DESACTIVADO: Color GRIS
             val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
             btnFinish.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
         }
@@ -247,6 +238,7 @@ class SopaActivity : AppCompatActivity() {
 
     private fun onGameCompleted() {
         puntuacionActual += 150
+        // Gran animación final
         animateMascotaCelebracion()
         Toast.makeText(this, "🎉 Zorionak! (+150 Bonus)", Toast.LENGTH_LONG).show()
         guardarPuntuacionEnBD(puntuacionActual)
