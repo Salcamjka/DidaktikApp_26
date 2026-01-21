@@ -2,7 +2,7 @@ package com.salca.didaktikapp
 
 import android.content.ClipData
 import android.content.Context
-import android.content.Intent // Necesario para ir al Mapa
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.media.MediaPlayer
@@ -18,18 +18,18 @@ import androidx.core.content.ContextCompat
 
 class PuzzleActivity : AppCompatActivity() {
 
-    // Contadores del Puzzle
+    // Contadores
     private var aciertosLehenaldia = 0
     private var aciertosOrainaldia = 0
     private var completadoLehenaldia = false
     private var completadoOrainaldia = false
 
-    // CAMBIO IMPORTANTE: 12 piezas (4x3)
+    // 12 piezas (4x3)
     private val PIEZAS_POR_PUZZLE = 12
     private val PUNTOS_POR_PUZZLE = 250
     private var puntuacionTotal = 0
 
-    // Variables de Audio (Se mantienen para que compile sin errores)
+    // Audio
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
     private lateinit var runnable: Runnable
@@ -42,22 +42,20 @@ class PuzzleActivity : AppCompatActivity() {
     private lateinit var layoutFinal: LinearLayout
     private lateinit var btnJarraitu: Button
     private lateinit var txtTituloPrincipal: TextView
-
-    // Botón Mapa
     private lateinit var btnVolverMapa: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_puzzle)
 
-        // Enlazamos vistas principales
         contenedorJuego = findViewById(R.id.contenedorJuego)
         layoutFinal = findViewById(R.id.layoutFinal)
         txtTituloPrincipal = findViewById(R.id.txtTituloPrincipal)
 
-        // --- CONFIGURACIÓN BOTÓN VOLVER AL MAPA ---
+        // Botón Volver Mapa (arriba izquierda)
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
         btnVolverMapa.setOnClickListener {
+            if (isPlaying) pauseAudio()
             finish()
         }
 
@@ -66,26 +64,28 @@ class PuzzleActivity : AppCompatActivity() {
         val gridPiezas = findViewById<GridLayout>(R.id.gridPiezas)
         btnJarraitu = findViewById(R.id.btnJarraitu)
 
-        // --- ESTADO INICIAL: BOTÓN DESACTIVADO ---
-        btnJarraitu.visibility = View.VISIBLE
+        // Estado inicial botón
         btnJarraitu.isEnabled = false
-
-        // Color GRIS (Desactivado)
         btnJarraitu.backgroundTintList = ContextCompat.getColorStateList(this, R.color.boton_desactivado)
         btnJarraitu.setTextColor(Color.WHITE)
 
-        // --- ACCIÓN DEL BOTÓN: IR AL MAPA ---
+        // --- CORRECCIÓN AQUÍ: MOSTRAR EXPLICACIÓN ---
         btnJarraitu.setOnClickListener {
+            cambiarAPantallaFinal()
+        }
+
+        // Botón final de la explicación (este SÍ vuelve al mapa)
+        findViewById<Button>(R.id.btnFinalizarTotal)?.setOnClickListener {
+            // Guardar, subir y salir
+            SyncHelper.subirInmediatamente(this)
+
             val intent = Intent(this, MapActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             startActivity(intent)
-            finish() // Cerramos el puzzle
+            finish()
         }
 
-        // Botón auxiliar de la pantalla final (por si acaso)
-        findViewById<Button>(R.id.btnFinalizarTotal)?.setOnClickListener { finish() }
-
-        // --- CARGA DE IMÁGENES (Solo cargamos 12: pasado0 a pasado11) ---
+        // Carga de imágenes
         val imagenesPasado = Array(PIEZAS_POR_PUZZLE) { i -> resources.getIdentifier("pasado$i", "drawable", packageName) }
         val imagenesPresente = Array(PIEZAS_POR_PUZZLE) { i -> resources.getIdentifier("presente$i", "drawable", packageName) }
 
@@ -104,7 +104,6 @@ class PuzzleActivity : AppCompatActivity() {
             img.scaleType = ImageView.ScaleType.FIT_XY
 
             val params = GridLayout.LayoutParams()
-            // TAMAÑO DE PIEZAS (Ajustado para 4 columnas)
             params.width = 180
             params.height = 130
             params.setMargins(5, 5, 5, 5)
@@ -130,9 +129,7 @@ class PuzzleActivity : AppCompatActivity() {
             val hueco = ImageView(this)
             hueco.setBackgroundColor(Color.LTGRAY)
             hueco.scaleType = ImageView.ScaleType.FIT_XY
-
             val params = GridLayout.LayoutParams()
-            // TAMAÑO DE HUECOS (Igual que las piezas)
             params.width = 180
             params.height = 130
             params.setMargins(2, 2, 2, 2)
@@ -177,7 +174,6 @@ class PuzzleActivity : AppCompatActivity() {
                 completadoLehenaldia = true
                 puntuacionTotal += PUNTOS_POR_PUZZLE
                 Toast.makeText(this, "Lehenaldia osatuta! (+250 pts)", Toast.LENGTH_SHORT).show()
-
                 guardarPuntuacionEnBD(puntuacionTotal)
             }
         } else {
@@ -186,41 +182,35 @@ class PuzzleActivity : AppCompatActivity() {
                 completadoOrainaldia = true
                 puntuacionTotal += PUNTOS_POR_PUZZLE
                 Toast.makeText(this, "Orainaldia osatuta! (+250 pts)", Toast.LENGTH_SHORT).show()
-
                 guardarPuntuacionEnBD(puntuacionTotal)
-
             }
         }
 
-        // --- ACTIVAR BOTÓN AL COMPLETAR AMBOS ---
         if (completadoLehenaldia && completadoOrainaldia) {
             Toast.makeText(this, "Puzzleak osatuta! Jarraitu dezakezu.", Toast.LENGTH_LONG).show()
-
-            // ACTIVAMOS EL BOTÓN
             btnJarraitu.isEnabled = true
-
-            // CAMBIAMOS AL COLOR 'PUZZLE' (Coral)
             val colorActivo = ContextCompat.getColor(this, R.color.puzzle)
             btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorActivo)
-
-            // Texto NEGRO para contraste
             btnJarraitu.setTextColor(Color.BLACK)
+
+            // Subimos puntos ahora que ha terminado el juego
+            SyncHelper.subirInmediatamente(this)
         }
     }
 
-    // Esta función ya no se llama desde el botón, pero se deja por compatibilidad
     private fun cambiarAPantallaFinal() {
-        if (layoutFinal.visibility != View.VISIBLE) {
-            contenedorJuego.visibility = View.GONE
-            btnVolverMapa.visibility = View.GONE
-            txtTituloPrincipal.visibility = View.GONE
-            layoutFinal.visibility = View.VISIBLE
+        // Ocultamos juego y cabecera
+        contenedorJuego.visibility = View.GONE
+        txtTituloPrincipal.visibility = View.GONE // Ocultamos "Bilboko Arenala" pequeño
 
-            val scrollView = findViewById<ScrollView>(R.id.scrollViewMain)
-            scrollView.post { scrollView.fullScroll(View.FOCUS_UP) }
+        // Mostramos explicación
+        layoutFinal.visibility = View.VISIBLE
 
-            setupAudioPlayer()
-        }
+        // Scroll arriba
+        val scrollView = findViewById<ScrollView>(R.id.scrollViewMain)
+        scrollView.post { scrollView.fullScroll(View.FOCUS_UP) }
+
+        setupAudioPlayer()
     }
 
     private fun guardarPuntuacionEnBD(puntos: Int) {
@@ -233,21 +223,15 @@ class PuzzleActivity : AppCompatActivity() {
     private fun setupAudioPlayer() {
         btnAudio = findViewById(R.id.btnAudio)
         seekBarAudio = findViewById(R.id.seekBarAudio)
-
         try {
             mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_5)
-
-            mediaPlayer?.setOnPreparedListener { mp ->
-                seekBarAudio.max = mp.duration
-            }
-
+            mediaPlayer?.setOnPreparedListener { mp -> seekBarAudio.max = mp.duration }
             mediaPlayer?.setOnCompletionListener {
                 btnAudio.setImageResource(android.R.drawable.ic_media_play)
                 seekBarAudio.progress = 0
                 isPlaying = false
                 if (::runnable.isInitialized) handler.removeCallbacks(runnable)
             }
-
             seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                     if (fromUser) mediaPlayer?.seekTo(progress)
@@ -255,14 +239,8 @@ class PuzzleActivity : AppCompatActivity() {
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             })
-
-            btnAudio.setOnClickListener {
-                if (isPlaying) pauseAudio() else playAudio()
-            }
-
-        } catch (e: Exception) {
-            // Manejo de error si falta el audio
-        }
+            btnAudio.setOnClickListener { if (isPlaying) pauseAudio() else playAudio() }
+        } catch (e: Exception) { }
     }
 
     private fun playAudio() {
