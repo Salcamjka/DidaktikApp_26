@@ -40,10 +40,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         map.setOnMarkerClickListener(this)
 
         val kokapenak = listOf(
-            Triple(LatLng(43.255000, -2.923333), "San Anton Eliza", "Zain"),
-            Triple(LatLng(43.256389, -2.922222), "Antzinako Harresia", "Toca para jugar"),
-            Triple(LatLng(43.256389, -2.924722), "Zazpi Kaleak", "Sopa de letras"),
-            Triple(LatLng(43.257833, -2.924389), "Txakurraren Iturria", "Jolastu"),
+            Triple(LatLng(43.255000, -2.923333), "San Anton Eliza", "Urkatua"),
+            Triple(LatLng(43.256389, -2.922222), "Antzinako Harresia", "Harresia"),
+            Triple(LatLng(43.256389, -2.924722), "Zazpi Kaleak", "Letra Sopa"),
+            Triple(LatLng(43.257833, -2.924389), "Txakurraren Iturria", "Ezberdintasunak"),
             Triple(LatLng(43.260221, -2.924074), "Bilboko Areatza", "Puzzlea")
         )
 
