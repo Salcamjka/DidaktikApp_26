@@ -12,16 +12,33 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/btnVolverMapa"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_margin="16dp"
-            android:layout_gravity="start"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="fitCenter"
-            android:src="@drawable/mapaimg"
-            android:contentDescription="Volver al mapa" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="8dp">
+
+            <ImageButton
+                android:id="@+id/btnVolverMapa"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="fitCenter"
+                android:src="@drawable/mapaimg"
+                android:contentDescription="Volver al mapa" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="San Anton Eliza"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/ahorcado" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/fase1_Juego"
@@ -86,7 +103,6 @@
                 app:backgroundTint="@color/boton_desactivado"/>
 
         </LinearLayout>
-
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/fase_Explicacion"
