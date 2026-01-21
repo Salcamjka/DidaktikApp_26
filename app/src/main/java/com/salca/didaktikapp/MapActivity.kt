@@ -1,6 +1,7 @@
 package com.salca.didaktikapp
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -17,6 +18,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // BLOQUEO DE ORIENTACIÓN: Solo vertical
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         setContentView(R.layout.activity_map)
 
         val mapFragment = supportFragmentManager
@@ -24,13 +29,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         mapFragment.getMapAsync(this)
     }
 
-    // ================================================================
-    // ⚡ SINCRONIZACIÓN AUTOMÁTICA AL VOLVER AL MAPA
-    // ================================================================
     override fun onResume() {
         super.onResume()
-        // Cada vez que esta pantalla aparece (al entrar o al volver de un juego)
-        // subimos los datos a la nube silenciosamente.
         SyncHelper.subirInmediatamente(this)
     }
 
