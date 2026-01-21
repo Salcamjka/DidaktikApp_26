@@ -1,35 +1,90 @@
 package com.salca.didaktikapp
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.asRequestBody
+import android.util.Log
+import java.io.DataOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 object SyncHelper {
+
+    // URL para subir el archivo .db entero
+    private const val API_URL = "https://api-didaktikapp.onrender.com/upload-db"
+
     fun subirInmediatamente(context: Context) {
-        val dbPath = context.getDatabasePath("DidaktikApp.db")
-        if (!dbPath.exists()) return
-
-        // 1. Checkpoint (Guardar todo a disco)
-        try {
-            val db = SQLiteDatabase.openDatabase(dbPath.absolutePath, null, SQLiteDatabase.OPEN_READWRITE)
-            db.rawQuery("PRAGMA wal_checkpoint(FULL)", null).close()
-            db.close()
-        } catch (e: Exception) { e.printStackTrace() }
-
-        // 2. Subir a la nube en segundo plano
         Thread {
+            val dbPath = context.getDatabasePath("DidaktikApp.db")
+
+            // Si no existe la base de datos, no hacemos nada
+            if (!dbPath.exists()) return@Thread
+
+            // 1. FORZAR GUARDADO: Obligamos a Android a escribir los datos en el archivo .db
             try {
-                val client = OkHttpClient()
-                val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-                    .addFormDataPart("file", "DidaktikApp.db", dbPath.asRequestBody("application/octet-stream".toMediaTypeOrNull()))
-                    .build()
-                val request = Request.Builder().url("https://api-didaktikapp.onrender.com/upload-db").post(requestBody).build()
-                client.newCall(request).execute()
-            } catch (e: Exception) { e.printStackTrace() }
+                val dbHelper = DatabaseHelper(context)
+                val db = dbHelper.writableDatabase
+                db.rawQuery("PRAGMA wal_checkpoint(FULL)", null).close()
+                // No cerramos la conexión para no interferir con la app
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            // 2. SUBIR EL ARCHIVO AL SERVIDOR
+            uploadFile(dbPath)
         }.start()
+    }
+
+    private fun uploadFile(file: File) {
+        val boundary = "*****" + System.currentTimeMillis() + "*****"
+        val lineEnd = "\r\n"
+        val twoHyphens = "--"
+
+        try {
+            val fileInputStream = FileInputStream(file)
+            val url = URL(API_URL)
+            val conn = url.openConnection() as HttpURLConnection
+
+            // Configuración de la conexión HTTP
+            conn.doInput = true
+            conn.doOutput = true
+            conn.useCaches = false
+            conn.requestMethod = "POST"
+            conn.setRequestProperty("Connection", "Keep-Alive")
+            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
+
+            val dos = DataOutputStream(conn.outputStream)
+
+            // Escribir cabeceras del formulario (campo "file")
+            dos.writeBytes(twoHyphens + boundary + lineEnd)
+            dos.writeBytes("Content-Disposition: form-data; name=\"file\";filename=\"DidaktikApp.db\"$lineEnd")
+            dos.writeBytes(lineEnd)
+
+            // Leer el archivo y enviarlo
+            val buffer = ByteArray(1024)
+            var bytesRead: Int
+            while (fileInputStream.read(buffer).also { bytesRead = it } != -1) {
+                dos.write(buffer, 0, bytesRead)
+            }
+
+            dos.writeBytes(lineEnd)
+            dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd)
+
+            fileInputStream.close()
+            dos.flush()
+            dos.close()
+
+            // Verificar respuesta
+            val responseCode = conn.responseCode
+            if (responseCode == 200 || responseCode == 201) {
+                Log.d("API", "Base de datos subida correctamente. Código: $responseCode")
+            } else {
+                Log.e("API", "Error al subir. Código: $responseCode")
+            }
+
+        } catch (e: Exception) {
+            Log.e("API", "Excepción: ${e.message}")
+            e.printStackTrace()
+        }
     }
 }

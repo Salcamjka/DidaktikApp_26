@@ -5,13 +5,17 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "DidaktikApp.db", null, 1) {
+// VERSIÓN 7: Limpieza total, solo queda la tabla de alumnos
+class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "DidaktikApp.db", null, 7) {
 
-    // Se crea la tabla solo si no existe
+    private val TABLE_ALUMNOS = "alumnos"
+
     override fun onCreate(db: SQLiteDatabase) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS alumnos (" +
+        // Creamos la tabla EXACTAMENTE como la espera tu servidor
+        // Solo guardamos los totales de cada juego por alumno
+        db.execSQL("CREATE TABLE $TABLE_ALUMNOS (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "nombre TEXT, " +
+                "nombre TEXT UNIQUE, " +
                 "ahorcado INTEGER DEFAULT 0, " +
                 "muralla INTEGER DEFAULT 0, " +
                 "sopa INTEGER DEFAULT 0, " +
@@ -20,84 +24,45 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "DidaktikApp.
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS alumnos")
+        // Borramos todo lo anterior para empezar limpio
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_ALUMNOS")
+        db.execSQL("DROP TABLE IF EXISTS puntuaciones_pendientes") // Borramos la que no quieres
+        db.execSQL("DROP TABLE IF EXISTS puntuaciones")
+        db.execSQL("DROP TABLE IF EXISTS usuarios")
         onCreate(db)
     }
 
-    // ==========================================
-    // 🧠 LÓGICA INTELIGENTE: NO REPETIR USUARIOS
-    // ==========================================
+    // =================================================
+    //  LOGIN: Crear usuario si no existe
+    // =================================================
     fun crearUsuarioInicial(nombre: String) {
         val db = this.writableDatabase
-
-        // 1. PRIMERO MIRAMOS SI YA EXISTE
-        // Hacemos una consulta buscando ese nombre
-        val cursor = db.rawQuery("SELECT * FROM alumnos WHERE nombre = ?", arrayOf(nombre))
-
-        if (cursor.moveToFirst()) {
-            // 🛑 EL USUARIO YA EXISTE
-            // No hacemos nada. Así mantenemos su ID y sus puntos antiguos.
-            // (Si quisieras actualizar algo, lo harías aquí)
-        } else {
-            // ✅ EL USUARIO NO EXISTE (ES NUEVO)
-            // Creamos una fila nueva y se le asignará un ID nuevo automáticamente.
-            val values = ContentValues()
-            values.put("nombre", nombre)
-            values.put("ahorcado", 0)
-            values.put("muralla", 0)
-            values.put("sopa", 0)
-            values.put("diferencias", 0)
-            values.put("puzzle", 0)
-
-            db.insert("alumnos", null, values)
-        }
-
-        cursor.close()
-        db.close()
+        val values = ContentValues()
+        values.put("nombre", nombre)
+        // Si ya existe, lo ignora (no duplica, no falla)
+        db.insertWithOnConflict(TABLE_ALUMNOS, null, values, SQLiteDatabase.CONFLICT_IGNORE)
     }
 
-    // Función para guardar/sumar puntos
+    // =================================================
+    //  GUARDAR PUNTOS (Actualiza la columna del alumno)
+    // =================================================
     fun guardarPuntuacion(nombre: String, juego: String, puntos: Int) {
         val db = this.writableDatabase
 
-        // Traducimos el nombre de tu actividad al nombre de la columna en la BD
+        // Traducimos tus nombres de Activity a las columnas de la BD
         val columna = when (juego) {
-            "Ahorcado" -> "ahorcado"
-            "Muralla" -> "muralla"
-            "Sopa" -> "sopa"
-            "Txakurra", "TxakurraTabla" -> "diferencias" // Asumimos que Txakurra va a 'diferencias'
-            "Puzzle" -> "puzzle"
-            else -> return // Si no coincide, salimos
+            "Ahorcado", "AhorcadoActivity" -> "ahorcado"
+            "Muralla", "MurallaActivity" -> "muralla"
+            "Sopa", "SopaActivity" -> "sopa"
+            "Txakurra", "TxakurraTabla", "TxakurraActivity" -> "diferencias"
+            "Puzzle", "PuzzleActivity" -> "puzzle"
+            else -> return
         }
-
-        // 1. Buscamos los puntos que ya tenía para SUMARLOS (opcional)
-        // Si prefieres que se sobrescriba (que 100 borre a 50), quita esta parte de lectura.
-        var puntosAnteriores = 0
-        val cursor = db.rawQuery("SELECT $columna FROM alumnos WHERE nombre = ?", arrayOf(nombre))
-        if (cursor.moveToFirst()) {
-            puntosAnteriores = cursor.getInt(0)
-        }
-        cursor.close()
-
-        // 2. Si quieres que se SUMEN a lo que ya tenía:
-        // val puntosFinales = puntosAnteriores + puntos
-
-        // 3. Si quieres guardar la puntuación ACTUAL (reemplazando la vieja):
-        val puntosFinales = puntos
-
-        // (Elige la opción 2 o 3 según prefieras. Ahora mismo está puesto REEMPLAZAR).
 
         val values = ContentValues()
-        values.put(columna, puntosFinales)
+        values.put(columna, puntos)
 
-        // Actualizamos solo la fila de este alumno
-        db.update("alumnos", values, "nombre = ?", arrayOf(nombre))
-        db.close()
-    }
-
-    // Función auxiliar para sumar puntos directamente (útil para juegos acumulativos)
-    fun sumarPuntos(juego: String, puntos: Int) {
-        // Esta función requeriría pasarle el nombre también,
-        // pero puedes usar guardarPuntuacion con la lógica de suma.
+        // Actualizamos la fila de este alumno con la nueva puntuación
+        db.update(TABLE_ALUMNOS, values, "nombre = ?", arrayOf(nombre))
     }
 }
