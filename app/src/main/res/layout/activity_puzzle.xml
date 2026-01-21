@@ -51,7 +51,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
             <LinearLayout
                 android:id="@+id/contenedorJuego"
@@ -59,54 +60,73 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="8dp"
-                android:visibility="visible">
+                android:visibility="visible"
+                android:gravity="center_horizontal">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
                     android:layout_marginBottom="15dp">
+
                     <TextView
-                        android:text="LEHENALDIA"
+                        android:text="L\nE\nH\nE\nN\nA\nL\nD\nI\nA"
                         android:textStyle="bold"
                         android:textColor="@color/black"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp"/>
+                        android:layout_marginEnd="2dp"
+                        android:gravity="center"
+                        android:lineSpacingExtra="-4dp"
+                        android:textSize="14sp"/>
 
-                    <GridLayout
-                        android:id="@+id/gridPasado"
+                    <FrameLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:columnCount="4"
-                        android:rowCount="3"
-                        android:background="@color/grey"
-                        android:padding="2dp"/>
+                        android:layout_height="wrap_content">
+
+                        <GridLayout
+                            android:id="@+id/gridPasado"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:columnCount="4"
+                            android:rowCount="3"
+                            android:background="@color/white"
+                            android:padding="0dp"/>
+                    </FrameLayout>
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
                     android:layout_marginBottom="10dp">
+
                     <TextView
-                        android:text="ORAINALDIA"
+                        android:text="O\nR\nA\nI\nN\nA\nL\nD\nI\nA"
                         android:textStyle="bold"
                         android:textColor="@color/black"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp"/>
+                        android:layout_marginEnd="2dp"
+                        android:gravity="center"
+                        android:lineSpacingExtra="-4dp"
+                        android:textSize="14sp"/>
 
-                    <GridLayout
-                        android:id="@+id/gridPresente"
+                    <FrameLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:columnCount="4"
-                        android:rowCount="3"
-                        android:background="@color/grey"
-                        android:padding="2dp"/>
+                        android:layout_height="wrap_content">
+
+                        <GridLayout
+                            android:id="@+id/gridPresente"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:columnCount="4"
+                            android:rowCount="3"
+                            android:background="@color/white"
+                            android:padding="0dp"/>
+                    </FrameLayout>
                 </LinearLayout>
 
                 <TextView
@@ -124,7 +144,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:columnCount="4"
+                    android:columnCount="5"
                     android:layout_marginBottom="10dp"/>
 
                 <Button
@@ -155,7 +175,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Areatza Bilboko leku garrantzitsu eta ezagunenetako bat da, Alde Zaharrean kokatua.\n\nIraganean, Areatza, izenak dioen bezala, hondartza bat zen, Bilboko hiriaren kanpoaldean, harresietatik haratago, kokatutako eremu bat. Leku hau arrantza-auzoa zen, Nerbioi ibaiaren sarreran kai gisa balio zuen harezko eremu batean kokatua.\n\nPixkanaka garrantzia hartu zuen portu naturala bilakatu zen, non itsasontziak karga deskargatzeko atrakatzen ziren. Urteetan zehar, Bilbo hazi egin zen, eta Areatza bilbotarrek paseatzera joaten ziren leku bihurtu zen. Horregatik hartzen da hiriko parkerik zaharrena bezala."
+                    android:text="Areatza Bilboko leku garrantzitsu eta ezagunenetako bat da, Alde Zaharrean kokatua.\n\nIraganean, Areatza, izenak dioen bezala, hondartza bat zen, Bilboko hiriaren kanpoaldean, harresietatik haratago, kokatutako eremu bat. Leku hau arrantza-auzoa zen, Nerbioi ibaiaren sarreran kai gisa balio zuen harezko eremu batean kokatua.\n\nPixkanaka garrantzia hartu zuen portu naturala bilakatu zen, non itsasontziak karga deskargatzeko atrakatzen ziren. Urteetan zehar, Bilbo hazi egin zen, y Areatza bilbotarrek paseatzera joaten ziren leku bihurtu zen. Horregatik hartzen da hiriko parkerik zaharrena bezala."
                     android:textSize="18sp"
                     android:textColor="@color/black"
                     android:gravity="center"
