@@ -231,16 +231,14 @@ class AhorcadoActivity : AppCompatActivity() {
             tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_acierto))
             ivAhorcado.setImageResource(R.drawable.leonfeliz)
         } else {
-            tvResultado.text = "GALDU DUZU... HITZ: $palabraActual"
+            tvResultado.text = "GALDU DUZU... HITZA: $palabraActual"
             tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
             ivAhorcado.setImageResource(R.drawable.leontriste)
-            tvPalabra.text = palabraActual.replace(" ", "\n")
         }
         guardarPuntuacionEnBD(puntuacionActual)
         btnJarraituJuego.isEnabled = true
         val colorActivo = ContextCompat.getColor(this, R.color.ahorcado)
         btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(colorActivo)
-        Toast.makeText(this, "Jokoa amaitu da. Sakatu Jarraitu.", Toast.LENGTH_SHORT).show()
     }
 
     private fun desactivarTeclado() {

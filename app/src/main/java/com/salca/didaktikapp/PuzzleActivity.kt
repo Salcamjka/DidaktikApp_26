@@ -68,7 +68,7 @@ class PuzzleActivity : AppCompatActivity() {
         // ESTADO INICIAL: BOTÓN DESACTIVADO (Modo Juego)
         // ================================================================
         btnJarraitu.visibility = View.VISIBLE
-        btnJarraitu.isEnabled = false // <--- DESACTIVADO: Debe completar los puzzles
+        btnJarraitu.isEnabled = false
 
         val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
         btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
@@ -77,12 +77,9 @@ class PuzzleActivity : AppCompatActivity() {
         btnJarraitu.setOnClickListener {
             cambiarAPantallaFinal()
         }
-        // ================================================================
 
-        // Botón final de la explicación
         findViewById<Button>(R.id.btnFinalizarTotal)?.setOnClickListener {
             SyncHelper.subirInmediatamente(this)
-
             val intent = Intent(this, MapActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             startActivity(intent)
@@ -101,6 +98,7 @@ class PuzzleActivity : AppCompatActivity() {
         for (i in 0 until PIEZAS_POR_PUZZLE) todasLasPiezas.add(PiezaPuzzle(i, "orainaldia", imagenesPresente[i]))
         todasLasPiezas.shuffle()
 
+        // CONFIGURACIÓN DE LAS PIEZAS PARA ARRASTRAR
         for (pieza in todasLasPiezas) {
             val img = ImageView(this)
             img.setImageResource(pieza.imagenID)
@@ -113,12 +111,14 @@ class PuzzleActivity : AppCompatActivity() {
             params.setMargins(5, 5, 5, 5)
             img.layoutParams = params
 
+            // CORRECCIÓN: La pieza ya no desaparece inmediatamente al tocarla
             img.setOnTouchListener { view, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {
                     val data = ClipData.newPlainText("mota", pieza.tipo)
                     val shadow = View.DragShadowBuilder(view)
+
+                    // Iniciamos el arrastre. Eliminamos la línea que ponía la vista en INVISIBLE aquí.
                     view.startDragAndDrop(data, shadow, view, 0)
-                    view.visibility = View.INVISIBLE
                     true
                 } else {
                     false
@@ -152,16 +152,27 @@ class PuzzleActivity : AppCompatActivity() {
                             huecoDestino.setImageResource(datosPieza.imagenID)
                             huecoDestino.setBackgroundColor(Color.TRANSPARENT)
                             huecoDestino.setOnDragListener(null)
+                            // La pieza original se elimina de la lista solo cuando se coloca correctamente
                             (piezaArrastrada.parent as GridLayout).removeView(piezaArrastrada)
                             verificarProgreso(datosPieza.tipo)
                         } else {
+                            // Si falla, nos aseguramos de que sea visible (por si se ocultó en el inicio del drag)
                             piezaArrastrada.visibility = View.VISIBLE
-                            Toast.makeText(this, "Hori ez doa hor!", Toast.LENGTH_SHORT).show()
                         }
                         true
                     }
+                    DragEvent.ACTION_DRAG_STARTED -> {
+                        // Opcional: Ocultar la pieza original justo cuando el sistema confirma que el arrastre empezó
+                        val piezaArrastrada = event.localState as? View
+                        piezaArrastrada?.visibility = View.INVISIBLE
+                        true
+                    }
                     DragEvent.ACTION_DRAG_ENDED -> {
-                        if (!event.result) (event.localState as View).visibility = View.VISIBLE
+                        // Si el arrastre termina sin éxito, recuperamos la visibilidad
+                        if (!event.result) {
+                            val piezaArrastrada = event.localState as? View
+                            piezaArrastrada?.visibility = View.VISIBLE
+                        }
                         true
                     }
                     else -> true
@@ -177,7 +188,6 @@ class PuzzleActivity : AppCompatActivity() {
             if (aciertosLehenaldia == PIEZAS_POR_PUZZLE && !completadoLehenaldia) {
                 completadoLehenaldia = true
                 puntuacionTotal += PUNTOS_POR_PUZZLE
-                Toast.makeText(this, "Lehenaldia osatuta! (+250 pts)", Toast.LENGTH_SHORT).show()
                 guardarPuntuacionEnBD(puntuacionTotal)
             }
         } else {
@@ -185,45 +195,27 @@ class PuzzleActivity : AppCompatActivity() {
             if (aciertosOrainaldia == PIEZAS_POR_PUZZLE && !completadoOrainaldia) {
                 completadoOrainaldia = true
                 puntuacionTotal += PUNTOS_POR_PUZZLE
-                Toast.makeText(this, "Orainaldia osatuta! (+250 pts)", Toast.LENGTH_SHORT).show()
                 guardarPuntuacionEnBD(puntuacionTotal)
             }
         }
 
-        // --- SOLO SE ACTIVA CUANDO AMBOS PUZZLES ESTÁN COMPLETOS ---
         if (completadoLehenaldia && completadoOrainaldia) {
-            Toast.makeText(this, "Puzzleak osatuta! Jarraitu dezakezu.", Toast.LENGTH_LONG).show()
-
-            // AHORA SÍ ACTIVAMOS EL BOTÓN
             btnJarraitu.isEnabled = true
-
-            // CAMBIAMOS AL COLOR 'PUZZLE' (Coral)
             val colorActivo = ContextCompat.getColor(this, R.color.puzzle)
             btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorActivo)
             btnJarraitu.setTextColor(Color.BLACK)
-
             SyncHelper.subirInmediatamente(this)
         }
     }
 
     private fun cambiarAPantallaFinal() {
-        // 1. Ocultamos el juego
         contenedorJuego.visibility = View.GONE
-
-        // 2. Ocultamos el botón de volver al mapa
         btnVolverMapa.visibility = View.INVISIBLE
-
-        // 3. Cambiamos el título
         txtTituloPrincipal.visibility = View.VISIBLE
         txtTituloPrincipal.text = "Bilboko Areatza"
-
-        // 4. Mostramos la explicación
         layoutFinal.visibility = View.VISIBLE
-
-        // 5. Scroll arriba
         val scrollView = findViewById<ScrollView>(R.id.scrollViewMain)
         scrollView.post { scrollView.fullScroll(View.FOCUS_UP) }
-
         setupAudioPlayer()
     }
 
@@ -232,8 +224,6 @@ class PuzzleActivity : AppCompatActivity() {
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
         val dbHelper = DatabaseHelper(this)
         dbHelper.guardarPuntuacion(nombreAlumno, "Puzzle", puntos)
-
-        // Sincronizar inmediatamente
         SyncHelper.subirInmediatamente(this)
     }
 

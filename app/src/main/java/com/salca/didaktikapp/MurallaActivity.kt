@@ -5,9 +5,11 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.Gravity
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 
 class MurallaActivity : AppCompatActivity() {
 
@@ -210,20 +212,13 @@ class MurallaActivity : AppCompatActivity() {
             else -> -1
         }
 
-        if (seleccion == -1) {
-            Toast.makeText(this, "Aukeratu erantzun bat", Toast.LENGTH_SHORT).show()
-            return
-        }
-
         if (seleccion == preguntas[indicePregunta].correcta) {
             progreso++
             puntuacionActual += 100
             if (indicePregunta < listaPiezas.size) listaPiezas[indicePregunta].visibility = View.VISIBLE
-            Toast.makeText(this, "Zuzena! (+100 pts)", Toast.LENGTH_SHORT).show()
         } else {
             puntuacionActual -= 50
             if (puntuacionActual < 0) puntuacionActual = 0
-            Toast.makeText(this, "Ez da zuzena (-50 pts)", Toast.LENGTH_SHORT).show()
         }
 
         indicePregunta++
@@ -231,21 +226,25 @@ class MurallaActivity : AppCompatActivity() {
     }
 
     private fun finalizarJuego() {
-        // Desactivamos el botón de responder y lo ocultamos para dar paso al nuevo botón
         btnResponder.isEnabled = false
         btnResponder.visibility = View.GONE
 
+        // --- CAMBIOS PARA EL CENTRADO Y ESTILO ---
+        grupoOpciones.visibility = View.GONE
+        txtPregunta.gravity = Gravity.CENTER
+        txtPregunta.textSize = 24f
+
         if (progreso == preguntas.size) {
-            txtPregunta.text = "🏰 Zorionak! Harresia osatu da!\nPuntuazioa: $puntuacionActual"
+            txtPregunta.text = "🏰 Zorionak!\nHarresia osatu duzu!\n\nPuntuazioa: $puntuacionActual"
+            txtPregunta.setTextColor(ContextCompat.getColor(this, R.color.mi_acierto))
         } else {
-            txtPregunta.text = "Jokoa amaitu da.\nPuntuazioa: $puntuacionActual"
+            txtPregunta.text = "Jokoa amaitu da.\n\nPuntuazioa: $puntuacionActual"
+            txtPregunta.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
         }
 
-        // MOSTRAR BOTÓN JARRAITU
         btnFinalizar.visibility = View.VISIBLE
-
         guardarPuntuacionEnBD(puntuacionActual)
-
+        SyncHelper.subirInmediatamente(this)
     }
 
     private fun guardarPuntuacionEnBD(puntos: Int) {

@@ -21,9 +21,8 @@ import kotlin.math.min
 class SopaActivity : AppCompatActivity() {
 
     private lateinit var mainScrollView: ScrollView
-    private lateinit var contenedorIntro: LinearLayout // Intro (Arriba)
-    private lateinit var sopaContainer: LinearLayout // Juego (Abajo)
-
+    private lateinit var contenedorIntro: LinearLayout
+    private lateinit var sopaContainer: LinearLayout
     private lateinit var tvTextoIntroductorio: TextView
     private lateinit var btnComenzarSopa: Button
     private lateinit var ivMascotaPantalla1: ImageView
@@ -119,19 +118,11 @@ class SopaActivity : AppCompatActivity() {
             finish()
         }
 
-        // --- BOTÓN COMENZAR: OCULTA INTRO, MUESTRA JUEGO Y RESETEA SCROLL ---
         btnComenzarSopa.setOnClickListener {
             if (isPlaying) pauseAudio()
-
-            // 1. Ocultar Intro
             contenedorIntro.visibility = View.GONE
-
-            // 2. Mostrar Juego
             sopaContainer.visibility = View.VISIBLE
-
-            // 3. Subir el scroll arriba del todo
             mainScrollView.scrollTo(0, 0)
-
             animateMascotaSaludando()
         }
     }
@@ -199,9 +190,7 @@ class SopaActivity : AppCompatActivity() {
             wordToCheckbox[word]?.isChecked = true
             puntuacionActual += 50
             updateProgress()
-            Toast.makeText(this, "✓ $word (+50 pts)", Toast.LENGTH_SHORT).show()
 
-            // Guardar y sincronizar al encontrar palabra
             guardarPuntuacionEnBD(puntuacionActual)
             SyncHelper.subirInmediatamente(this)
 
@@ -231,9 +220,8 @@ class SopaActivity : AppCompatActivity() {
     }
 
     private fun onGameCompleted() {
-        puntuacionActual += 150
+        puntuacionActual += 150 // Bonus final para llegar a 500 pts
         animateMascotaCelebracion()
-        Toast.makeText(this, "🎉 Zorionak! (+150 Bonus)", Toast.LENGTH_LONG).show()
         guardarPuntuacionEnBD(puntuacionActual)
         SyncHelper.subirInmediatamente(this)
     }
@@ -247,7 +235,7 @@ class SopaActivity : AppCompatActivity() {
 }
 
 // ============================================================================
-// CLASE WORDSEARCHVIEW (BARRENKALE FIX + TUS COLORES XML)
+// CLASE WORDSEARCHVIEW (BLOQUEO DE DIAGONALES)
 // ============================================================================
 
 class WordSearchView @JvmOverloads constructor(
@@ -288,7 +276,6 @@ class WordSearchView @JvmOverloads constructor(
     private var currentCell: Pair<Int, Int>? = null
     private val selectedCells = mutableListOf<Pair<Int, Int>>()
 
-    // COLORES: Usando los que definiste en colors.xml
     private val wordColors = listOf(
         ContextCompat.getColor(context, R.color.sopa_verde),
         ContextCompat.getColor(context, R.color.sopa_azul),
@@ -301,27 +288,23 @@ class WordSearchView @JvmOverloads constructor(
 
     private val foundCellColors = mutableMapOf<Pair<Int, Int>, Int>()
 
-    // PINCEL REJILLA: Usando sopa_rejilla del XML
     private val gridPaint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.sopa_rejilla)
         strokeWidth = 1.5f
         style = Paint.Style.STROKE
     }
 
-    // PINCEL TEXTO: Usando sopa_texto_letras del XML
     private val textPaint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.sopa_texto_letras)
         textAlign = Paint.Align.CENTER
         typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     }
 
-    // PINCEL RESALTADO
     private val highlightPaint = Paint().apply {
         style = Paint.Style.FILL
         alpha = 200
     }
 
-    // PINCEL SELECCIÓN DEDO: Usando sopa_seleccion_dedo del XML
     private val selectionPaint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.sopa_seleccion_dedo)
         style = Paint.Style.FILL
@@ -418,17 +401,42 @@ class WordSearchView @JvmOverloads constructor(
         return if (row in 0 until gridRows && col in 0 until gridCols) Pair(row, col) else null
     }
 
+    // LÓGICA DE SELECCIÓN SIN DIAGONALES
     private fun updateSelection() {
         val start = startCell ?: return
         val current = currentCell ?: return
         selectedCells.clear()
+
         val rowDiff = current.first - start.first
         val colDiff = current.second - start.second
-        val steps = max(abs(rowDiff), abs(colDiff))
-        if (steps == 0) { selectedCells.add(start); return }
-        val rowStep = if (rowDiff == 0) 0 else rowDiff / abs(rowDiff)
-        val colStep = if (colDiff == 0) 0 else colDiff / abs(colDiff)
-        for (i in 0..steps) selectedCells.add(Pair(start.first + i * rowStep, start.second + i * colStep))
+
+        // Bloqueo de diagonales: forzamos el eje dominante
+        val targetRow: Int
+        val targetCol: Int
+
+        if (abs(rowDiff) > abs(colDiff)) {
+            targetRow = current.first
+            targetCol = start.second
+        } else {
+            targetRow = start.first
+            targetCol = current.second
+        }
+
+        val newRowDiff = targetRow - start.first
+        val newColDiff = targetCol - start.second
+        val steps = max(abs(newRowDiff), abs(newColDiff))
+
+        if (steps == 0) {
+            selectedCells.add(start)
+            return
+        }
+
+        val rowStep = if (newRowDiff == 0) 0 else newRowDiff / abs(newRowDiff)
+        val colStep = if (newColDiff == 0) 0 else newColDiff / abs(newColDiff)
+
+        for (i in 0..steps) {
+            selectedCells.add(Pair(start.first + i * rowStep, start.second + i * colStep))
+        }
     }
 
     private fun checkForWord() {
@@ -439,7 +447,6 @@ class WordSearchView @JvmOverloads constructor(
 
         for (word in targetWords) {
             if ((selectedWord == word || reversedWord == word) && !foundWords.contains(word)) {
-                // Fix para Barrenkale (evitar conflicto con Barrenkale Barrena)
                 if (word == "BARRENKALE") {
                     val esLaVertical = selectedCells.all { it.second == 11 }
                     if (esLaVertical) continue

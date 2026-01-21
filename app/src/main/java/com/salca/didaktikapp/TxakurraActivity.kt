@@ -9,7 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View // Importante
+import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -143,35 +143,33 @@ class TxakurraActivity : AppCompatActivity() {
     // ==========================================
 
     private fun setupNavigationButtons() {
+        btnVolverMapa.visibility = View.VISIBLE
+
         btnVolverMapa.setOnClickListener {
             if (isPlaying) pauseAudio()
             finish()
         }
 
-        // --- BOTÓN HASI TAULA (Transición) ---
         btnContinuar.setOnClickListener {
-            // 1. Parar audio
             if (::runnable.isInitialized) handler.removeCallbacks(runnable)
             mediaPlayer?.stop()
             isPlaying = false
             btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
 
-            // 2. CAMBIO DE VISIBILIDAD (El truco)
-            contenedorIntro.visibility = View.GONE  // Ocultamos la intro
-            contenedorTabla.visibility = View.VISIBLE // Mostramos la tabla
-
-            // 3. Resetear scroll (ir arriba)
+            contenedorIntro.visibility = View.GONE
+            contenedorTabla.visibility = View.VISIBLE
+            btnVolverMapa.visibility = View.GONE
             mainScrollView.scrollTo(0, 0)
 
-            // 4. Animar elementos de la tabla
+            // LLAMADA A LA FUNCIÓN SIN ANIMACIONES PARA LOS ANIMALES
             animateTablaElements()
         }
 
         btnFinish.setOnClickListener {
             animateMascotaCelebracion()
-            guardarPuntuacionEnBD(100)
+            guardarPuntuacionEnBD(500)
             SyncHelper.subirInmediatamente(this)
-            Toast.makeText(this, "🎉 Bikain! Taula osatu duzu! (+100 pts)", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "🎉 Bikain! Taula osatu duzu! (+500 pts)", Toast.LENGTH_LONG).show()
             Handler(Looper.getMainLooper()).postDelayed({ finish() }, 2000)
         }
     }
@@ -198,16 +196,10 @@ class TxakurraActivity : AppCompatActivity() {
     }
 
     private fun animateTablaElements() {
+        // HEMOS QUITADO LAS ANIMACIONES DE IVPERRO E IVLEON
         try {
             val waveAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_wave)
             ivMascotaTabla.startAnimation(waveAnim)
-
-            val bounceAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
-            ivPerro.startAnimation(bounceAnim)
-
-            Handler(Looper.getMainLooper()).postDelayed({
-                ivLeon.startAnimation(bounceAnim)
-            }, 300)
         } catch (e: Exception) { }
     }
 
