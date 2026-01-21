@@ -64,19 +64,23 @@ class PuzzleActivity : AppCompatActivity() {
         val gridPiezas = findViewById<GridLayout>(R.id.gridPiezas)
         btnJarraitu = findViewById(R.id.btnJarraitu)
 
-        // Estado inicial botón
-        btnJarraitu.isEnabled = false
-        btnJarraitu.backgroundTintList = ContextCompat.getColorStateList(this, R.color.boton_desactivado)
+        // ================================================================
+        // ESTADO INICIAL: BOTÓN DESACTIVADO (Modo Juego)
+        // ================================================================
+        btnJarraitu.visibility = View.VISIBLE
+        btnJarraitu.isEnabled = false // <--- DESACTIVADO: Debe completar los puzzles
+
+        val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
+        btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
         btnJarraitu.setTextColor(Color.WHITE)
 
-        // --- CORRECCIÓN AQUÍ: MOSTRAR EXPLICACIÓN ---
         btnJarraitu.setOnClickListener {
             cambiarAPantallaFinal()
         }
+        // ================================================================
 
-        // Botón final de la explicación (este SÍ vuelve al mapa)
+        // Botón final de la explicación
         findViewById<Button>(R.id.btnFinalizarTotal)?.setOnClickListener {
-            // Guardar, subir y salir
             SyncHelper.subirInmediatamente(this)
 
             val intent = Intent(this, MapActivity::class.java)
@@ -186,27 +190,37 @@ class PuzzleActivity : AppCompatActivity() {
             }
         }
 
+        // --- SOLO SE ACTIVA CUANDO AMBOS PUZZLES ESTÁN COMPLETOS ---
         if (completadoLehenaldia && completadoOrainaldia) {
             Toast.makeText(this, "Puzzleak osatuta! Jarraitu dezakezu.", Toast.LENGTH_LONG).show()
+
+            // AHORA SÍ ACTIVAMOS EL BOTÓN
             btnJarraitu.isEnabled = true
+
+            // CAMBIAMOS AL COLOR 'PUZZLE' (Coral)
             val colorActivo = ContextCompat.getColor(this, R.color.puzzle)
             btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorActivo)
             btnJarraitu.setTextColor(Color.BLACK)
 
-            // Subimos puntos ahora que ha terminado el juego
             SyncHelper.subirInmediatamente(this)
         }
     }
 
     private fun cambiarAPantallaFinal() {
-        // Ocultamos juego y cabecera
+        // 1. Ocultamos el juego
         contenedorJuego.visibility = View.GONE
-        txtTituloPrincipal.visibility = View.GONE // Ocultamos "Bilboko Arenala" pequeño
 
-        // Mostramos explicación
+        // 2. Ocultamos el botón de volver al mapa
+        btnVolverMapa.visibility = View.INVISIBLE
+
+        // 3. Cambiamos el título
+        txtTituloPrincipal.visibility = View.VISIBLE
+        txtTituloPrincipal.text = "Bilboko Areatza"
+
+        // 4. Mostramos la explicación
         layoutFinal.visibility = View.VISIBLE
 
-        // Scroll arriba
+        // 5. Scroll arriba
         val scrollView = findViewById<ScrollView>(R.id.scrollViewMain)
         scrollView.post { scrollView.fullScroll(View.FOCUS_UP) }
 
@@ -218,6 +232,9 @@ class PuzzleActivity : AppCompatActivity() {
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
         val dbHelper = DatabaseHelper(this)
         dbHelper.guardarPuntuacion(nombreAlumno, "Puzzle", puntos)
+
+        // Sincronizar inmediatamente
+        SyncHelper.subirInmediatamente(this)
     }
 
     private fun setupAudioPlayer() {

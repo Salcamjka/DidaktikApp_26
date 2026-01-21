@@ -2,7 +2,6 @@ package com.salca.didaktikapp
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -23,7 +22,7 @@ class AhorcadoActivity : AppCompatActivity() {
     private lateinit var llTeclado: LinearLayout
     private lateinit var btnJarraituJuego: Button
 
-    // NUEVO: Variable para el botón del mapa
+    // --- NUEVO: Variable para el botón del mapa ---
     private lateinit var btnVolverMapa: ImageButton
 
     // --- Variables Lógica Juego ---
@@ -31,8 +30,6 @@ class AhorcadoActivity : AppCompatActivity() {
     private var palabraActual = ""
     private var letrasAdivinadas = mutableListOf<Char>()
     private var errores = 0
-
-    // --- PUNTUACIÓN ---
     private var puntuacionActual = 0
 
     // --- Variables Explicación/Audio ---
@@ -51,9 +48,8 @@ class AhorcadoActivity : AppCompatActivity() {
     }
 
     private fun inicializarVistas() {
-        // --- CONFIGURACIÓN BOTÓN VOLVER AL MAPA ---
+        // 1. CONFIGURACIÓN BOTÓN VOLVER AL MAPA
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
-        btnVolverMapa.visibility = View.VISIBLE // Aseguramos que se ve al principio
         btnVolverMapa.setOnClickListener {
             if (mediaPlayer?.isPlaying == true) {
                 mediaPlayer?.stop()
@@ -69,7 +65,6 @@ class AhorcadoActivity : AppCompatActivity() {
         llTeclado = findViewById(R.id.llTeclado)
         btnJarraituJuego = findViewById(R.id.btnJarraituJuego)
 
-        // Configuración inicial del botón Jarraitu (DESACTIVADO - Color Gris)
         btnJarraituJuego.isEnabled = false
         val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
         btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
@@ -82,11 +77,15 @@ class AhorcadoActivity : AppCompatActivity() {
         seekBar = findViewById(R.id.seekBarAudio)
         btnJarraituExplicacion = findViewById(R.id.btnJarraituExplicacion)
 
-        btnJarraituExplicacion.setOnClickListener { finish() }
+        btnJarraituExplicacion.setOnClickListener {
+            SyncHelper.subirInmediatamente(this)
+            finish()
+        }
 
         btnPlayPause.setOnClickListener {
             if (mediaPlayer?.isPlaying == true) pausarAudio() else reproducirAudio()
         }
+
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) mediaPlayer?.seekTo(progress)
@@ -106,7 +105,9 @@ class AhorcadoActivity : AppCompatActivity() {
         contenedorFaseExplicacion.visibility = View.GONE
         tvResultado.visibility = View.GONE
 
-        // Reset imagen y botón
+        // 2. MOSTRAR BOTÓN AL INICIAR JUEGO
+        btnVolverMapa.visibility = View.VISIBLE
+
         ivAhorcado.setImageResource(R.drawable.ahorcado0)
         btnJarraituJuego.isEnabled = false
         val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
@@ -115,6 +116,18 @@ class AhorcadoActivity : AppCompatActivity() {
         crearTeclado()
         actualizarTextoPantalla()
     }
+
+    private fun mostrarFaseExplicacion() {
+        contenedorFaseJuego.visibility = View.GONE
+        contenedorFaseExplicacion.visibility = View.VISIBLE
+
+        // 3. OCULTAR BOTÓN AL PASAR A LA EXPLICACIÓN
+        btnVolverMapa.visibility = View.GONE
+
+        configurarAudio()
+    }
+
+    // --- Resto de funciones del juego ---
 
     private fun crearTeclado() {
         llTeclado.removeAllViews()
@@ -125,10 +138,7 @@ class AhorcadoActivity : AppCompatActivity() {
                 filaActual = LinearLayout(this)
                 filaActual.orientation = LinearLayout.HORIZONTAL
                 filaActual.gravity = Gravity.CENTER
-                val params = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
+                val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                 params.setMargins(0, 5, 0, 5)
                 filaActual.layoutParams = params
                 llTeclado.addView(filaActual)
@@ -147,22 +157,19 @@ class AhorcadoActivity : AppCompatActivity() {
 
     private fun procesarLetra(letra: Char, boton: Button) {
         if (palabraActual.contains(letra)) {
-            // Acierto
+            // Cada acierto de letra única son 10 puntos
             if (!letrasAdivinadas.contains(letra)) {
                 letrasAdivinadas.add(letra)
                 puntuacionActual += 10
             }
             boton.isEnabled = false
-            // Color Acierto (Verde)
             boton.setBackgroundColor(ContextCompat.getColor(this, R.color.mi_acierto))
             actualizarTextoPantalla()
             verificarVictoria()
         } else {
-            // Fallo
             errores++
             puntuacionActual -= 5
             if (puntuacionActual < 0) puntuacionActual = 0
-
             actualizarImagenAhorcado()
             if (errores >= 7) mostrarResultadoFinal(gano = false)
         }
@@ -171,10 +178,8 @@ class AhorcadoActivity : AppCompatActivity() {
     private fun actualizarTextoPantalla() {
         val sb = StringBuilder()
         for (c in palabraActual) {
-            if (c == ' ') sb.append("\n")
-            else {
-                if (letrasAdivinadas.contains(c) || c == '-') sb.append("$c ")
-                else sb.append("_ ")
+            if (c == ' ') sb.append("\n") else {
+                if (letrasAdivinadas.contains(c) || c == '-') sb.append("$c ") else sb.append("_ ")
             }
         }
         tvPalabra.text = sb.toString()
@@ -210,10 +215,18 @@ class AhorcadoActivity : AppCompatActivity() {
         desactivarTeclado()
         tvResultado.visibility = View.VISIBLE
         if (gano) {
-            val bonusVictoria = 100
+            // CÁLCULO PARA QUE EL MÁXIMO SEA 500
+            // 1. Puntos por letras ya sumados: 10 letras x 10 = 100 puntos.
+            // 2. Faltan 400 puntos para llegar a 500.
+            // 3. Fórmula: Base(120) + (Vidas(7)*40) = 120 + 280 = 400 bonus.
+            // Total: 100 + 400 = 500.
+
+            val bonusVictoria = 120
             val vidasRestantes = 7 - errores
-            val bonusVidas = vidasRestantes * 20
+            val bonusVidas = vidasRestantes * 40
+
             puntuacionActual += (bonusVictoria + bonusVidas)
+
             tvResultado.text = "OSO ONDO! IRABAZI DUZU!"
             tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_acierto))
             ivAhorcado.setImageResource(R.drawable.leonfeliz)
@@ -224,13 +237,9 @@ class AhorcadoActivity : AppCompatActivity() {
             tvPalabra.text = palabraActual.replace(" ", "\n")
         }
         guardarPuntuacionEnBD(puntuacionActual)
-
         btnJarraituJuego.isEnabled = true
-
-        // --- CORRECCIÓN AQUÍ: Usamos el color 'ahorcado' (Morado) ---
         val colorActivo = ContextCompat.getColor(this, R.color.ahorcado)
         btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(colorActivo)
-
         Toast.makeText(this, "Jokoa amaitu da. Sakatu Jarraitu.", Toast.LENGTH_SHORT).show()
     }
 
@@ -238,8 +247,7 @@ class AhorcadoActivity : AppCompatActivity() {
         for (i in 0 until llTeclado.childCount) {
             val fila = llTeclado.getChildAt(i) as LinearLayout
             for (j in 0 until fila.childCount) {
-                val boton = fila.getChildAt(j)
-                boton.isEnabled = false
+                fila.getChildAt(j).isEnabled = false
             }
         }
     }
@@ -249,16 +257,7 @@ class AhorcadoActivity : AppCompatActivity() {
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
         val dbHelper = DatabaseHelper(this)
         dbHelper.guardarPuntuacion(nombreAlumno, "Ahorcado", puntos)
-    }
-
-    private fun mostrarFaseExplicacion() {
-        contenedorFaseJuego.visibility = View.GONE
-        contenedorFaseExplicacion.visibility = View.VISIBLE
-
-        // OCULTAMOS EL BOTÓN DEL MAPA AL PASAR A LA EXPLICACIÓN
-        btnVolverMapa.visibility = View.GONE
-
-        configurarAudio()
+        SyncHelper.subirInmediatamente(this)
     }
 
     private fun configurarAudio() {
