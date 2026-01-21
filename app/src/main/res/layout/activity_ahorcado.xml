@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -30,6 +31,7 @@
                 android:contentDescription="Volver al mapa" />
 
             <TextView
+                android:id="@+id/tvTituloCabecera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -111,31 +113,16 @@
             android:padding="16dp"
             android:visibility="gone">
 
-            <TextView
-                android:id="@+id/tvTituloExplicacion"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="San Anton Eliza"
-                android:textAlignment="center"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="@color/ahorcado"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <LinearLayout
                 android:id="@+id/layoutAudioPlayer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvTituloExplicacion">
-
+                app:layout_constraintTop_toTopOf="parent">
                 <ImageButton
                     android:id="@+id/btnPlayPause"
                     android:layout_width="50dp"
