@@ -245,6 +245,7 @@ class MurallaActivity : AppCompatActivity() {
         btnFinalizar.visibility = View.VISIBLE
 
         guardarPuntuacionEnBD(puntuacionActual)
+
     }
 
     private fun guardarPuntuacionEnBD(puntos: Int) {

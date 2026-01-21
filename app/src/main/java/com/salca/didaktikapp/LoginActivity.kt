@@ -25,16 +25,20 @@ class LoginActivity : AppCompatActivity() {
             val studentName = etName.text.toString().trim()
 
             if (studentName.isNotEmpty()) {
-                // 1. Guardar nombre en preferencias (memoria rápida)
+                // 1. Guardar nombre
                 val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
                 val editor = prefs.edit()
                 editor.putString("nombre_alumno_actual", studentName)
                 editor.apply()
 
-                // 2. Crear usuario en la base de datos si es nuevo
+                // 2. Crear usuario en BD local
                 dbHelper.crearUsuarioInicial(studentName)
 
-                // 3. Ir al Mapa
+                // 3. ⚡ SINCRONIZAR AUTOMÁTICAMENTE AL ENTRAR ⚡
+                // (Sin botón, lo hacemos invisible al usuario)
+                SyncHelper.subirInmediatamente(this)
+
+                // 4. Ir al Mapa
                 val intent = Intent(this, MapActivity::class.java)
                 startActivity(intent)
                 finish()

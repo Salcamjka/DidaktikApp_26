@@ -177,6 +177,7 @@ class PuzzleActivity : AppCompatActivity() {
                 completadoLehenaldia = true
                 puntuacionTotal += PUNTOS_POR_PUZZLE
                 Toast.makeText(this, "Lehenaldia osatuta! (+250 pts)", Toast.LENGTH_SHORT).show()
+
                 guardarPuntuacionEnBD(puntuacionTotal)
             }
         } else {
@@ -185,7 +186,9 @@ class PuzzleActivity : AppCompatActivity() {
                 completadoOrainaldia = true
                 puntuacionTotal += PUNTOS_POR_PUZZLE
                 Toast.makeText(this, "Orainaldia osatuta! (+250 pts)", Toast.LENGTH_SHORT).show()
+
                 guardarPuntuacionEnBD(puntuacionTotal)
+
             }
         }
 
