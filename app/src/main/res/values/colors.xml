@@ -11,6 +11,8 @@
     <color name="mi_error_texto">#FF0000</color>
     <color name="boton_desactivado">#9E9E9E</color>
 
+    <color name="verde_oscuro">#006400</color>
+
     <color name="ahorcado">#B49FDC</color>
     <color name="muralla">#FEC9A7</color>
     <color name="sopa">#F197C0</color>

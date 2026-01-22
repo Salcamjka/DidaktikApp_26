@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/mi_fondo_pantalla">
+    android:background="#E3F2FD">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,7 +32,6 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:scaleType="fitCenter"
                     android:src="@drawable/mapaimg"
-                    android:contentDescription="Volver al mapa"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="8dp"/>
@@ -43,7 +42,7 @@
                     android:text="Txakurraren Iturria"
                     android:textSize="28sp"
                     android:textStyle="bold"
-                    android:textColor="@color/txakurra"
+                    android:textColor="#E57373"
                     android:layout_centerInParent="true"
                     android:gravity="center" />
             </RelativeLayout>
@@ -63,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:text="Iturri hau izen bera duen kalean aurkitzen da; zehazki, Txakur kalean. Orain dela urte asko eraiki zen iturria dugu aurrean. Ikusten duzuenez, iturriak lehoi buru forma duen brontzezko hiru txorrota ditu. Baina, zergatik deitzen da, beraz, Txakur Iturria?\n\nHistorian zehar eztabaida handiak sortu dira jendearen artean eta guztien artean 2 kondaira desberdintzen dira:"
                 android:textSize="15sp"
-                android:textColor="@color/black"
+                android:textColor="@android:color/black"
                 android:textAlignment="center"
                 android:lineSpacingExtra="3dp"
                 android:paddingBottom="16dp"/>
@@ -73,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:text="Modu horretan, denboraren poderioz, iritzi desberdinak sortu dira."
                 android:textSize="14sp"
-                android:textColor="@color/black"
+                android:textColor="@android:color/black"
                 android:textStyle="italic"
                 android:gravity="center"
                 android:paddingTop="8dp"
@@ -94,16 +93,14 @@
                     android:layout_height="40dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@android:drawable/ic_media_play"
-                    app:tint="@color/black" />
+                    app:tint="@android:color/black" />
 
                 <SeekBar
                     android:id="@+id/seekBarAudio"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="12dp"
-                    android:progressTint="@color/txakurra"
-                    android:thumbTint="@color/txakurra" />
+                    android:layout_marginStart="12dp" />
             </LinearLayout>
 
             <Button
@@ -113,11 +110,11 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="32dp"
-                android:backgroundTint="@color/txakurra"
+                android:backgroundTint="#E57373"
                 android:paddingHorizontal="32dp"
                 android:paddingVertical="12dp"
                 android:text="Hasi Taula"
-                android:textColor="@color/white"
+                android:textColor="@android:color/white"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -137,7 +134,7 @@
                 android:text="Txakurraren Iturria"
                 android:textSize="28sp"
                 android:textStyle="bold"
-                android:textColor="@color/txakurra"
+                android:textColor="#E57373"
                 android:layout_gravity="center"
                 android:layout_marginBottom="8dp"/>
 
@@ -180,8 +177,8 @@
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:background="@color/txakurra"
-                        android:textColor="@color/white"
+                        android:background="#E57373"
+                        android:textColor="@android:color/white"
                         android:padding="8dp"/>
                 </LinearLayout>
 
@@ -207,8 +204,8 @@
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:background="@color/txakurra"
-                        android:textColor="@color/white"
+                        android:background="#E57373"
+                        android:textColor="@android:color/white"
                         android:padding="8dp"/>
                 </LinearLayout>
             </LinearLayout>
@@ -220,7 +217,7 @@
                 android:text="Aipatu 5 ezaugarri:"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="@color/black"
+                android:textColor="@android:color/black"
                 android:gravity="center"/>
 
             <LinearLayout
@@ -228,7 +225,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:orientation="horizontal"
-                android:background="@color/boton_desactivado"
+                android:background="#9E9E9E"
                 android:padding="2dp">
 
                 <LinearLayout
@@ -237,11 +234,11 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:layout_marginEnd="1dp">
-                    <EditText android:id="@+id/etTxakurra1" android:layout_width="match_parent" android:layout_height="50dp" android:hint="1." android:padding="8dp" android:textSize="12sp" android:background="@color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etTxakurra2" android:layout_width="match_parent" android:layout_height="50dp" android:hint="2." android:padding="8dp" android:textSize="12sp" android:background="@color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etTxakurra3" android:layout_width="match_parent" android:layout_height="50dp" android:hint="3." android:padding="8dp" android:textSize="12sp" android:background="@color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etTxakurra4" android:layout_width="match_parent" android:layout_height="50dp" android:hint="4." android:padding="8dp" android:textSize="12sp" android:background="@color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etTxakurra5" android:layout_width="match_parent" android:layout_height="50dp" android:hint="5." android:padding="8dp" android:textSize="12sp" android:background="@color/white" android:inputType="textCapSentences"/>
+                    <EditText android:id="@+id/etTxakurra1" android:layout_width="match_parent" android:layout_height="50dp" android:hint="MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                    <EditText android:id="@+id/etTxakurra2" android:layout_width="match_parent" android:layout_height="50dp" android:hint="BIZILEKUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                    <EditText android:id="@+id/etTxakurra3" android:layout_width="match_parent" android:layout_height="50dp" android:hint="JANARI MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                    <EditText android:id="@+id/etTxakurra4" android:layout_width="match_parent" android:layout_height="50dp" android:hint="SOINUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                    <EditText android:id="@+id/etTxakurra5" android:layout_width="match_parent" android:layout_height="50dp" android:hint="TAMAINA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:inputType="textCapSentences"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -250,11 +247,11 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:layout_marginStart="1dp">
-                    <EditText android:id="@+id/etLehoia1" android:layout_width="match_parent" android:layout_height="50dp" android:hint="1." android:padding="8dp" android:textSize="12sp" android:background="@color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etLehoia2" android:layout_width="match_parent" android:layout_height="50dp" android:hint="2." android:padding="8dp" android:textSize="12sp" android:background="@color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etLehoia3" android:layout_width="match_parent" android:layout_height="50dp" android:hint="3." android:padding="8dp" android:textSize="12sp" android:background="@color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etLehoia4" android:layout_width="match_parent" android:layout_height="50dp" android:hint="4." android:padding="8dp" android:textSize="12sp" android:background="@color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etLehoia5" android:layout_width="match_parent" android:layout_height="50dp" android:hint="5." android:padding="8dp" android:textSize="12sp" android:background="@color/white" android:inputType="textCapSentences"/>
+                    <EditText android:id="@+id/etLehoia1" android:layout_width="match_parent" android:layout_height="50dp" android:hint="MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                    <EditText android:id="@+id/etLehoia2" android:layout_width="match_parent" android:layout_height="50dp" android:hint="BIZILEKUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                    <EditText android:id="@+id/etLehoia3" android:layout_width="match_parent" android:layout_height="50dp" android:hint="JANARI MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                    <EditText android:id="@+id/etLehoia4" android:layout_width="match_parent" android:layout_height="50dp" android:hint="SOINUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                    <EditText android:id="@+id/etLehoia5" android:layout_width="match_parent" android:layout_height="50dp" android:hint="TAMAINA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:inputType="textCapSentences"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -269,8 +266,8 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:enabled="false"
-                android:backgroundTint="@color/boton_desactivado"
-                android:textColor="@color/white"
+                android:backgroundTint="#9E9E9E"
+                android:textColor="@android:color/white"
                 android:paddingHorizontal="32dp"/>
 
         </LinearLayout>
