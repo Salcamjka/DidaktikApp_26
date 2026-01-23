@@ -9,13 +9,13 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/contenedorIntro"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="16dp"
             android:gravity="center_horizontal">
@@ -48,22 +48,12 @@
                     android:layout_centerInParent="true"/>
             </RelativeLayout>
 
-            <ImageView
-                android:id="@+id/ivMascotaPantalla1"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="12dp"
-                android:src="@drawable/leonnormal"
-                android:scaleType="fitCenter"
-                android:contentDescription="Mascota del Athletic Club"/>
-
             <TextView
                 android:id="@+id/tvTextoIntroductorio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Bilbo 1300. urtean sortu zen itsasadarraren ertzean, merkataritza bultzatzeko diseinatua. Herria zazpi kale nagusiren inguruan egituratzen zen (Somera, Artekale, Tendería, Belostikale, Carnicería Vieja, Barrenkale eta Barrenkale Barrena). Kale horiek hiriaren merkataritza eta artisau bihotza ziren, eta merkatariak, zapatariak, arrantzaleak, artisauak, errementariak eta beste lanbide batzuk hartzen zituzten.\n\nBilboko Alde Zaharreko kaleek antzinako lanbideen izenak jasotzen dituzte: Somera (barazkiak eta frutak saltzen ziren), Artekale (erdikoa), Tendería (dendariengatik/ohialeengatik), Belostikale (larru sailtzaileengatik), Carniceria Vieja (harategiengatik), Barrenkale eta Barrenkale Barrena (kalerik baxuenak), jatorriz zapatariak eta beste artisau batzuk hartzen."
-                android:textSize="15sp"
+                android:textSize="18sp"
                 android:textColor="@color/black"
                 android:textAlignment="center"
                 android:lineSpacingExtra="3dp"
@@ -74,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="20dp"
                 android:paddingHorizontal="16dp">
 
                 <ImageButton
@@ -96,6 +86,21 @@
                     android:thumbTint="@color/sopa" />
             </LinearLayout>
 
+            <ImageView
+                android:id="@+id/ivLeonExplicacion"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:src="@drawable/leonexplicacion"
+                android:layout_marginBottom="10dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="Leon Explicacion"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
             <Button
                 android:id="@+id/btnComenzarSopa"
                 android:layout_width="wrap_content"
@@ -107,7 +112,8 @@
                 android:textColor="@color/white"
                 android:paddingHorizontal="32dp"
                 android:paddingVertical="12dp"
-                android:layout_marginBottom="32dp"/> </LinearLayout>
+                android:layout_marginBottom="30dp"/>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/sopaContainer"
@@ -128,16 +134,6 @@
                 android:textColor="@color/sopa"
                 android:gravity="center"
                 android:layout_marginBottom="6dp"/>
-
-            <ImageView
-                android:id="@+id/ivMascotaPantalla2"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="8dp"
-                android:src="@drawable/leonsaludo"
-                android:scaleType="fitCenter"
-                android:contentDescription="Mascota del Athletic Club"/>
 
             <com.salca.didaktikapp.WordSearchView
                 android:id="@+id/wordSearchView"

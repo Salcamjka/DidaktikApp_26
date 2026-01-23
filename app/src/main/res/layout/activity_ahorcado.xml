@@ -113,16 +113,29 @@
             android:padding="16dp"
             android:visibility="gone">
 
+            <TextView
+                android:id="@+id/tvTextoExplicativo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="San Anton Eliza Bilboko eraikin ezagunetako bat da. Alde Zaharrean dago, izen bereko zubiaren eta itsasadarraren ondoan. Zubi hori hiriko armarrian ikusi dezakegu, elizaren ondoan. Gainera, zer ikusi dugu jolasean? San Anton zubia Athletic Cluben armarrian agertzen dela baita ere."
+                android:textAlignment="center"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <LinearLayout
                 android:id="@+id/layoutAudioPlayer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="24dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/tvTextoExplicativo">
+
                 <ImageButton
                     android:id="@+id/btnPlayPause"
                     android:layout_width="50dp"
@@ -142,18 +155,6 @@
                     android:thumbTint="@color/ahorcado"/>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvTextoExplicativo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="San Anton Eliza Bilboko eraikin ezagunetako bat da. Alde Zaharrean dago, izen bereko zubiaren eta itsasadarraren ondoan. Zubi hori hiriko armarrian ikusi dezakegu, elizaren ondoan. Gainera, zer ikusi dugu jolasean? San Anton zubia Athletic Cluben armarrian agertzen dela baita ere."
-                android:textAlignment="center"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutAudioPlayer" />
-
             <ImageView
                 android:id="@+id/imgSanAntonComun"
                 android:layout_width="0dp"
@@ -166,7 +167,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvTextoExplicativo"
+                app:layout_constraintTop_toBottomOf="@id/layoutAudioPlayer"
                 app:srcCompat="@drawable/sanantoneliza" />
 
             <ImageView

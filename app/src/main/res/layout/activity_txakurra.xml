@@ -9,13 +9,13 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/contenedorIntro"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="16dp"
             android:visibility="visible">
@@ -47,21 +47,11 @@
                     android:gravity="center" />
             </RelativeLayout>
 
-            <ImageView
-                android:id="@+id/ivMascotaIntro"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="12dp"
-                android:src="@drawable/leonnormal"
-                android:scaleType="fitCenter"/>
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Iturri hau izen bera duen kalean aurkitzen da; zehazki, Txakur kalean. Orain dela urte asko eraiki zen iturria dugu aurrean. Ikusten duzuenez, iturriak lehoi buru forma duen brontzezko hiru txorrota ditu. Baina, zergatik deitzen da, beraz, Txakur Iturria?\n\nHistorian zehar eztabaida handiak sortu dira jendearen artean eta guztien artean 2 kondaira desberdintzen dira:"
-                android:textSize="15sp"
+                android:textSize="18sp"
                 android:textColor="@android:color/black"
                 android:textAlignment="center"
                 android:lineSpacingExtra="3dp"
@@ -71,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Modu horretan, denboraren poderioz, iritzi desberdinak sortu dira."
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textColor="@android:color/black"
                 android:textStyle="italic"
                 android:gravity="center"
@@ -84,7 +74,7 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="20dp"
                 android:paddingHorizontal="16dp">
 
                 <ImageButton
@@ -102,6 +92,21 @@
                     android:layout_weight="1"
                     android:layout_marginStart="12dp" />
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivLeonExplicacion"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:src="@drawable/leonexplicacion"
+                android:layout_marginBottom="10dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="Leon Explicacion"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
             <Button
                 android:id="@+id/btnContinuar"
@@ -123,7 +128,7 @@
         <LinearLayout
             android:id="@+id/contenedorTabla"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="16dp"
             android:visibility="gone">
@@ -137,16 +142,6 @@
                 android:textColor="#E57373"
                 android:layout_gravity="center"
                 android:layout_marginBottom="8dp"/>
-
-            <ImageView
-                android:id="@+id/ivMascotaTabla"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:src="@drawable/leonnormal"
-                android:scaleType="fitCenter"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -254,6 +249,11 @@
                     <EditText android:id="@+id/etLehoia5" android:layout_width="match_parent" android:layout_height="50dp" android:hint="TAMAINA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:inputType="textCapSentences"/>
                 </LinearLayout>
             </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
             <Button
                 android:id="@+id/btnFinish"
