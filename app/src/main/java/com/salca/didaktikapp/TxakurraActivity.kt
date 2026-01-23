@@ -1,5 +1,6 @@
 package com.salca.didaktikapp
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.media.MediaPlayer
@@ -14,7 +15,6 @@ import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 
 class TxakurraActivity : AppCompatActivity() {
 
@@ -42,8 +42,9 @@ class TxakurraActivity : AppCompatActivity() {
     private val lehoiaEditTexts = mutableListOf<EditText>()
     private val allEditTexts = mutableListOf<EditText>()
 
-    private val respuestasTxakurra = listOf("etxekoa", "etxea", "orojalea", "zaunka", "txikia")
-    private val respuestasLehoia = listOf("basatia", "sabana", "haragijalea", "orrua", "handia")
+    // ✅ LISTAS DE RESPUESTAS ACTUALIZADAS (Kanidoa / Felidoa)
+    private val respuestasTxakurra = listOf("kanidoa", "etxea", "orojalea", "zaunka", "txikia")
+    private val respuestasLehoia = listOf("felinoa", "sabana", "haragijalea", "orrua", "handia")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,10 +122,9 @@ class TxakurraActivity : AppCompatActivity() {
         val textoUsuario = editText.text.toString().trim()
         if (textoUsuario.isNotEmpty()) {
             if (textoUsuario.equals(respuestaCorrecta, ignoreCase = true)) {
-                // VERDE ESMERALDA (#009900)
-                editText.setTextColor(Color.parseColor("#009900"))
+                editText.setTextColor(Color.parseColor("#009900")) // Verde acierto
             } else {
-                editText.setTextColor(Color.RED)
+                editText.setTextColor(Color.RED) // Rojo error
             }
         } else {
             editText.setTextColor(Color.BLACK)
@@ -173,9 +173,8 @@ class TxakurraActivity : AppCompatActivity() {
         }
     }
 
-    // --- AQUÍ ESTÁ EL CAMBIO PARA SALIR SIEMPRE ---
+    // ✅ LÓGICA DE PUNTUACIÓN Y SUBIDA AL SERVIDOR
     private fun calcularPuntuacionFinal() {
-        // Desactivamos el botón para que no le den dos veces
         btnFinish.isEnabled = false
 
         var aciertos = 0
@@ -186,18 +185,30 @@ class TxakurraActivity : AppCompatActivity() {
             if (et.text.toString().trim().equals(respuestasLehoia[index], ignoreCase = true)) aciertos++
         }
 
+        // ✅ 50 Puntos por acierto (Total 500)
         val puntosObtenidos = aciertos * 50
 
-        // Mensaje diferente según la nota
         if (aciertos == 10) {
             animateMascotaCelebracion()
         }
 
-        // --- IMPORTANTE: SALIR SIEMPRE DESPUÉS DE 2 SEGUNDOS ---
-        // Da igual si tiene 0, 5 o 10 aciertos, se cierra la actividad.
+        // ✅ GUARDAR EN BD LOCAL Y SUBIR A RENDER
+        guardarPuntuacionEnBD(puntosObtenidos)
+        SyncHelper.subirInmediatamente(this)
+
+        // Salir a los 2 segundos
         Handler(Looper.getMainLooper()).postDelayed({
             finish()
         }, 2000)
+    }
+
+    // Función auxiliar para SQLite
+    private fun guardarPuntuacionEnBD(puntos: Int) {
+        val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
+        val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
+        val dbHelper = DatabaseHelper(this)
+        // Guardamos en la columna 'diferencias'
+        dbHelper.guardarPuntuacion(nombreAlumno, "diferencias", puntos)
     }
 
     // --- AUDIO ---

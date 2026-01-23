@@ -234,7 +234,7 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:layout_marginEnd="1dp">
-                    <EditText android:id="@+id/etTxakurra1" android:layout_width="match_parent" android:layout_height="50dp" android:hint="MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                    <EditText android:id="@+id/etTxakurra1" android:layout_width="match_parent" android:layout_height="50dp" android:hint="FAMILIA MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
                     <EditText android:id="@+id/etTxakurra2" android:layout_width="match_parent" android:layout_height="50dp" android:hint="BIZILEKUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
                     <EditText android:id="@+id/etTxakurra3" android:layout_width="match_parent" android:layout_height="50dp" android:hint="JANARI MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
                     <EditText android:id="@+id/etTxakurra4" android:layout_width="match_parent" android:layout_height="50dp" android:hint="SOINUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
@@ -247,7 +247,7 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:layout_marginStart="1dp">
-                    <EditText android:id="@+id/etLehoia1" android:layout_width="match_parent" android:layout_height="50dp" android:hint="MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                    <EditText android:id="@+id/etLehoia1" android:layout_width="match_parent" android:layout_height="50dp" android:hint="FAMILIA MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
                     <EditText android:id="@+id/etLehoia2" android:layout_width="match_parent" android:layout_height="50dp" android:hint="BIZILEKUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
                     <EditText android:id="@+id/etLehoia3" android:layout_width="match_parent" android:layout_height="50dp" android:hint="JANARI MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
                     <EditText android:id="@+id/etLehoia4" android:layout_width="match_parent" android:layout_height="50dp" android:hint="SOINUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
