@@ -12,7 +12,7 @@ object SyncHelper {
 
     // ✅ CORREGIDO: Apunta a tu ordenador local en lugar de a la nube
     // Nota: Si mañana tu IP cambia, tendrás que actualizar este número.
-    private const val API_URL = "https://api-didaktikapp.onrender.com/upload-db0"
+    private const val API_URL = "https://api-didaktikapp.onrender.com/upload-db"
 
     fun subirInmediatamente(context: Context) {
         Thread {
