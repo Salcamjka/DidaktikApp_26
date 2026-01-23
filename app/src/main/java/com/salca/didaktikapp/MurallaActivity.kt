@@ -208,6 +208,7 @@ class MurallaActivity : AppCompatActivity() {
             else -> -1
         }
 
+
         // Si llega aquí es que ha seleccionado algo
         if (seleccion == preguntas[indicePregunta].correcta) {
             progreso++
