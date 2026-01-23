@@ -10,8 +10,9 @@ import java.net.URL
 
 object SyncHelper {
 
-    // URL para subir el archivo .db entero
-    private const val API_URL = "https://api-didaktikapp.onrender.com/upload-db"
+    // ✅ CORREGIDO: Apunta a tu ordenador local en lugar de a la nube
+    // Nota: Si mañana tu IP cambia, tendrás que actualizar este número.
+    private const val API_URL = "https://api-didaktikapp.onrender.com/upload-db0"
 
     fun subirInmediatamente(context: Context) {
         Thread {
@@ -77,13 +78,13 @@ object SyncHelper {
             // Verificar respuesta
             val responseCode = conn.responseCode
             if (responseCode == 200 || responseCode == 201) {
-                Log.d("API", "Base de datos subida correctamente. Código: $responseCode")
+                Log.d("API", "✅ ÉXITO: Base de datos subida al PC. Código: $responseCode")
             } else {
-                Log.e("API", "Error al subir. Código: $responseCode")
+                Log.e("API", "❌ ERROR al subir. Código: $responseCode")
             }
 
         } catch (e: Exception) {
-            Log.e("API", "Excepción: ${e.message}")
+            Log.e("API", "❌ EXCEPCIÓN DE CONEXIÓN: ${e.message}")
             e.printStackTrace()
         }
     }
