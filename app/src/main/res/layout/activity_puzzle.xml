@@ -130,6 +130,7 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/tvInstruccionArrastrar"
                     android:text="Arrastatu piezak:"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -138,6 +139,19 @@
                     android:layout_gravity="center_horizontal"
                     android:textStyle="italic"
                     android:textColor="@color/black"/>
+
+                <TextView
+                    android:id="@+id/tvMensajeVictoria"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="OSO ONDO!\n2 PUZZLEAK BETE DITUZU!"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/mi_acierto"
+                    android:gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:visibility="gone"/>
 
                 <GridLayout
                     android:id="@+id/gridPiezas"
@@ -187,7 +201,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="30dp">
+                    android:layout_marginBottom="20dp">
 
                     <ImageButton
                         android:id="@+id/btnAudio"
@@ -207,6 +221,16 @@
                         android:progressTint="@color/puzzle"
                         android:thumbTint="@color/puzzle"/>
                 </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/ivLeonExplicacion"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/leonexplicacion"
+                    android:layout_marginBottom="20dp"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="Leon Explicacion"/>
 
                 <Button
                     android:id="@+id/btnFinalizarTotal"

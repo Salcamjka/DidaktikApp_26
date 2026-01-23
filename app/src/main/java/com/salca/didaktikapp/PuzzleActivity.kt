@@ -44,6 +44,10 @@ class PuzzleActivity : AppCompatActivity() {
     private lateinit var txtTituloPrincipal: TextView
     private lateinit var btnVolverMapa: ImageButton
 
+    // Referencias a textos
+    private lateinit var tvInstruccionArrastrar: TextView
+    private lateinit var tvMensajeVictoria: TextView // NUEVO
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_puzzle)
@@ -51,6 +55,9 @@ class PuzzleActivity : AppCompatActivity() {
         contenedorJuego = findViewById(R.id.contenedorJuego)
         layoutFinal = findViewById(R.id.layoutFinal)
         txtTituloPrincipal = findViewById(R.id.txtTituloPrincipal)
+
+        tvInstruccionArrastrar = findViewById(R.id.tvInstruccionArrastrar)
+        tvMensajeVictoria = findViewById(R.id.tvMensajeVictoria) // Inicializamos
 
         // Botón Volver Mapa (arriba izquierda)
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
@@ -64,13 +71,9 @@ class PuzzleActivity : AppCompatActivity() {
         val gridPiezas = findViewById<GridLayout>(R.id.gridPiezas)
         btnJarraitu = findViewById(R.id.btnJarraitu)
 
-        // ================================================================
-        // CAMBIO: BOTÓN ACTIVADO DESDE EL PRINCIPIO
-        // ================================================================
+        // BOTÓN ACTIVADO DESDE EL PRINCIPIO
         btnJarraitu.visibility = View.VISIBLE
-        btnJarraitu.isEnabled = true // Ahora es TRUE
-
-        // Ponemos directamente el color de "ACTIVADO"
+        btnJarraitu.isEnabled = true
         val colorActivo = ContextCompat.getColor(this, R.color.puzzle)
         btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorActivo)
         btnJarraitu.setTextColor(Color.BLACK)
@@ -193,10 +196,11 @@ class PuzzleActivity : AppCompatActivity() {
             }
         }
 
-        // Aunque el botón ya esté activo desde el principio, mantenemos esto
-        // para asegurar que se sube la puntuación final si completan el juego.
+        // SI AMBOS PUZZLES ESTÁN COMPLETOS:
         if (completadoLehenaldia && completadoOrainaldia) {
             SyncHelper.subirInmediatamente(this)
+            tvInstruccionArrastrar.visibility = View.GONE // Ocultamos instrucción
+            tvMensajeVictoria.visibility = View.VISIBLE // Mostramos victoria
         }
     }
 
