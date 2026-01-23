@@ -11,7 +11,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
-import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -28,13 +27,11 @@ class TxakurraActivity : AppCompatActivity() {
     private lateinit var seekBarAudio: SeekBar
     private lateinit var btnVolverMapa: ImageButton
     private lateinit var btnContinuar: Button
-    private lateinit var ivMascotaIntro: ImageView
 
     private lateinit var runnable: Runnable
     private var handler = Handler(Looper.getMainLooper())
 
     private lateinit var btnFinish: Button
-    private lateinit var ivMascotaTabla: ImageView
     private lateinit var ivPerro: ImageView
     private lateinit var ivLeon: ImageView
 
@@ -54,7 +51,6 @@ class TxakurraActivity : AppCompatActivity() {
             initializeViews()
             setupAudio()
             setupAudioControls()
-            animateMascotaIntro()
             setupTextWatchers()
             setupIndividualValidation()
             setupNavigationButtons()
@@ -71,11 +67,9 @@ class TxakurraActivity : AppCompatActivity() {
         btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
         seekBarAudio = findViewById(R.id.seekBarAudio)
         btnContinuar = findViewById(R.id.btnContinuar)
-        ivMascotaIntro = findViewById(R.id.ivMascotaIntro)
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
 
         btnFinish = findViewById(R.id.btnFinish)
-        ivMascotaTabla = findViewById(R.id.ivMascotaTabla)
         ivPerro = findViewById(R.id.ivPerro)
         ivLeon = findViewById(R.id.ivLeon)
 
@@ -166,7 +160,6 @@ class TxakurraActivity : AppCompatActivity() {
             contenedorTabla.visibility = View.VISIBLE
             btnVolverMapa.visibility = View.GONE
             mainScrollView.scrollTo(0, 0)
-            animateTablaElements()
         }
         btnFinish.setOnClickListener {
             calcularPuntuacionFinal()
@@ -187,10 +180,6 @@ class TxakurraActivity : AppCompatActivity() {
 
         // ✅ 50 Puntos por acierto (Total 500)
         val puntosObtenidos = aciertos * 50
-
-        if (aciertos == 10) {
-            animateMascotaCelebracion()
-        }
 
         // ✅ GUARDAR EN BD LOCAL Y SUBIR A RENDER
         guardarPuntuacionEnBD(puntosObtenidos)
@@ -258,29 +247,6 @@ class TxakurraActivity : AppCompatActivity() {
             handler.postDelayed(runnable, 500)
         }
         handler.postDelayed(runnable, 0)
-    }
-
-    // --- ANIMACIONES ---
-    private fun animateMascotaIntro() {
-        try {
-            val bounceAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in)
-            ivMascotaIntro.startAnimation(bounceAnim)
-        } catch (e: Exception) { }
-    }
-
-    private fun animateTablaElements() {
-        try {
-            val waveAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_wave)
-            ivMascotaTabla.startAnimation(waveAnim)
-        } catch (e: Exception) { }
-    }
-
-    private fun animateMascotaCelebracion() {
-        try {
-            ivMascotaTabla.setImageResource(R.drawable.leonfeliz)
-            val celebrateAnim = AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate)
-            ivMascotaTabla.startAnimation(celebrateAnim)
-        } catch (e: Exception) { }
     }
 
     override fun onDestroy() {

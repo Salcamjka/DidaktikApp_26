@@ -234,14 +234,14 @@ class MurallaActivity : AppCompatActivity() {
         txtPregunta.textSize = 24f
         txtPregunta.visibility = View.VISIBLE
 
-        // LÓGICA FINAL:
+        // ESTA LÍNEA PONE EL TEXTO EN NEGRITA
+        txtPregunta.setTypeface(null, android.graphics.Typeface.BOLD)
+
         if (progreso == preguntas.size) {
-            // SI HA ACERTADO TODAS
             txtPregunta.text = "🏰 Zorionak!\nHarresia osatu duzu!"
             txtPregunta.setTextColor(ContextCompat.getColor(this, R.color.mi_acierto))
         } else {
-            // SI HA FALLADO ALGUNA
-            txtPregunta.text = "Galdu duzu!"
+            txtPregunta.text = "Galdu duzu!\n(Puntuazioa: $progreso/5)"
             txtPregunta.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
         }
 

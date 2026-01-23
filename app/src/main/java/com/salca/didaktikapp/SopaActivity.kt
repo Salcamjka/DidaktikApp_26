@@ -25,7 +25,6 @@ class SopaActivity : AppCompatActivity() {
     private lateinit var sopaContainer: LinearLayout
     private lateinit var tvTextoIntroductorio: TextView
     private lateinit var btnComenzarSopa: Button
-    private lateinit var ivMascotaPantalla1: ImageView
     private lateinit var btnVolverMapa: ImageButton
 
     // Audio
@@ -38,7 +37,6 @@ class SopaActivity : AppCompatActivity() {
     private lateinit var wordSearchView: WordSearchView
     private lateinit var tvProgress: TextView
     private lateinit var btnFinish: Button
-    private lateinit var ivMascotaPantalla2: ImageView
 
     private lateinit var cbBarrencalle: CheckBox
     private lateinit var cbBelosticalle: CheckBox
@@ -65,7 +63,7 @@ class SopaActivity : AppCompatActivity() {
             setupWordSearchView()
             setupFinishButton()
             setupAudio()
-            animateMascotaInicial()
+            // Eliminada la llamada a animateMascotaInicial()
         } catch (e: Exception) {
             Toast.makeText(this, "Errorea: ${e.message}", Toast.LENGTH_LONG).show()
         }
@@ -85,7 +83,7 @@ class SopaActivity : AppCompatActivity() {
 
         tvTextoIntroductorio = findViewById(R.id.tvTextoIntroductorio)
         btnComenzarSopa = findViewById(R.id.btnComenzarSopa)
-        ivMascotaPantalla1 = findViewById(R.id.ivMascotaPantalla1)
+        // Eliminado ivMascotaPantalla1
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
         btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
         seekBarAudio = findViewById(R.id.seekBarAudio)
@@ -93,7 +91,7 @@ class SopaActivity : AppCompatActivity() {
         wordSearchView = findViewById(R.id.wordSearchView)
         tvProgress = findViewById(R.id.tvProgress)
         btnFinish = findViewById(R.id.btnFinish)
-        ivMascotaPantalla2 = findViewById(R.id.ivMascotaPantalla2)
+        // Eliminado ivMascotaPantalla2
 
         cbBarrencalle = findViewById(R.id.cbBarrencalle)
         cbBelosticalle = findViewById(R.id.cbBelosticalle)
@@ -123,7 +121,7 @@ class SopaActivity : AppCompatActivity() {
             contenedorIntro.visibility = View.GONE
             sopaContainer.visibility = View.VISIBLE
             mainScrollView.scrollTo(0, 0)
-            animateMascotaSaludando()
+            // Eliminada la llamada a animateMascotaSaludando()
         }
     }
 
@@ -173,16 +171,7 @@ class SopaActivity : AppCompatActivity() {
         handler.postDelayed(runnable, 0)
     }
 
-    private fun animateMascotaInicial() {
-        ivMascotaPantalla1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.mascot_bounce_in))
-    }
-    private fun animateMascotaSaludando() {
-        ivMascotaPantalla2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.mascot_wave))
-    }
-    private fun animateMascotaCelebracion() {
-        ivMascotaPantalla2.setImageResource(R.drawable.leonfeliz)
-        ivMascotaPantalla2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.mascot_celebrate))
-    }
+    // ELIMINADAS LAS FUNCIONES DE ANIMACIÓN DE MASCOTAS (animateMascotaInicial, Saludando, Celebracion)
 
     private fun setupWordSearchView() {
         wordSearchView.onWordFoundListener = { word, count ->
@@ -221,7 +210,7 @@ class SopaActivity : AppCompatActivity() {
 
     private fun onGameCompleted() {
         puntuacionActual += 150 // Bonus final para llegar a 500 pts
-        animateMascotaCelebracion()
+        // Eliminada la llamada a animateMascotaCelebracion()
         guardarPuntuacionEnBD(puntuacionActual)
         SyncHelper.subirInmediatamente(this)
     }

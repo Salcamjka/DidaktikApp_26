@@ -65,14 +65,15 @@ class PuzzleActivity : AppCompatActivity() {
         btnJarraitu = findViewById(R.id.btnJarraitu)
 
         // ================================================================
-        // ESTADO INICIAL: BOTÓN DESACTIVADO (Modo Juego)
+        // CAMBIO: BOTÓN ACTIVADO DESDE EL PRINCIPIO
         // ================================================================
         btnJarraitu.visibility = View.VISIBLE
-        btnJarraitu.isEnabled = false
+        btnJarraitu.isEnabled = true // Ahora es TRUE
 
-        val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
-        btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
-        btnJarraitu.setTextColor(Color.WHITE)
+        // Ponemos directamente el color de "ACTIVADO"
+        val colorActivo = ContextCompat.getColor(this, R.color.puzzle)
+        btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorActivo)
+        btnJarraitu.setTextColor(Color.BLACK)
 
         btnJarraitu.setOnClickListener {
             cambiarAPantallaFinal()
@@ -111,13 +112,10 @@ class PuzzleActivity : AppCompatActivity() {
             params.setMargins(5, 5, 5, 5)
             img.layoutParams = params
 
-            // CORRECCIÓN: La pieza ya no desaparece inmediatamente al tocarla
             img.setOnTouchListener { view, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {
                     val data = ClipData.newPlainText("mota", pieza.tipo)
                     val shadow = View.DragShadowBuilder(view)
-
-                    // Iniciamos el arrastre. Eliminamos la línea que ponía la vista en INVISIBLE aquí.
                     view.startDragAndDrop(data, shadow, view, 0)
                     true
                 } else {
@@ -152,23 +150,19 @@ class PuzzleActivity : AppCompatActivity() {
                             huecoDestino.setImageResource(datosPieza.imagenID)
                             huecoDestino.setBackgroundColor(Color.TRANSPARENT)
                             huecoDestino.setOnDragListener(null)
-                            // La pieza original se elimina de la lista solo cuando se coloca correctamente
                             (piezaArrastrada.parent as GridLayout).removeView(piezaArrastrada)
                             verificarProgreso(datosPieza.tipo)
                         } else {
-                            // Si falla, nos aseguramos de que sea visible (por si se ocultó en el inicio del drag)
                             piezaArrastrada.visibility = View.VISIBLE
                         }
                         true
                     }
                     DragEvent.ACTION_DRAG_STARTED -> {
-                        // Opcional: Ocultar la pieza original justo cuando el sistema confirma que el arrastre empezó
                         val piezaArrastrada = event.localState as? View
                         piezaArrastrada?.visibility = View.INVISIBLE
                         true
                     }
                     DragEvent.ACTION_DRAG_ENDED -> {
-                        // Si el arrastre termina sin éxito, recuperamos la visibilidad
                         if (!event.result) {
                             val piezaArrastrada = event.localState as? View
                             piezaArrastrada?.visibility = View.VISIBLE
@@ -199,11 +193,9 @@ class PuzzleActivity : AppCompatActivity() {
             }
         }
 
+        // Aunque el botón ya esté activo desde el principio, mantenemos esto
+        // para asegurar que se sube la puntuación final si completan el juego.
         if (completadoLehenaldia && completadoOrainaldia) {
-            btnJarraitu.isEnabled = true
-            val colorActivo = ContextCompat.getColor(this, R.color.puzzle)
-            btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorActivo)
-            btnJarraitu.setTextColor(Color.BLACK)
             SyncHelper.subirInmediatamente(this)
         }
     }
