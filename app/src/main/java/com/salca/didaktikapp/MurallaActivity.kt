@@ -27,9 +27,7 @@ class MurallaActivity : AppCompatActivity() {
     private lateinit var op3: RadioButton
     private lateinit var btnResponder: Button
 
-    // NUEVO: Botón Finalizar (Jarraitu)
     private lateinit var btnFinalizar: Button
-
     private lateinit var btnVolverMapa: ImageButton
 
     private var audio: MediaPlayer? = null
@@ -70,10 +68,8 @@ class MurallaActivity : AppCompatActivity() {
         seekBarAudio = findViewById(R.id.seekBarAudio)
         layoutMuralla = findViewById(R.id.layoutMuralla)
 
-        // Inicializamos el botón finalizar
         btnFinalizar = findViewById(R.id.btnFinalizar)
 
-        // Botón Mapa
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
         btnVolverMapa.visibility = View.VISIBLE
         btnVolverMapa.setOnClickListener {
@@ -99,7 +95,7 @@ class MurallaActivity : AppCompatActivity() {
         btnResponder = findViewById(R.id.btnResponder)
 
         btnComenzar.visibility = View.VISIBLE
-        btnFinalizar.visibility = View.GONE // Aseguramos que esté oculto
+        btnFinalizar.visibility = View.GONE
 
         txtIntro.text = "Orain dela urte asko, Bilbon harrizko harresi handi bat eraiki zen hiria babesteko asmoarekin.\n" +
                 "Bertan familia garrantzitsuenak bizi ziren, euren etxe, denda eta Katedralarekin. Harresitik\n" +
@@ -145,9 +141,8 @@ class MurallaActivity : AppCompatActivity() {
 
         btnResponder.setOnClickListener { comprobarRespuesta() }
 
-        // Listener para el botón final Jarraitu
         btnFinalizar.setOnClickListener {
-            finish() // Volver al mapa
+            finish()
         }
     }
 
@@ -204,6 +199,7 @@ class MurallaActivity : AppCompatActivity() {
         }
     }
 
+    // --- AQUÍ ESTÁ EL CAMBIO IMPORTANTE ---
     private fun comprobarRespuesta() {
         val seleccion = when (grupoOpciones.checkedRadioButtonId) {
             R.id.op1 -> 0
@@ -212,6 +208,7 @@ class MurallaActivity : AppCompatActivity() {
             else -> -1
         }
 
+        // Si llega aquí es que ha seleccionado algo
         if (seleccion == preguntas[indicePregunta].correcta) {
             progreso++
             puntuacionActual += 100
@@ -229,7 +226,6 @@ class MurallaActivity : AppCompatActivity() {
         btnResponder.isEnabled = false
         btnResponder.visibility = View.GONE
 
-        // --- CAMBIOS PARA EL CENTRADO Y ESTILO ---
         grupoOpciones.visibility = View.GONE
         txtPregunta.gravity = Gravity.CENTER
         txtPregunta.textSize = 24f
