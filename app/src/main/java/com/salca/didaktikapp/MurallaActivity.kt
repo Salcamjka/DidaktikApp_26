@@ -199,7 +199,6 @@ class MurallaActivity : AppCompatActivity() {
         }
     }
 
-    // --- CAMBIO: Bloqueo silencioso si no hay respuesta ---
     private fun comprobarRespuesta() {
         val seleccion = when (grupoOpciones.checkedRadioButtonId) {
             R.id.op1 -> 0
@@ -208,13 +207,10 @@ class MurallaActivity : AppCompatActivity() {
             else -> -1
         }
 
-        // Si no han seleccionado nada (-1), hacemos 'return'.
-        // Esto detiene la función aquí mismo. El botón no hace nada.
         if (seleccion == -1) {
             return
         }
 
-        // Si llega aquí, es que YA ha seleccionado algo
         if (seleccion == preguntas[indicePregunta].correcta) {
             progreso++
             puntuacionActual += 100
@@ -231,14 +227,22 @@ class MurallaActivity : AppCompatActivity() {
     private fun finalizarJuego() {
         btnResponder.isEnabled = false
         btnResponder.visibility = View.GONE
-
         grupoOpciones.visibility = View.GONE
+
+        // Configuración visual del texto
         txtPregunta.gravity = Gravity.CENTER
         txtPregunta.textSize = 24f
+        txtPregunta.visibility = View.VISIBLE
 
+        // LÓGICA FINAL:
         if (progreso == preguntas.size) {
+            // SI HA ACERTADO TODAS
             txtPregunta.text = "🏰 Zorionak!\nHarresia osatu duzu!"
             txtPregunta.setTextColor(ContextCompat.getColor(this, R.color.mi_acierto))
+        } else {
+            // SI HA FALLADO ALGUNA
+            txtPregunta.text = "Galdu duzu!"
+            txtPregunta.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
         }
 
         btnFinalizar.visibility = View.VISIBLE
