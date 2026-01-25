@@ -52,7 +52,7 @@
                 android:id="@+id/tvTextoIntroductorio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Bilbo 1300. urtean sortu zen itsasadarraren ertzean, merkataritza bultzatzeko diseinatua. Herria zazpi kale nagusiren inguruan egituratzen zen (Somera, Artekale, Tendería, Belostikale, Carnicería Vieja, Barrenkale eta Barrenkale Barrena). Kale horiek hiriaren merkataritza eta artisau bihotza ziren, eta merkatariak, zapatariak, arrantzaleak, artisauak, errementariak eta beste lanbide batzuk hartzen zituzten.\n\nBilboko Alde Zaharreko kaleek antzinako lanbideen izenak jasotzen dituzte: Somera (barazkiak eta frutak saltzen ziren), Artekale (erdikoa), Tendería (dendariengatik/ohialeengatik), Belostikale (larru sailtzaileengatik), Carniceria Vieja (harategiengatik), Barrenkale eta Barrenkale Barrena (kalerik baxuenak), jatorriz zapatariak eta beste artisau batzuk hartzen."
+                android:text="Bilbo 1300. urtean sortu zen..."
                 android:textSize="18sp"
                 android:textColor="@color/black"
                 android:textAlignment="center"
@@ -73,8 +73,7 @@
                     android:layout_height="40dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@android:drawable/ic_media_play"
-                    app:tint="@color/black"
-                    android:contentDescription="Reproducir" />
+                    app:tint="@color/black" />
 
                 <SeekBar
                     android:id="@+id/seekBarAudio"
@@ -92,9 +91,7 @@
                 android:layout_height="150dp"
                 android:layout_gravity="center"
                 android:src="@drawable/leonexplicacion"
-                android:layout_marginBottom="10dp"
-                android:scaleType="fitCenter"
-                android:contentDescription="Leon Explicacion"/>
+                android:scaleType="fitCenter" />
 
             <Space
                 android:layout_width="match_parent"
@@ -106,8 +103,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Hasi Letra-Sopa"
-                android:textSize="17sp"
-                android:textStyle="bold"
                 android:backgroundTint="@color/sopa"
                 android:textColor="@color/white"
                 android:paddingHorizontal="32dp"
@@ -144,93 +139,45 @@
                 android:background="@color/white"
                 android:elevation="1dp"/>
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/contenedorListaPalabras"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Aurkitu beharreko hitzak:"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="6dp"/>
+                android:orientation="vertical">
 
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:columnCount="2"
-                android:layout_marginBottom="10dp">
-
-                <CheckBox
-                    android:id="@+id/cbSomera"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:text="Somera"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
-                    android:enabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/cbArtecalle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:text="Artekale"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
-                    android:enabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/cbTenderia"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:text="Tendería"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
-                    android:enabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/cbBelosticalle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:text="Belostikale"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
-                    android:enabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/cbCarniceriaVieja"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:text="Carniceria Vieja"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
-                    android:enabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/cbBarrencalle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:text="Barrenkale"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
-                    android:enabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/cbBarrenkaleBarrena"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_columnSpan="2"
-                    android:text="Barrenkale Barrena"
-                    android:textSize="13sp"
+                    android:text="Aurkitu beharreko hitzak:"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
                     android:textColor="@color/black"
-                    android:enabled="false"/>
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="6dp"/>
 
-            </GridLayout>
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2"
+                    android:layout_marginBottom="10dp">
+
+                    <CheckBox android:id="@+id/cbSomera" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Somera" android:enabled="false"/>
+                    <CheckBox android:id="@+id/cbArtecalle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Artekale" android:enabled="false"/>
+                    <CheckBox android:id="@+id/cbTenderia" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Tendería" android:enabled="false"/>
+                    <CheckBox android:id="@+id/cbBelosticalle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Belostikale" android:enabled="false"/>
+                    <CheckBox android:id="@+id/cbCarniceriaVieja" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Carniceria Vieja" android:enabled="false"/>
+                    <CheckBox android:id="@+id/cbBarrencalle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Barrenkale" android:enabled="false"/>
+                    <CheckBox android:id="@+id/cbBarrenkaleBarrena" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_columnSpan="2" android:text="Barrenkale Barrena" android:enabled="false"/>
+                </GridLayout>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivLeonAnimadoFinal"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:visibility="gone"
+                android:scaleType="fitCenter"
+                android:src="@drawable/animacion_celebracion" />
 
             <TextView
                 android:id="@+id/tvProgress"

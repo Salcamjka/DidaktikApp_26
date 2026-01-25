@@ -3,6 +3,7 @@ package com.salca.didaktikapp
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.*
+import android.graphics.drawable.AnimationDrawable
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -10,7 +11,6 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -38,13 +38,14 @@ class SopaActivity : AppCompatActivity() {
     private lateinit var tvProgress: TextView
     private lateinit var btnFinish: Button
 
-    private lateinit var cbBarrencalle: CheckBox
-    private lateinit var cbBelosticalle: CheckBox
-    private lateinit var cbCarniceriaVieja: CheckBox
-    private lateinit var cbSomera: CheckBox
-    private lateinit var cbArtecalle: CheckBox
-    private lateinit var cbTenderia: CheckBox
-    private lateinit var cbBarrenkaleBarrena: CheckBox
+    // VISTAS PARA ANIMACIÓN
+    private lateinit var contenedorListaPalabras: LinearLayout
+    private lateinit var ivLeonAnimadoFinal: ImageView
+
+    // ============================================
+    // NUEVO: Variable para controlar la animación del león
+    // ============================================
+    private var animacionLeon: AnimationDrawable? = null
 
     private val wordToCheckbox = mutableMapOf<String, CheckBox>()
     private var foundWordsCount = 0
@@ -63,7 +64,6 @@ class SopaActivity : AppCompatActivity() {
             setupWordSearchView()
             setupFinishButton()
             setupAudio()
-            // Eliminada la llamada a animateMascotaInicial()
         } catch (e: Exception) {
             Toast.makeText(this, "Errorea: ${e.message}", Toast.LENGTH_LONG).show()
         }
@@ -71,6 +71,12 @@ class SopaActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+
+        // ============================================
+        // NUEVO: Detener animación del león si está corriendo
+        // ============================================
+        animacionLeon?.stop()
+
         if (::runnable.isInitialized) handler.removeCallbacks(runnable)
         mediaPlayer?.release()
         mediaPlayer = null
@@ -80,34 +86,31 @@ class SopaActivity : AppCompatActivity() {
         mainScrollView = findViewById(R.id.mainScrollView)
         contenedorIntro = findViewById(R.id.contenedorIntro)
         sopaContainer = findViewById(R.id.sopaContainer)
-
-        tvTextoIntroductorio = findViewById(R.id.tvTextoIntroductorio)
         btnComenzarSopa = findViewById(R.id.btnComenzarSopa)
-        // Eliminado ivMascotaPantalla1
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
         btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
         seekBarAudio = findViewById(R.id.seekBarAudio)
-
         wordSearchView = findViewById(R.id.wordSearchView)
         tvProgress = findViewById(R.id.tvProgress)
         btnFinish = findViewById(R.id.btnFinish)
-        // Eliminado ivMascotaPantalla2
 
-        cbBarrencalle = findViewById(R.id.cbBarrencalle)
-        cbBelosticalle = findViewById(R.id.cbBelosticalle)
-        cbCarniceriaVieja = findViewById(R.id.cbCarniceriaVieja)
-        cbSomera = findViewById(R.id.cbSomera)
-        cbArtecalle = findViewById(R.id.cbArtecalle)
-        cbTenderia = findViewById(R.id.cbTenderia)
-        cbBarrenkaleBarrena = findViewById(R.id.cbBarrenkaleBarrena)
+        // Inicialización de la animación
+        contenedorListaPalabras = findViewById(R.id.contenedorListaPalabras)
+        ivLeonAnimadoFinal = findViewById(R.id.ivLeonAnimadoFinal)
 
-        wordToCheckbox["SOMERA"] = cbSomera
-        wordToCheckbox["ARTEKALE"] = cbArtecalle
-        wordToCheckbox["TENDERIA"] = cbTenderia
-        wordToCheckbox["BELOSTIKALE"] = cbBelosticalle
-        wordToCheckbox["CARNICERIAVIEJA"] = cbCarniceriaVieja
-        wordToCheckbox["BARRENKALE"] = cbBarrencalle
-        wordToCheckbox["BARRENKALEBARRENA"] = cbBarrenkaleBarrena
+        // ============================================
+        // NUEVO: Configurar la animación del león
+        // ============================================
+        setupLeonAnimation()
+
+        // Checkboxes
+        wordToCheckbox["SOMERA"] = findViewById(R.id.cbSomera)
+        wordToCheckbox["ARTEKALE"] = findViewById(R.id.cbArtecalle)
+        wordToCheckbox["TENDERIA"] = findViewById(R.id.cbTenderia)
+        wordToCheckbox["BELOSTIKALE"] = findViewById(R.id.cbBelosticalle)
+        wordToCheckbox["CARNICERIAVIEJA"] = findViewById(R.id.cbCarniceriaVieja)
+        wordToCheckbox["BARRENKALE"] = findViewById(R.id.cbBarrencalle)
+        wordToCheckbox["BARRENKALEBARRENA"] = findViewById(R.id.cbBarrenkaleBarrena)
 
         updateProgress()
 
@@ -121,8 +124,19 @@ class SopaActivity : AppCompatActivity() {
             contenedorIntro.visibility = View.GONE
             sopaContainer.visibility = View.VISIBLE
             mainScrollView.scrollTo(0, 0)
-            // Eliminada la llamada a animateMascotaSaludando()
         }
+    }
+
+    // ============================================
+    // NUEVO: Método para configurar la animación del león
+    // Este método prepara la animación que se mostrará al finalizar el juego
+    // ============================================
+    private fun setupLeonAnimation() {
+        // Establecer el drawable de animación al ImageView
+        ivLeonAnimadoFinal.setBackgroundResource(R.drawable.animacion_celebracion)
+
+        // Obtener la referencia a la animación
+        animacionLeon = ivLeonAnimadoFinal.background as? AnimationDrawable
     }
 
     private fun setupAudio() {
@@ -171,27 +185,45 @@ class SopaActivity : AppCompatActivity() {
         handler.postDelayed(runnable, 0)
     }
 
-    // ELIMINADAS LAS FUNCIONES DE ANIMACIÓN DE MASCOTAS (animateMascotaInicial, Saludando, Celebracion)
-
     private fun setupWordSearchView() {
         wordSearchView.onWordFoundListener = { word, count ->
             foundWordsCount = count
             wordToCheckbox[word]?.isChecked = true
             puntuacionActual += 50
             updateProgress()
-
             guardarPuntuacionEnBD(puntuacionActual)
             SyncHelper.subirInmediatamente(this)
-
             if (foundWordsCount == totalWords) onGameCompleted()
         }
     }
 
     private fun setupFinishButton() {
         btnFinish.setOnClickListener {
-            guardarPuntuacionEnBD(puntuacionActual)
-            SyncHelper.subirInmediatamente(this)
-            finish()
+            // ============================================
+            // ANIMACIÓN FINAL - MODIFICADO para usar AnimationDrawable
+            // ============================================
+
+            // Ocultar la lista de palabras
+            contenedorListaPalabras.visibility = View.GONE
+
+            // Mostrar el león animado
+            ivLeonAnimadoFinal.visibility = View.VISIBLE
+
+            // Iniciar la animación del león
+            animacionLeon?.start()
+
+            // Esperar 4 segundos, luego guardar puntuación y cerrar
+            Handler(Looper.getMainLooper()).postDelayed({
+                // Detener la animación antes de salir
+                animacionLeon?.stop()
+
+                // Guardar puntuación en la base de datos
+                guardarPuntuacionEnBD(puntuacionActual)
+                SyncHelper.subirInmediatamente(this)
+
+                // Cerrar la actividad
+                finish()
+            }, 4000)
         }
     }
 
@@ -200,17 +232,14 @@ class SopaActivity : AppCompatActivity() {
         val isComplete = foundWordsCount == totalWords
         btnFinish.isEnabled = isComplete
         if (isComplete) {
-            val colorActivo = ContextCompat.getColor(this, R.color.sopa)
-            btnFinish.backgroundTintList = ColorStateList.valueOf(colorActivo)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.sopa))
         } else {
-            val colorDesactivado = ContextCompat.getColor(this, R.color.boton_desactivado)
-            btnFinish.backgroundTintList = ColorStateList.valueOf(colorDesactivado)
+            btnFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.boton_desactivado))
         }
     }
 
     private fun onGameCompleted() {
-        puntuacionActual += 150 // Bonus final para llegar a 500 pts
-        // Eliminada la llamada a animateMascotaCelebracion()
+        puntuacionActual += 150
         guardarPuntuacionEnBD(puntuacionActual)
         SyncHelper.subirInmediatamente(this)
     }
@@ -223,10 +252,7 @@ class SopaActivity : AppCompatActivity() {
     }
 }
 
-// ============================================================================
-// CLASE WORDSEARCHVIEW (BLOQUEO DE DIAGONALES)
-// ============================================================================
-
+// Clase WordSearchView
 class WordSearchView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

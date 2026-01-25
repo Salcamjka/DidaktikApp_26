@@ -3,6 +3,7 @@ package com.salca.didaktikapp
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.AnimationDrawable
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -20,6 +21,10 @@ class TxakurraActivity : AppCompatActivity() {
     private lateinit var mainScrollView: ScrollView
     private lateinit var contenedorIntro: LinearLayout
     private lateinit var contenedorTabla: LinearLayout
+
+    // Vistas para las animaciones (Intercambio de pantallas)
+    private lateinit var layoutContenidoJuego: LinearLayout
+    private lateinit var ivLeonAnimadoFinal: ImageView
 
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
@@ -39,7 +44,7 @@ class TxakurraActivity : AppCompatActivity() {
     private val lehoiaEditTexts = mutableListOf<EditText>()
     private val allEditTexts = mutableListOf<EditText>()
 
-    // ✅ LISTAS DE RESPUESTAS ACTUALIZADAS (Kanidoa / Felidoa)
+    // Respuestas correctas
     private val respuestasTxakurra = listOf("kanidoa", "etxea", "orojalea", "zaunka", "txikia")
     private val respuestasLehoia = listOf("felinoa", "sabana", "haragijalea", "orrua", "handia")
 
@@ -63,6 +68,10 @@ class TxakurraActivity : AppCompatActivity() {
         mainScrollView = findViewById(R.id.mainScrollView)
         contenedorIntro = findViewById(R.id.contenedorIntro)
         contenedorTabla = findViewById(R.id.contenedorTabla)
+
+        // Inicialización de vistas para la animación
+        layoutContenidoJuego = findViewById(R.id.layoutContenidoJuego)
+        ivLeonAnimadoFinal = findViewById(R.id.ivLeonAnimadoFinal)
 
         btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
         seekBarAudio = findViewById(R.id.seekBarAudio)
@@ -116,9 +125,9 @@ class TxakurraActivity : AppCompatActivity() {
         val textoUsuario = editText.text.toString().trim()
         if (textoUsuario.isNotEmpty()) {
             if (textoUsuario.equals(respuestaCorrecta, ignoreCase = true)) {
-                editText.setTextColor(Color.parseColor("#009900")) // Verde acierto
+                editText.setTextColor(Color.parseColor("#009900"))
             } else {
-                editText.setTextColor(Color.RED) // Rojo error
+                editText.setTextColor(Color.RED)
             }
         } else {
             editText.setTextColor(Color.BLACK)
@@ -161,46 +170,78 @@ class TxakurraActivity : AppCompatActivity() {
             btnVolverMapa.visibility = View.GONE
             mainScrollView.scrollTo(0, 0)
         }
+
         btnFinish.setOnClickListener {
+            verificarResultadoFinal()
+        }
+    }
+
+    // Comprobación de errores para decidir qué animación mostrar
+    private fun verificarResultadoFinal() {
+        var hayErrores = false
+
+        txakurraEditTexts.forEachIndexed { index, et ->
+            if (!et.text.toString().trim().equals(respuestasTxakurra[index], ignoreCase = true)) {
+                hayErrores = true
+            }
+        }
+        lehoiaEditTexts.forEachIndexed { index, et ->
+            if (!et.text.toString().trim().equals(respuestasLehoia[index], ignoreCase = true)) {
+                hayErrores = true
+            }
+        }
+
+        if (hayErrores) {
+            mostrarAnimacionTriste()
+        } else {
             calcularPuntuacionFinal()
         }
     }
 
-    // ✅ LÓGICA DE PUNTUACIÓN Y SUBIDA AL SERVIDOR
+    private fun mostrarAnimacionTriste() {
+        layoutContenidoJuego.visibility = View.GONE
+        ivLeonAnimadoFinal.visibility = View.VISIBLE
+
+        // Cambiamos a la animación triste
+        ivLeonAnimadoFinal.setImageResource(R.drawable.animacion_triste)
+        val animTriste = ivLeonAnimadoFinal.drawable as AnimationDrawable
+        animTriste.start()
+
+        Toast.makeText(this, "Akatsen bat dago, berrikusi taula", Toast.LENGTH_SHORT).show()
+
+        // Volvemos a la tabla después de 3 segundos
+        Handler(Looper.getMainLooper()).postDelayed({
+            animTriste.stop()
+            ivLeonAnimadoFinal.visibility = View.GONE
+            layoutContenidoJuego.visibility = View.VISIBLE
+        }, 3000)
+    }
+
     private fun calcularPuntuacionFinal() {
         btnFinish.isEnabled = false
 
-        var aciertos = 0
-        txakurraEditTexts.forEachIndexed { index, et ->
-            if (et.text.toString().trim().equals(respuestasTxakurra[index], ignoreCase = true)) aciertos++
-        }
-        lehoiaEditTexts.forEachIndexed { index, et ->
-            if (et.text.toString().trim().equals(respuestasLehoia[index], ignoreCase = true)) aciertos++
-        }
+        // Animación de alegría
+        layoutContenidoJuego.visibility = View.GONE
+        ivLeonAnimadoFinal.visibility = View.VISIBLE
+        ivLeonAnimadoFinal.setImageResource(R.drawable.animacion_celebracion)
+        val animAlegre = ivLeonAnimadoFinal.drawable as AnimationDrawable
+        animAlegre.start()
 
-        // ✅ 50 Puntos por acierto (Total 500)
-        val puntosObtenidos = aciertos * 50
-
-        // ✅ GUARDAR EN BD LOCAL Y SUBIR A RENDER
-        guardarPuntuacionEnBD(puntosObtenidos)
+        guardarPuntuacionEnBD(500)
         SyncHelper.subirInmediatamente(this)
 
-        // Salir a los 2 segundos
         Handler(Looper.getMainLooper()).postDelayed({
             finish()
-        }, 2000)
+        }, 4000)
     }
 
-    // Función auxiliar para SQLite
     private fun guardarPuntuacionEnBD(puntos: Int) {
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
         val dbHelper = DatabaseHelper(this)
-        // Guardamos en la columna 'diferencias'
         dbHelper.guardarPuntuacion(nombreAlumno, "diferencias", puntos)
     }
 
-    // --- AUDIO ---
     private fun setupAudio() {
         try {
             mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_4)

@@ -133,122 +133,138 @@
             android:padding="16dp"
             android:visibility="gone">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/layoutContenidoJuego"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Txakurraren Iturria"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="#E57373"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Txakurraren Iturria"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:textColor="#E57373"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="8dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="8dp">
+
+                        <ImageView
+                            android:id="@+id/ivPerro"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:src="@drawable/perro"
+                            android:scaleType="centerCrop"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="TXAKURRA"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:background="#E57373"
+                            android:textColor="@android:color/white"
+                            android:padding="8dp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="8dp">
+
+                        <ImageView
+                            android:id="@+id/ivLeon"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:src="@drawable/leon"
+                            android:scaleType="centerCrop"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="LEHOIA"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:background="#E57373"
+                            android:textColor="@android:color/white"
+                            android:padding="8dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Aipatu 5 ezaugarri:"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:gravity="center"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    android:background="#9E9E9E"
+                    android:padding="2dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginEnd="1dp">
+                        <EditText android:id="@+id/etTxakurra1" android:layout_width="match_parent" android:layout_height="50dp" android:hint="FAMILIA MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                        <EditText android:id="@+id/etTxakurra2" android:layout_width="match_parent" android:layout_height="50dp" android:hint="BIZILEKUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                        <EditText android:id="@+id/etTxakurra3" android:layout_width="match_parent" android:layout_height="50dp" android:hint="JANARI MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                        <EditText android:id="@+id/etTxakurra4" android:layout_width="match_parent" android:layout_height="50dp" android:hint="SOINUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                        <EditText android:id="@+id/etTxakurra5" android:layout_width="match_parent" android:layout_height="50dp" android:hint="TAMAINA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:inputType="textCapSentences"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="1dp">
+                        <EditText android:id="@+id/etLehoia1" android:layout_width="match_parent" android:layout_height="50dp" android:hint="FAMILIA MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                        <EditText android:id="@+id/etLehoia2" android:layout_width="match_parent" android:layout_height="50dp" android:hint="BIZILEKUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                        <EditText android:id="@+id/etLehoia3" android:layout_width="match_parent" android:layout_height="50dp" android:hint="JANARI MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                        <EditText android:id="@+id/etLehoia4" android:layout_width="match_parent" android:layout_height="50dp" android:hint="SOINUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
+                        <EditText android:id="@+id/etLehoia5" android:layout_width="match_parent" android:layout_height="50dp" android:hint="TAMAINA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:inputType="textCapSentences"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivLeonAnimadoFinal"
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
                 android:layout_gravity="center"
-                android:layout_marginBottom="8dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp">
-
-                    <ImageView
-                        android:id="@+id/ivPerro"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/perro"
-                        android:scaleType="centerCrop"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="TXAKURRA"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:gravity="center"
-                        android:background="#E57373"
-                        android:textColor="@android:color/white"
-                        android:padding="8dp"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp">
-
-                    <ImageView
-                        android:id="@+id/ivLeon"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/leon"
-                        android:scaleType="centerCrop"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="LEHOIA"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:gravity="center"
-                        android:background="#E57373"
-                        android:textColor="@android:color/white"
-                        android:padding="8dp"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Aipatu 5 ezaugarri:"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"
-                android:gravity="center"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal"
-                android:background="#9E9E9E"
-                android:padding="2dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginEnd="1dp">
-                    <EditText android:id="@+id/etTxakurra1" android:layout_width="match_parent" android:layout_height="50dp" android:hint="FAMILIA MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etTxakurra2" android:layout_width="match_parent" android:layout_height="50dp" android:hint="BIZILEKUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etTxakurra3" android:layout_width="match_parent" android:layout_height="50dp" android:hint="JANARI MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etTxakurra4" android:layout_width="match_parent" android:layout_height="50dp" android:hint="SOINUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etTxakurra5" android:layout_width="match_parent" android:layout_height="50dp" android:hint="TAMAINA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:inputType="textCapSentences"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="1dp">
-                    <EditText android:id="@+id/etLehoia1" android:layout_width="match_parent" android:layout_height="50dp" android:hint="FAMILIA MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etLehoia2" android:layout_width="match_parent" android:layout_height="50dp" android:hint="BIZILEKUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etLehoia3" android:layout_width="match_parent" android:layout_height="50dp" android:hint="JANARI MOTA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etLehoia4" android:layout_width="match_parent" android:layout_height="50dp" android:hint="SOINUA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:layout_marginBottom="2dp" android:inputType="textCapSentences"/>
-                    <EditText android:id="@+id/etLehoia5" android:layout_width="match_parent" android:layout_height="50dp" android:hint="TAMAINA" android:padding="8dp" android:textSize="18sp" android:background="@android:color/white" android:inputType="textCapSentences"/>
-                </LinearLayout>
-            </LinearLayout>
+                android:visibility="gone"
+                android:scaleType="fitCenter"
+                android:src="@drawable/animacion_celebracion" />
 
             <Space
                 android:layout_width="match_parent"
