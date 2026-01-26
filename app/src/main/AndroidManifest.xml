@@ -16,6 +16,7 @@
         android:theme="@style/Theme.DidaktikApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyC7vrjNUblbJzCz0iWQPT4CKFCUkkHxeBE"/>
@@ -37,5 +38,8 @@
         <activity android:name=".TxakurraActivity" android:screenOrientation="portrait" />
         <activity android:name=".MurallaActivity" android:screenOrientation="portrait" />
         <activity android:name=".PuzzleActivity" android:screenOrientation="portrait" />
+
+        <activity android:name=".AccesibilidadActivity" android:screenOrientation="portrait" />
+
     </application>
 </manifest>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Accesibilidad"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp"/>
+
+    <Switch
+        android:id="@+id/switchContraste"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mapa de Alto Contraste"
+        android:minHeight="48dp"
+        android:layout_marginBottom="16dp"/>
+
+    <Switch
+        android:id="@+id/switchTexto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Textos más grandes"
+        android:minHeight="48dp"/>
+
+    <Button
+        android:id="@+id/btnVolver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Guardar y Volver"
+        android:layout_marginTop="40dp"/>
+
+</LinearLayout>

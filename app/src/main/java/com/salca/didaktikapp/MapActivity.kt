@@ -1,8 +1,10 @@
 package com.salca.didaktikapp
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -12,17 +14,21 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
+// Ya no implementamos TextToSpeech.OnInitListener
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var map: GoogleMap
+    private var mapReady = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // BLOQUEO DE ORIENTACIÓN: Solo vertical
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
         setContentView(R.layout.activity_map)
+
+        val btnAjustes = findViewById<ImageButton>(R.id.btnAjustes)
+        btnAjustes.setOnClickListener {
+            startActivity(Intent(this, AccesibilidadActivity::class.java))
+        }
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -32,12 +38,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     override fun onResume() {
         super.onResume()
         SyncHelper.subirInmediatamente(this)
+
+        if (mapReady) {
+            actualizarTipoDeMapa()
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        mapReady = true
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
+
+        actualizarTipoDeMapa()
 
         val kokapenak = listOf(
             Triple(LatLng(43.255000, -2.923333), "San Anton Eliza", "Urkatua"),
@@ -55,7 +68,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(centro, 16.5f))
     }
 
+    private fun actualizarTipoDeMapa() {
+        val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
+        val modoOscuro = sharedPref.getBoolean("MODO_OSCURO", false)
+
+        if (modoOscuro) {
+            map.mapType = GoogleMap.MAP_TYPE_HYBRID
+        } else {
+            map.mapType = GoogleMap.MAP_TYPE_NORMAL
+        }
+    }
+
     override fun onMarkerClick(marker: Marker): Boolean {
+        // YA NO HAY VOZ AQUÍ, SOLO NAVEGACIÓN DIRECTA
         when (marker.title) {
             "Antzinako Harresia" -> startActivity(Intent(this, MurallaActivity::class.java))
             "Zazpi Kaleak" -> startActivity(Intent(this, SopaActivity::class.java))
