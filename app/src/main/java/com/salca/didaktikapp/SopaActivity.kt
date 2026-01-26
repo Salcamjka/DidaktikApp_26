@@ -42,10 +42,9 @@ class SopaActivity : AppCompatActivity() {
     private lateinit var contenedorListaPalabras: LinearLayout
     private lateinit var ivLeonAnimadoFinal: ImageView
 
-    // ============================================
-    // NUEVO: Variable para controlar la animación del león
-    // ============================================
-    private var animacionLeon: AnimationDrawable? = null
+    // Handler para la animación del león
+    private val animationHandler = Handler(Looper.getMainLooper())
+    private var animationRunnable: Runnable? = null
 
     private val wordToCheckbox = mutableMapOf<String, CheckBox>()
     private var foundWordsCount = 0
@@ -72,10 +71,8 @@ class SopaActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        // ============================================
-        // NUEVO: Detener animación del león si está corriendo
-        // ============================================
-        animacionLeon?.stop()
+        // Detener la animación del león
+        stopLeonAnimation()
 
         if (::runnable.isInitialized) handler.removeCallbacks(runnable)
         mediaPlayer?.release()
@@ -97,11 +94,6 @@ class SopaActivity : AppCompatActivity() {
         // Inicialización de la animación
         contenedorListaPalabras = findViewById(R.id.contenedorListaPalabras)
         ivLeonAnimadoFinal = findViewById(R.id.ivLeonAnimadoFinal)
-
-        // ============================================
-        // NUEVO: Configurar la animación del león
-        // ============================================
-        setupLeonAnimation()
 
         // Checkboxes
         wordToCheckbox["SOMERA"] = findViewById(R.id.cbSomera)
@@ -125,18 +117,6 @@ class SopaActivity : AppCompatActivity() {
             sopaContainer.visibility = View.VISIBLE
             mainScrollView.scrollTo(0, 0)
         }
-    }
-
-    // ============================================
-    // NUEVO: Método para configurar la animación del león
-    // Este método prepara la animación que se mostrará al finalizar el juego
-    // ============================================
-    private fun setupLeonAnimation() {
-        // Establecer el drawable de animación al ImageView
-        ivLeonAnimadoFinal.setBackgroundResource(R.drawable.animacion_celebracion)
-
-        // Obtener la referencia a la animación
-        animacionLeon = ivLeonAnimadoFinal.background as? AnimationDrawable
     }
 
     private fun setupAudio() {
@@ -199,23 +179,19 @@ class SopaActivity : AppCompatActivity() {
 
     private fun setupFinishButton() {
         btnFinish.setOnClickListener {
-            // ============================================
-            // ANIMACIÓN FINAL - MODIFICADO para usar AnimationDrawable
-            // ============================================
-
             // Ocultar la lista de palabras
             contenedorListaPalabras.visibility = View.GONE
 
             // Mostrar el león animado
             ivLeonAnimadoFinal.visibility = View.VISIBLE
 
-            // Iniciar la animación del león
-            animacionLeon?.start()
+            // Iniciar la animación ultra suave del león
+            startSmoothLeonAnimation()
 
             // Esperar 4 segundos, luego guardar puntuación y cerrar
             Handler(Looper.getMainLooper()).postDelayed({
                 // Detener la animación antes de salir
-                animacionLeon?.stop()
+                stopLeonAnimation()
 
                 // Guardar puntuación en la base de datos
                 guardarPuntuacionEnBD(puntuacionActual)
@@ -225,6 +201,56 @@ class SopaActivity : AppCompatActivity() {
                 finish()
             }, 4000)
         }
+    }
+
+    // ============================================
+    // ANIMACIÓN ULTRA SUAVE DEL LEÓN - Cambio imperceptible
+    // ============================================
+    private fun startSmoothLeonAnimation() {
+        val frames = listOf(
+            R.drawable.leon1,
+            R.drawable.leon2,
+            R.drawable.leon3
+        )
+
+        var currentFrame = 0
+        val frameDuration = 1200L // ⭐ Tiempo total entre cambios (1.2 segundos)
+        val fadeDuration = 600L    // ⭐ Transición ultra suave (0.6 segundos)
+
+        animationRunnable = object : Runnable {
+            override fun run() {
+                val nextFrame = frames[currentFrame % frames.size]
+
+                // Crossfade ultra suave - casi imperceptible
+                ivLeonAnimadoFinal.animate()
+                    .alpha(0f)
+                    .setDuration(fadeDuration)
+                    .withEndAction {
+                        ivLeonAnimadoFinal.setImageResource(nextFrame)
+                        ivLeonAnimadoFinal.animate()
+                            .alpha(1f)
+                            .setDuration(fadeDuration)
+                            .start()
+                    }
+                    .start()
+
+                currentFrame++
+                animationHandler.postDelayed(this, frameDuration)
+            }
+        }
+
+        // Iniciar la animación
+        ivLeonAnimadoFinal.setImageResource(frames[0])
+        ivLeonAnimadoFinal.alpha = 1f
+        animationHandler.postDelayed(animationRunnable!!, frameDuration)
+    }
+
+    // Detener la animación del león
+    private fun stopLeonAnimation() {
+        animationRunnable?.let {
+            animationHandler.removeCallbacks(it)
+        }
+        animationRunnable = null
     }
 
     private fun updateProgress() {
@@ -416,7 +442,6 @@ class WordSearchView @JvmOverloads constructor(
         return if (row in 0 until gridRows && col in 0 until gridCols) Pair(row, col) else null
     }
 
-    // LÓGICA DE SELECCIÓN SIN DIAGONALES
     private fun updateSelection() {
         val start = startCell ?: return
         val current = currentCell ?: return
@@ -425,7 +450,6 @@ class WordSearchView @JvmOverloads constructor(
         val rowDiff = current.first - start.first
         val colDiff = current.second - start.second
 
-        // Bloqueo de diagonales: forzamos el eje dominante
         val targetRow: Int
         val targetCol: Int
 

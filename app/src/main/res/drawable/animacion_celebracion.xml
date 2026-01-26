@@ -1,8 +1,8 @@
 <!-- res/drawable/leon_animacion.xml -->
+<!-- res/drawable/animacion_celebracion.xml -->
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android"
     android:oneshot="false">
-
-   <item android:drawable="@drawable/leon1" android:duration="150" />
-    <item android:drawable="@drawable/leon2" android:duration="150" />
-    <item android:drawable="@drawable/leon3" android:duration="150" />
+    <item android:drawable="@drawable/leon1" android:duration="250" />
+    <item android:drawable="@drawable/leon2" android:duration="250" />
+    <item android:drawable="@drawable/leon3" android:duration="250" />
 </animation-list>
