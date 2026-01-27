@@ -54,21 +54,10 @@ class AhorcadoActivity : AppCompatActivity() {
         val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
         if (usarTextoGrande) {
-            // Buscamos los elementos por ID y aumentamos su tamaño
-
-            // Título Cabecera
             findViewById<TextView>(R.id.tvTituloCabecera)?.textSize = 34f
-
-            // Palabra del juego (_ _ _ _)
             tvPalabra.textSize = 32f
-
-            // Resultado (Zorionak/Galdu duzu)
             tvResultado.textSize = 30f
-
-            // Texto Explicativo (Historia)
             findViewById<TextView>(R.id.tvTextoExplicativo)?.textSize = 24f
-
-            // Botones
             btnJarraituJuego.textSize = 22f
             btnJarraituExplicacion.textSize = 22f
         }
@@ -79,7 +68,6 @@ class AhorcadoActivity : AppCompatActivity() {
     }
 
     private fun inicializarVistas() {
-        // CONFIGURACIÓN BOTÓN VOLVER AL MAPA
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
         btnVolverMapa.setOnClickListener {
             if (mediaPlayer?.isPlaying == true) {
@@ -88,7 +76,6 @@ class AhorcadoActivity : AppCompatActivity() {
             finish()
         }
 
-        // Fase Juego
         contenedorFaseJuego = findViewById(R.id.fase1_Juego)
         ivAhorcado = findViewById(R.id.ivAhorcado)
         tvPalabra = findViewById(R.id.tvPalabra)
@@ -102,7 +89,6 @@ class AhorcadoActivity : AppCompatActivity() {
 
         btnJarraituJuego.setOnClickListener { mostrarFaseExplicacion() }
 
-        // Fase Explicación
         contenedorFaseExplicacion = findViewById(R.id.fase_Explicacion)
         btnPlayPause = findViewById(R.id.btnPlayPause)
         seekBar = findViewById(R.id.seekBarAudio)
@@ -136,7 +122,9 @@ class AhorcadoActivity : AppCompatActivity() {
         contenedorFaseExplicacion.visibility = View.GONE
         tvResultado.visibility = View.GONE
 
-        // MOSTRAR BOTÓN AL INICIAR JUEGO
+        // Aseguramos que el teclado sea visible al empezar
+        llTeclado.visibility = View.VISIBLE
+
         btnVolverMapa.visibility = View.VISIBLE
 
         ivAhorcado.setImageResource(R.drawable.ahorcado0)
@@ -151,14 +139,9 @@ class AhorcadoActivity : AppCompatActivity() {
     private fun mostrarFaseExplicacion() {
         contenedorFaseJuego.visibility = View.GONE
         contenedorFaseExplicacion.visibility = View.VISIBLE
-
-        // OCULTAR BOTÓN AL PASAR A LA EXPLICACIÓN
         btnVolverMapa.visibility = View.GONE
-
         configurarAudio()
     }
-
-    // --- Resto de funciones del juego ---
 
     private fun crearTeclado() {
         llTeclado.removeAllViews()
@@ -188,7 +171,6 @@ class AhorcadoActivity : AppCompatActivity() {
 
     private fun procesarLetra(letra: Char, boton: Button) {
         if (palabraActual.contains(letra)) {
-            // Cada acierto de letra única son 10 puntos
             if (!letrasAdivinadas.contains(letra)) {
                 letrasAdivinadas.add(letra)
                 puntuacionActual += 10
@@ -243,36 +225,29 @@ class AhorcadoActivity : AppCompatActivity() {
     }
 
     private fun mostrarResultadoFinal(gano: Boolean) {
-        desactivarTeclado()
+        // --- CAMBIO: OCULTAMOS EL TECLADO ---
+        llTeclado.visibility = View.GONE
+        // ------------------------------------
+
         tvResultado.visibility = View.VISIBLE
         if (gano) {
             val bonusVictoria = 120
             val vidasRestantes = 7 - errores
             val bonusVidas = vidasRestantes * 40
-
             puntuacionActual += (bonusVictoria + bonusVidas)
 
             tvResultado.text = "OSO ONDO! IRABAZI DUZU!"
             tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_acierto))
-            ivAhorcado.setImageResource(R.drawable.leonfeliz)
+            ivAhorcado.setImageResource(R.drawable.escudo)
         } else {
             tvResultado.text = "GALDU DUZU... HITZA: $palabraActual"
             tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
-            ivAhorcado.setImageResource(R.drawable.leontriste)
+            ivAhorcado.setImageResource(R.drawable.escudo)
         }
         guardarPuntuacionEnBD(puntuacionActual)
         btnJarraituJuego.isEnabled = true
         val colorActivo = ContextCompat.getColor(this, R.color.ahorcado)
         btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(colorActivo)
-    }
-
-    private fun desactivarTeclado() {
-        for (i in 0 until llTeclado.childCount) {
-            val fila = llTeclado.getChildAt(i) as LinearLayout
-            for (j in 0 until fila.childCount) {
-                fila.getChildAt(j).isEnabled = false
-            }
-        }
     }
 
     private fun guardarPuntuacionEnBD(puntos: Int) {
