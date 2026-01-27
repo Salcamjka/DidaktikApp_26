@@ -13,7 +13,11 @@ import androidx.core.content.ContextCompat
 
 class MurallaActivity : AppCompatActivity() {
 
-    private lateinit var txtIntro: TextView
+    private lateinit var txtIntro1: TextView
+    private lateinit var txtIntro2: TextView
+    private lateinit var tvLeerMas: TextView
+    private lateinit var ivLeon: ImageView
+
     private lateinit var txtTitulo: TextView
     private lateinit var btnComenzar: Button
     private lateinit var btnPlayPauseAudio: ImageButton
@@ -36,6 +40,7 @@ class MurallaActivity : AppCompatActivity() {
     private var indicePregunta = 0
     private var progreso = 0
     private var puntuacionActual = 0
+    private var textoDesplegado = false
 
     private val updateSeekBarRunnable = object : Runnable {
         override fun run() {
@@ -62,7 +67,11 @@ class MurallaActivity : AppCompatActivity() {
 
         // Inicialización de Vistas
         txtTitulo = findViewById(R.id.txtTitulo)
-        txtIntro = findViewById(R.id.txtIntro)
+        txtIntro1 = findViewById(R.id.txtIntro1)
+        txtIntro2 = findViewById(R.id.txtIntro2)
+        tvLeerMas = findViewById(R.id.tvLeerMas)
+        ivLeon = findViewById(R.id.ivLeonExplicacion)
+
         btnComenzar = findViewById(R.id.btnComenzar)
         btnPlayPauseAudio = findViewById(R.id.btnPlayPauseAudio)
         seekBarAudio = findViewById(R.id.seekBarAudio)
@@ -94,14 +103,41 @@ class MurallaActivity : AppCompatActivity() {
         op3 = findViewById(R.id.op3)
         btnResponder = findViewById(R.id.btnResponder)
 
+        // ---------------------------------------------------------------
+        // ACCESIBILIDAD: LETRA GRANDE
+        // ---------------------------------------------------------------
+        val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
+        val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
+
+        if (usarTextoGrande) {
+            txtTitulo.textSize = 34f
+
+            // Textos de introducción
+            txtIntro1.textSize = 24f
+            txtIntro2.textSize = 24f
+            tvLeerMas.textSize = 22f
+
+            txtPregunta.textSize = 22f
+            op1.textSize = 20f
+            op2.textSize = 20f
+            op3.textSize = 20f
+            btnComenzar.textSize = 22f
+            btnResponder.textSize = 22f
+            btnFinalizar.textSize = 22f
+        }
+        // ---------------------------------------------------------------
+
         btnComenzar.visibility = View.VISIBLE
         btnFinalizar.visibility = View.GONE
 
-        txtIntro.text = "Orain dela urte asko, Bilbon harrizko harresi handi bat eraiki zen hiria babesteko asmoarekin.\n" +
+        // --- ASIGNACIÓN DE TEXTOS ---
+        // PARTE 1: La introducción principal
+        txtIntro1.text = "Orain dela urte asko, Bilbon harrizko harresi handi bat eraiki zen hiria babesteko asmoarekin.\n" +
                 "Bertan familia garrantzitsuenak bizi ziren, euren etxe, denda eta Katedralarekin. Harresitik\n" +
-                "kanpo, berriz, herri giroa zegoen, Pelota eta Ronda izeneko kaleetan.\n" +
-                "\n" +
-                "Denboraren poderioz, hiria hazi egin zen eta harresia ez zen hain beharrezkoa. Zati batzuk,\n" +
+                "kanpo, berriz, herri giroa zegoen, Pelota eta Ronda izeneko kaleetan."
+
+        // PARTE 2: El resto del texto (oculto al principio)
+        txtIntro2.text = "\nDenboraren poderioz, hiria hazi egin zen eta harresia ez zen hain beharrezkoa. Zati batzuk,\n" +
                 "gainean etxeak eraikitzeko erabili ziren, eta beste batzuk eraitsiz joan ziren, nahiz eta gaur\n" +
                 "egun ere egon zela gogorarazten diguten aztarnak dauden. Erronda kalean, esaterako,\n" +
                 "harresiaren gainean egindako fatxadak ikus daitezke, eta San Anton elizaren azpian ere\n" +
@@ -111,6 +147,23 @@ class MurallaActivity : AppCompatActivity() {
                 "horrela deitzen zaio jendeak frontoi bat bezala erabiltzen zuelako harresia. Erronda kaleari,\n" +
                 "aldiz, harresia zaintzen zuten soldaduek guardiako txandak egiten zituztelako. Horregatik,\n" +
                 "gaur egun ere kale honek zaintza garai hura gogorarazten digu."
+
+        // Lógica de "Leer más"
+        tvLeerMas.setOnClickListener {
+            if (!textoDesplegado) {
+                // DESPLEGAR
+                txtIntro2.visibility = View.VISIBLE
+                tvLeerMas.text = "Irakurri gutxiago ▲"
+                ivLeon.visibility = View.GONE // Ocultamos león al desplegar
+                textoDesplegado = true
+            } else {
+                // PLEGAR
+                txtIntro2.visibility = View.GONE
+                tvLeerMas.text = "Irakurri gehiago ▼"
+                ivLeon.visibility = View.VISIBLE // Mostramos león al plegar
+                textoDesplegado = false
+            }
+        }
 
         mostrarTest(false)
         prepararAudio()
@@ -183,7 +236,11 @@ class MurallaActivity : AppCompatActivity() {
         grupoOpciones.visibility = vis
         btnResponder.visibility = vis
 
-        txtIntro.visibility = if (visible) View.GONE else View.VISIBLE
+        txtIntro1.visibility = if (visible) View.GONE else View.VISIBLE
+        txtIntro2.visibility = View.GONE // Siempre oculto al empezar el test
+        tvLeerMas.visibility = if (visible) View.GONE else View.VISIBLE
+        ivLeon.visibility = if (visible) View.GONE else View.VISIBLE
+
         btnPlayPauseAudio.visibility = if (visible) View.GONE else View.VISIBLE
         seekBarAudio.visibility = if (visible) View.GONE else View.VISIBLE
     }
@@ -229,12 +286,17 @@ class MurallaActivity : AppCompatActivity() {
         btnResponder.visibility = View.GONE
         grupoOpciones.visibility = View.GONE
 
-        // Configuración visual del texto
         txtPregunta.gravity = Gravity.CENTER
-        txtPregunta.textSize = 24f
-        txtPregunta.visibility = View.VISIBLE
+        val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
+        val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
-        // ESTA LÍNEA PONE EL TEXTO EN NEGRITA
+        if(usarTextoGrande) {
+            txtPregunta.textSize = 30f
+        } else {
+            txtPregunta.textSize = 24f
+        }
+
+        txtPregunta.visibility = View.VISIBLE
         txtPregunta.setTypeface(null, android.graphics.Typeface.BOLD)
 
         if (progreso == preguntas.size) {

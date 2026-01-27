@@ -21,6 +21,13 @@ class TxakurraActivity : AppCompatActivity() {
     private lateinit var contenedorIntro: LinearLayout
     private lateinit var contenedorTabla: LinearLayout
 
+    // VARIABLES NUEVAS PARA EL DESPLEGABLE
+    private lateinit var tvTextoIntro1: TextView
+    private lateinit var tvTextoIntro2: TextView
+    private lateinit var tvLeerMas: TextView
+    private lateinit var ivLeonExplicacion: ImageView
+    private var textoDesplegado = false
+
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
     private lateinit var btnPlayPauseIcon: ImageButton
@@ -39,7 +46,6 @@ class TxakurraActivity : AppCompatActivity() {
     private val lehoiaEditTexts = mutableListOf<EditText>()
     private val allEditTexts = mutableListOf<EditText>()
 
-    // ✅ LISTAS DE RESPUESTAS ACTUALIZADAS (Kanidoa / Felidoa)
     private val respuestasTxakurra = listOf("kanidoa", "etxea", "orojalea", "zaunka", "txikia")
     private val respuestasLehoia = listOf("felinoa", "sabana", "haragijalea", "orrua", "handia")
 
@@ -49,6 +55,53 @@ class TxakurraActivity : AppCompatActivity() {
 
         try {
             initializeViews()
+
+            // ---------------------------------------------------------------
+            // ACCESIBILIDAD: LETRA GRANDE
+            // ---------------------------------------------------------------
+            val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
+            val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
+
+            if (usarTextoGrande) {
+                // Pantalla INTRO
+                findViewById<TextView>(R.id.tvTituloIntro)?.textSize = 34f
+                tvTextoIntro1.textSize = 24f
+                tvTextoIntro2.textSize = 24f
+                tvLeerMas.textSize = 22f
+                btnContinuar.textSize = 22f
+
+                // Pantalla TABLA
+                findViewById<TextView>(R.id.tvTituloTabla)?.textSize = 34f
+                findViewById<TextView>(R.id.tvLabelTxakurra)?.textSize = 20f
+                findViewById<TextView>(R.id.tvLabelLehoia)?.textSize = 20f
+                findViewById<TextView>(R.id.tvInstruccionTabla)?.textSize = 20f
+
+                // Agrandamos todos los campos de texto
+                for (et in allEditTexts) {
+                    et.textSize = 24f
+                }
+
+                btnFinish.textSize = 22f
+            }
+            // ---------------------------------------------------------------
+
+            // LOGICA LEER MÁS
+            tvLeerMas.setOnClickListener {
+                if (!textoDesplegado) {
+                    // DESPLEGAR
+                    tvTextoIntro2.visibility = View.VISIBLE
+                    tvLeerMas.text = "Irakurri gutxiago ▲"
+                    ivLeonExplicacion.visibility = View.GONE // Ocultamos león
+                    textoDesplegado = true
+                } else {
+                    // PLEGAR
+                    tvTextoIntro2.visibility = View.GONE
+                    tvLeerMas.text = "Irakurri gehiago ▼"
+                    ivLeonExplicacion.visibility = View.VISIBLE // Mostramos león
+                    textoDesplegado = false
+                }
+            }
+
             setupAudio()
             setupAudioControls()
             setupTextWatchers()
@@ -63,6 +116,12 @@ class TxakurraActivity : AppCompatActivity() {
         mainScrollView = findViewById(R.id.mainScrollView)
         contenedorIntro = findViewById(R.id.contenedorIntro)
         contenedorTabla = findViewById(R.id.contenedorTabla)
+
+        // Referencias nuevas
+        tvTextoIntro1 = findViewById(R.id.tvTextoIntro1)
+        tvTextoIntro2 = findViewById(R.id.tvTextoIntro2)
+        tvLeerMas = findViewById(R.id.tvLeerMas)
+        ivLeonExplicacion = findViewById(R.id.ivLeonExplicacion)
 
         btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
         seekBarAudio = findViewById(R.id.seekBarAudio)
@@ -166,7 +225,6 @@ class TxakurraActivity : AppCompatActivity() {
         }
     }
 
-    // ✅ LÓGICA DE PUNTUACIÓN Y SUBIDA AL SERVIDOR
     private fun calcularPuntuacionFinal() {
         btnFinish.isEnabled = false
 
@@ -178,29 +236,23 @@ class TxakurraActivity : AppCompatActivity() {
             if (et.text.toString().trim().equals(respuestasLehoia[index], ignoreCase = true)) aciertos++
         }
 
-        // ✅ 50 Puntos por acierto (Total 500)
         val puntosObtenidos = aciertos * 50
 
-        // ✅ GUARDAR EN BD LOCAL Y SUBIR A RENDER
         guardarPuntuacionEnBD(puntosObtenidos)
         SyncHelper.subirInmediatamente(this)
 
-        // Salir a los 2 segundos
         Handler(Looper.getMainLooper()).postDelayed({
             finish()
         }, 2000)
     }
 
-    // Función auxiliar para SQLite
     private fun guardarPuntuacionEnBD(puntos: Int) {
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
         val dbHelper = DatabaseHelper(this)
-        // Guardamos en la columna 'diferencias'
         dbHelper.guardarPuntuacion(nombreAlumno, "diferencias", puntos)
     }
 
-    // --- AUDIO ---
     private fun setupAudio() {
         try {
             mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_4)

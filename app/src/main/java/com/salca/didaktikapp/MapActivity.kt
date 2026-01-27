@@ -14,14 +14,33 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
-// Ya no implementamos TextToSpeech.OnInitListener
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var map: GoogleMap
     private var mapReady = false
 
+    // VARIABLES PREFERENCIAS
+    private var modoTextoGrande = false
+
+    // --- VARIABLES DE SESIÓN (ESTÁTICAS) ---
+    companion object {
+        var esPrimeraVezEnLaApp = true
+    }
+    // ----------------------------------------
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Si es la primera vez que se carga la app, reseteamos el tamaño de letra
+        if (esPrimeraVezEnLaApp) {
+            val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
+            val editor = sharedPref.edit()
+            editor.putBoolean("MODO_TEXTO_GRANDE", false)
+            editor.apply()
+
+            esPrimeraVezEnLaApp = false
+        }
+
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_map)
 
@@ -37,11 +56,21 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
     override fun onResume() {
         super.onResume()
+        // Subimos datos si hay pendientes
         SyncHelper.subirInmediatamente(this)
 
+        // Leer configuración visual
+        leerPreferencias()
+
+        // Actualizar mapa si ya está cargado
         if (mapReady) {
             actualizarTipoDeMapa()
         }
+    }
+
+    private fun leerPreferencias() {
+        val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
+        modoTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -80,7 +109,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        // YA NO HAY VOZ AQUÍ, SOLO NAVEGACIÓN DIRECTA
         when (marker.title) {
             "Antzinako Harresia" -> startActivity(Intent(this, MurallaActivity::class.java))
             "Zazpi Kaleak" -> startActivity(Intent(this, SopaActivity::class.java))

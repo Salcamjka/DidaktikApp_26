@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#E3F2FD">
+    android:background="@color/mi_fondo_pantalla">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,36 +37,53 @@
                     android:layout_marginEnd="8dp"/>
 
                 <TextView
+                    android:id="@+id/tvTituloIntro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Txakurraren Iturria"
                     android:textSize="28sp"
                     android:textStyle="bold"
-                    android:textColor="#E57373"
+                    android:textColor="@color/txakurra"
                     android:layout_centerInParent="true"
                     android:gravity="center" />
             </RelativeLayout>
 
             <TextView
+                android:id="@+id/tvTextoIntro1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Iturri hau izen bera duen kalean aurkitzen da; zehazki, Txakur kalean. Orain dela urte asko eraiki zen iturria dugu aurrean. Ikusten duzuenez, iturriak lehoi buru forma duen brontzezko hiru txorrota ditu. Baina, zergatik deitzen da, beraz, Txakur Iturria?\n\nHistorian zehar eztabaida handiak sortu dira jendearen artean eta guztien artean 2 kondaira desberdintzen dira:"
+                android:text="Iturri hau izen bera duen kalean aurkitzen da; zehazki, Txakur kalean. Orain dela urte asko eraiki zen iturria dugu aurrean. Ikusten duzuenez, iturriak lehoi buru forma duen brontzezko hiru txorrota ditu. Baina, zergatik deitzen da, beraz, Txakur Iturria?"
                 android:textSize="18sp"
                 android:textColor="@android:color/black"
                 android:textAlignment="center"
                 android:lineSpacingExtra="3dp"
-                android:paddingBottom="16dp"/>
+                android:layout_marginBottom="4dp"/>
 
             <TextView
+                android:id="@+id/tvTextoIntro2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Modu horretan, denboraren poderioz, iritzi desberdinak sortu dira."
-                android:textSize="16sp"
+                android:text="Historian zehar eztabaida handiak sortu dira jendearen artean eta guztien artean 2 kondaira desberdintzen dira:\n\n1. Lehenengoaren arabera, iturria eraiki zenean, bilbotarrek ez zuten lehoiaren itxura ezagutzen, ez zekiten nolakoa zen; ez zuten inoiz lehoirik ikusi. Orduan iturria ikustean, txakurrak zirela pentsatu zuten.\n\n2. Bigarrenak aldiz, kontatzen du kale horretan gizon bat bizi zela, eta etxeko fatxadan lehoi baten eskultura jartzea erabaki zuela, bere etxea zaintzeko. Gainontzeko pertsonek barre egiten zuten txakurra zirudiela esanez. Denborarekin, txantxa sendotuz joan zen, kaleari eta ondoren iturriari izena eman arte.\n\nModu horretan, denboraren poderioz, iritzi desberdinak sortu dira."
+                android:textSize="18sp"
                 android:textColor="@android:color/black"
-                android:textStyle="italic"
-                android:gravity="center"
-                android:paddingTop="8dp"
-                android:paddingBottom="16dp"/>
+                android:textAlignment="center"
+                android:lineSpacingExtra="3dp"
+                android:visibility="gone"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/tvLeerMas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Irakurri gehiago ▼"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_gravity="center"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginBottom="12dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -83,14 +100,17 @@
                     android:layout_height="40dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@android:drawable/ic_media_play"
-                    app:tint="@android:color/black" />
+                    app:tint="@color/black"
+                    android:contentDescription="Reproducir audio" />
 
                 <SeekBar
                     android:id="@+id/seekBarAudio"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="12dp" />
+                    android:layout_marginStart="12dp"
+                    android:progressTint="@color/txakurra"
+                    android:thumbTint="@color/txakurra" />
             </LinearLayout>
 
             <ImageView
@@ -115,7 +135,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="32dp"
-                android:backgroundTint="#E57373"
+                android:backgroundTint="@color/txakurra"
                 android:paddingHorizontal="32dp"
                 android:paddingVertical="12dp"
                 android:text="Hasi Taula"
@@ -134,12 +154,13 @@
             android:visibility="gone">
 
             <TextView
+                android:id="@+id/tvTituloTabla"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Txakurraren Iturria"
                 android:textSize="28sp"
                 android:textStyle="bold"
-                android:textColor="#E57373"
+                android:textColor="@color/txakurra"
                 android:layout_gravity="center"
                 android:layout_marginBottom="8dp"/>
 
@@ -165,6 +186,7 @@
                         android:src="@drawable/perro"
                         android:scaleType="centerCrop"/>
                     <TextView
+                        android:id="@+id/tvLabelTxakurra"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -172,7 +194,7 @@
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:background="#E57373"
+                        android:background="@color/txakurra"
                         android:textColor="@android:color/white"
                         android:padding="8dp"/>
                 </LinearLayout>
@@ -192,6 +214,7 @@
                         android:src="@drawable/leon"
                         android:scaleType="centerCrop"/>
                     <TextView
+                        android:id="@+id/tvLabelLehoia"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -199,13 +222,14 @@
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:background="#E57373"
+                        android:background="@color/txakurra"
                         android:textColor="@android:color/white"
                         android:padding="8dp"/>
                 </LinearLayout>
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tvInstruccionTabla"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -266,7 +290,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:enabled="false"
-                android:backgroundTint="#9E9E9E"
+                android:backgroundTint="@color/boton_desactivado"
                 android:textColor="@android:color/white"
                 android:paddingHorizontal="32dp"/>
 

@@ -46,7 +46,7 @@ class PuzzleActivity : AppCompatActivity() {
 
     // Referencias a textos
     private lateinit var tvInstruccionArrastrar: TextView
-    private lateinit var tvMensajeVictoria: TextView // NUEVO
+    private lateinit var tvMensajeVictoria: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,9 +57,9 @@ class PuzzleActivity : AppCompatActivity() {
         txtTituloPrincipal = findViewById(R.id.txtTituloPrincipal)
 
         tvInstruccionArrastrar = findViewById(R.id.tvInstruccionArrastrar)
-        tvMensajeVictoria = findViewById(R.id.tvMensajeVictoria) // Inicializamos
+        tvMensajeVictoria = findViewById(R.id.tvMensajeVictoria)
 
-        // Botón Volver Mapa (arriba izquierda)
+        // Botón Volver Mapa
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
         btnVolverMapa.setOnClickListener {
             if (isPlaying) pauseAudio()
@@ -70,23 +70,39 @@ class PuzzleActivity : AppCompatActivity() {
         val gridPresente = findViewById<GridLayout>(R.id.gridPresente)
         val gridPiezas = findViewById<GridLayout>(R.id.gridPiezas)
         btnJarraitu = findViewById(R.id.btnJarraitu)
+        val btnFinalizarTotal = findViewById<Button>(R.id.btnFinalizarTotal)
 
-        // BOTÓN ACTIVADO DESDE EL PRINCIPIO
+        // ---------------------------------------------------------------
+        // ACCESIBILIDAD: LETRA GRANDE
+        // ---------------------------------------------------------------
+        val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
+        val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
+
+        if (usarTextoGrande) {
+            txtTituloPrincipal.textSize = 34f
+            findViewById<TextView>(R.id.tvLabelPasado)?.textSize = 18f
+            findViewById<TextView>(R.id.tvLabelPresente)?.textSize = 18f
+            tvInstruccionArrastrar.textSize = 24f
+            tvMensajeVictoria.textSize = 30f
+            findViewById<TextView>(R.id.tvExplicacionFinal)?.textSize = 24f
+            btnJarraitu.textSize = 22f
+            btnFinalizarTotal.textSize = 22f
+        }
+        // ---------------------------------------------------------------
+
+        // --- CAMBIO: BOTÓN DESACTIVADO AL PRINCIPIO ---
         btnJarraitu.visibility = View.VISIBLE
-        btnJarraitu.isEnabled = true
-        val colorActivo = ContextCompat.getColor(this, R.color.puzzle)
-        btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorActivo)
-        btnJarraitu.setTextColor(Color.BLACK)
+        btnJarraitu.isEnabled = false // No se puede pulsar
+        val colorInactivo = ContextCompat.getColor(this, R.color.boton_desactivado)
+        btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorInactivo)
+        // ---------------------------------------------
 
         btnJarraitu.setOnClickListener {
             cambiarAPantallaFinal()
         }
 
-        findViewById<Button>(R.id.btnFinalizarTotal)?.setOnClickListener {
+        btnFinalizarTotal.setOnClickListener {
             SyncHelper.subirInmediatamente(this)
-            val intent = Intent(this, MapActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            startActivity(intent)
             finish()
         }
 
@@ -196,12 +212,19 @@ class PuzzleActivity : AppCompatActivity() {
             }
         }
 
-        // SI AMBOS PUZZLES ESTÁN COMPLETOS:
+        // --- CAMBIO: SI AMBOS PUZZLES ESTÁN COMPLETOS, ACTIVAMOS EL BOTÓN ---
         if (completadoLehenaldia && completadoOrainaldia) {
             SyncHelper.subirInmediatamente(this)
-            tvInstruccionArrastrar.visibility = View.GONE // Ocultamos instrucción
-            tvMensajeVictoria.visibility = View.VISIBLE // Mostramos victoria
+            tvInstruccionArrastrar.visibility = View.GONE
+            tvMensajeVictoria.visibility = View.VISIBLE
+
+            // ACTIVAMOS EL BOTÓN
+            btnJarraitu.isEnabled = true
+            val colorActivo = ContextCompat.getColor(this, R.color.puzzle)
+            btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorActivo)
+            btnJarraitu.setTextColor(Color.BLACK)
         }
+        // --------------------------------------------------------------------
     }
 
     private fun cambiarAPantallaFinal() {

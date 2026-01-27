@@ -71,6 +71,7 @@
                     android:layout_marginBottom="15dp">
 
                     <TextView
+                        android:id="@+id/tvLabelPasado"
                         android:text="L\nE\nH\nE\nN\nA\nL\nD\nI\nA"
                         android:textStyle="bold"
                         android:textColor="@color/black"
@@ -104,6 +105,7 @@
                     android:layout_marginBottom="10dp">
 
                     <TextView
+                        android:id="@+id/tvLabelPresente"
                         android:text="O\nR\nA\nI\nN\nA\nL\nD\nI\nA"
                         android:textStyle="bold"
                         android:textColor="@color/black"
@@ -187,6 +189,7 @@
                 android:paddingTop="20dp">
 
                 <TextView
+                    android:id="@+id/tvExplicacionFinal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Areatza Bilboko leku garrantzitsu eta ezagunenetako bat da, Alde Zaharrean kokatua.\n\nIraganean, Areatza, izenak dioen bezala, hondartza bat zen, Bilboko hiriaren kanpoaldean, harresietatik haratago, kokatutako eremu bat. Leku hau arrantza-auzoa zen, Nerbioi ibaiaren sarreran kai gisa balio zuen harezko eremu batean kokatua.\n\nPixkanaka garrantzia hartu zuen portu naturala bilakatu zen, non itsasontziak karga deskargatzeko atrakatzen ziren. Urteetan zehar, Bilbo hazi egin zen, y Areatza bilbotarrek paseatzera joaten ziren leku bihurtu zen. Horregatik hartzen da hiriko parkerik zaharrena bezala."
@@ -239,7 +242,7 @@
                     android:text="Amaitu Jarduera"
                     android:textStyle="bold"
                     app:backgroundTint="@color/puzzle"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/white"/>
 
             </LinearLayout>
 

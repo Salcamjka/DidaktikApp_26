@@ -20,7 +20,8 @@ class AccesibilidadActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
         val editor = sharedPref.edit()
 
-        // 2. LEER ESTADO ANTERIOR
+        // 2. LEER ESTADO REAL
+        // Aquí recuperamos cómo estaba el interruptor mientras la app siga abierta
         switchContraste.isChecked = sharedPref.getBoolean("MODO_OSCURO", false)
         switchTexto.isChecked = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
@@ -35,8 +36,6 @@ class AccesibilidadActivity : AppCompatActivity() {
             editor.putBoolean("MODO_TEXTO_GRANDE", isChecked)
             editor.apply()
         }
-
-        // EL CÓDIGO DE VOZ SE HA ELIMINADO
 
         btnVolver.setOnClickListener {
             finish()

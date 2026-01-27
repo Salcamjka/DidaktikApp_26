@@ -22,7 +22,7 @@ class AhorcadoActivity : AppCompatActivity() {
     private lateinit var llTeclado: LinearLayout
     private lateinit var btnJarraituJuego: Button
 
-    // --- NUEVO: Variable para el botón del mapa ---
+    // --- Variable para el botón del mapa ---
     private lateinit var btnVolverMapa: ImageButton
 
     // --- Variables Lógica Juego ---
@@ -43,12 +43,43 @@ class AhorcadoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ahorcado)
+
+        // 1. Inicializamos las vistas estándar
         inicializarVistas()
+
+        // ---------------------------------------------------------------
+        // 2. ACCESIBILIDAD: APLICAR TEXTO GRANDE SI ES NECESARIO
+        // ---------------------------------------------------------------
+        val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
+        val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
+
+        if (usarTextoGrande) {
+            // Buscamos los elementos por ID y aumentamos su tamaño
+
+            // Título Cabecera
+            findViewById<TextView>(R.id.tvTituloCabecera)?.textSize = 34f
+
+            // Palabra del juego (_ _ _ _)
+            tvPalabra.textSize = 32f
+
+            // Resultado (Zorionak/Galdu duzu)
+            tvResultado.textSize = 30f
+
+            // Texto Explicativo (Historia)
+            findViewById<TextView>(R.id.tvTextoExplicativo)?.textSize = 24f
+
+            // Botones
+            btnJarraituJuego.textSize = 22f
+            btnJarraituExplicacion.textSize = 22f
+        }
+        // ---------------------------------------------------------------
+
+        // 3. Iniciamos el juego
         iniciarJuego()
     }
 
     private fun inicializarVistas() {
-        // 1. CONFIGURACIÓN BOTÓN VOLVER AL MAPA
+        // CONFIGURACIÓN BOTÓN VOLVER AL MAPA
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
         btnVolverMapa.setOnClickListener {
             if (mediaPlayer?.isPlaying == true) {
@@ -105,7 +136,7 @@ class AhorcadoActivity : AppCompatActivity() {
         contenedorFaseExplicacion.visibility = View.GONE
         tvResultado.visibility = View.GONE
 
-        // 2. MOSTRAR BOTÓN AL INICIAR JUEGO
+        // MOSTRAR BOTÓN AL INICIAR JUEGO
         btnVolverMapa.visibility = View.VISIBLE
 
         ivAhorcado.setImageResource(R.drawable.ahorcado0)
@@ -121,7 +152,7 @@ class AhorcadoActivity : AppCompatActivity() {
         contenedorFaseJuego.visibility = View.GONE
         contenedorFaseExplicacion.visibility = View.VISIBLE
 
-        // 3. OCULTAR BOTÓN AL PASAR A LA EXPLICACIÓN
+        // OCULTAR BOTÓN AL PASAR A LA EXPLICACIÓN
         btnVolverMapa.visibility = View.GONE
 
         configurarAudio()
@@ -215,12 +246,6 @@ class AhorcadoActivity : AppCompatActivity() {
         desactivarTeclado()
         tvResultado.visibility = View.VISIBLE
         if (gano) {
-            // CÁLCULO PARA QUE EL MÁXIMO SEA 500
-            // 1. Puntos por letras ya sumados: 10 letras x 10 = 100 puntos.
-            // 2. Faltan 400 puntos para llegar a 500.
-            // 3. Fórmula: Base(120) + (Vidas(7)*40) = 120 + 280 = 400 bonus.
-            // Total: 100 + 400 = 500.
-
             val bonusVictoria = 120
             val vidasRestantes = 7 - errores
             val bonusVidas = vidasRestantes * 40

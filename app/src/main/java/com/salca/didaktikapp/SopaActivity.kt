@@ -10,7 +10,6 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -59,11 +58,42 @@ class SopaActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sopa)
         try {
             initializeViews()
+
+            // ---------------------------------------------------------------
+            // ACCESIBILIDAD: LETRA GRANDE
+            // ---------------------------------------------------------------
+            val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
+            val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
+
+            if (usarTextoGrande) {
+                // PANTALLA DE INTRODUCCIÓN
+                findViewById<TextView>(R.id.tvTituloIntro)?.textSize = 34f
+                tvTextoIntroductorio.textSize = 24f
+                btnComenzarSopa.textSize = 22f
+
+                // PANTALLA DE JUEGO
+                findViewById<TextView>(R.id.tvTitle)?.textSize = 30f
+                tvProgress.textSize = 28f
+                btnFinish.textSize = 22f
+
+                // LISTA DE PALABRAS (CHECKBOXES)
+                // Aumentamos el tamaño de la lista para que se lea bien
+                val listaChecks = listOf(
+                    cbSomera, cbArtecalle, cbTenderia, cbBelosticalle,
+                    cbCarniceriaVieja, cbBarrencalle, cbBarrenkaleBarrena
+                )
+
+                for (cb in listaChecks) {
+                    cb.textSize = 20f
+                }
+            }
+            // ---------------------------------------------------------------
+
             setupAudioControls()
             setupWordSearchView()
             setupFinishButton()
             setupAudio()
-            // Eliminada la llamada a animateMascotaInicial()
+
         } catch (e: Exception) {
             Toast.makeText(this, "Errorea: ${e.message}", Toast.LENGTH_LONG).show()
         }
@@ -83,7 +113,6 @@ class SopaActivity : AppCompatActivity() {
 
         tvTextoIntroductorio = findViewById(R.id.tvTextoIntroductorio)
         btnComenzarSopa = findViewById(R.id.btnComenzarSopa)
-        // Eliminado ivMascotaPantalla1
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
         btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
         seekBarAudio = findViewById(R.id.seekBarAudio)
@@ -91,7 +120,6 @@ class SopaActivity : AppCompatActivity() {
         wordSearchView = findViewById(R.id.wordSearchView)
         tvProgress = findViewById(R.id.tvProgress)
         btnFinish = findViewById(R.id.btnFinish)
-        // Eliminado ivMascotaPantalla2
 
         cbBarrencalle = findViewById(R.id.cbBarrencalle)
         cbBelosticalle = findViewById(R.id.cbBelosticalle)
@@ -121,7 +149,6 @@ class SopaActivity : AppCompatActivity() {
             contenedorIntro.visibility = View.GONE
             sopaContainer.visibility = View.VISIBLE
             mainScrollView.scrollTo(0, 0)
-            // Eliminada la llamada a animateMascotaSaludando()
         }
     }
 
@@ -171,8 +198,6 @@ class SopaActivity : AppCompatActivity() {
         handler.postDelayed(runnable, 0)
     }
 
-    // ELIMINADAS LAS FUNCIONES DE ANIMACIÓN DE MASCOTAS (animateMascotaInicial, Saludando, Celebracion)
-
     private fun setupWordSearchView() {
         wordSearchView.onWordFoundListener = { word, count ->
             foundWordsCount = count
@@ -210,7 +235,6 @@ class SopaActivity : AppCompatActivity() {
 
     private fun onGameCompleted() {
         puntuacionActual += 150 // Bonus final para llegar a 500 pts
-        // Eliminada la llamada a animateMascotaCelebracion()
         guardarPuntuacionEnBD(puntuacionActual)
         SyncHelper.subirInmediatamente(this)
     }
@@ -390,7 +414,6 @@ class WordSearchView @JvmOverloads constructor(
         return if (row in 0 until gridRows && col in 0 until gridCols) Pair(row, col) else null
     }
 
-    // LÓGICA DE SELECCIÓN SIN DIAGONALES
     private fun updateSelection() {
         val start = startCell ?: return
         val current = currentCell ?: return
@@ -399,7 +422,6 @@ class WordSearchView @JvmOverloads constructor(
         val rowDiff = current.first - start.first
         val colDiff = current.second - start.second
 
-        // Bloqueo de diagonales: forzamos el eje dominante
         val targetRow: Int
         val targetCol: Int
 

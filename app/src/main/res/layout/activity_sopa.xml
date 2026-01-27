@@ -52,7 +52,7 @@
                 android:id="@+id/tvTextoIntroductorio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Bilbo 1300. urtean sortu zen itsasadarraren ertzean, merkataritza bultzatzeko diseinatua. Herria zazpi kale nagusiren inguruan egituratzen zen (Somera, Artekale, Tendería, Belostikale, Carnicería Vieja, Barrenkale eta Barrenkale Barrena). Kale horiek hiriaren merkataritza eta artisau bihotza ziren, eta merkatariak, zapatariak, arrantzaleak, artisauak, errementariak eta beste lanbide batzuk hartzen zituzten.\n\nBilboko Alde Zaharreko kaleek antzinako lanbideen izenak jasotzen dituzte: Somera (barazkiak eta frutak saltzen ziren), Artekale (erdikoa), Tendería (dendariengatik/ohialeengatik), Belostikale (larru sailtzaileengatik), Carniceria Vieja (harategiengatik), Barrenkale eta Barrenkale Barrena (kalerik baxuenak), jatorriz zapatariak eta beste artisau batzuk hartzen."
+                android:text="Bilbo 1300. urtean sortu zen itsasadarraren ertzean, merkataritza bultzatzeko diseinatua. Herria zazpi kale nagusiren inguruan egituratzen zen (Somera, Artekale, Tenderia, Belostikale, Carnicería Vieja, Barrenkale eta Barrenkale Barrena). Kale horiek hiriaren merkataritza eta artisau bihotza ziren, eta merkatariak, zapatariak, arrantzaleak, artisauak, errementariak eta beste lanbide batzuk hartzen zituzten.\n\nBilboko Alde Zaharreko kaleek antzinako lanbideen izenak jasotzen dituzte: Somera (barazkiak eta frutak saltzen ziren), Artekale (erdikoa), Tenderia (dendariengatik/ohialeengatik), Belostikale (larru sailtzaileengatik), Carniceria Vieja (harategiengatik), Barrenkale eta Barrenkale Barrena (kalerik baxuenak), jatorriz zapatariak eta beste artisau batzuk hartzen zituena. Kaleen izenek gaur egun ere jatorrizko funtzioaren aztarnak gordetzen dituzte."
                 android:textSize="18sp"
                 android:textColor="@color/black"
                 android:textAlignment="center"
@@ -185,7 +185,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
-                    android:text="Tendería"
+                    android:text="Tenderia"
                     android:textSize="13sp"
                     android:textColor="@color/black"
                     android:enabled="false"/>
