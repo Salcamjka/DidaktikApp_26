@@ -135,7 +135,6 @@
             <ImageView android:id="@+id/pieza2" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:scaleType="fitCenter" android:src="@drawable/muralla_2" android:visibility="invisible" />
             <ImageView android:id="@+id/pieza3" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:scaleType="fitCenter" android:src="@drawable/muralla_3" android:visibility="invisible" />
             <ImageView android:id="@+id/pieza4" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:scaleType="fitCenter" android:src="@drawable/muralla_4" android:visibility="invisible" />
-
         </LinearLayout>
 
         <TextView
@@ -169,6 +168,15 @@
             android:layout_marginBottom="16dp"
             app:backgroundTint="@color/muralla"/>
 
+        <ImageView
+            android:id="@+id/ivGifResultado"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_gravity="center"
+            android:src="@drawable/leonfeliz"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"/>
+
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -181,7 +189,7 @@
             android:text="Amaitu Jarduera"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="30dp"
             android:visibility="gone"
             android:textColor="@color/white"

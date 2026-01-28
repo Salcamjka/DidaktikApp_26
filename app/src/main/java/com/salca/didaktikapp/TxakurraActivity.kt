@@ -7,304 +7,245 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.KeyEvent
-import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide // Importante para el GIF
 
 class TxakurraActivity : AppCompatActivity() {
 
-    private lateinit var mainScrollView: ScrollView
+    // VISTAS INTRODUCCIÓN
     private lateinit var contenedorIntro: LinearLayout
-    private lateinit var contenedorTabla: LinearLayout
-
-    // VARIABLES NUEVAS PARA EL DESPLEGABLE
     private lateinit var tvTextoIntro1: TextView
     private lateinit var tvTextoIntro2: TextView
     private lateinit var tvLeerMas: TextView
     private lateinit var ivLeonExplicacion: ImageView
-    private var textoDesplegado = false
-
-    private var mediaPlayer: MediaPlayer? = null
-    private var isPlaying = false
     private lateinit var btnPlayPauseIcon: ImageButton
     private lateinit var seekBarAudio: SeekBar
-    private lateinit var btnVolverMapa: ImageButton
     private lateinit var btnContinuar: Button
+    private var textoDesplegado = false
 
-    private lateinit var runnable: Runnable
-    private var handler = Handler(Looper.getMainLooper())
-
+    // VISTAS TABLA
+    private lateinit var contenedorTabla: LinearLayout
     private lateinit var btnFinish: Button
-    private lateinit var ivPerro: ImageView
-    private lateinit var ivLeon: ImageView
+    private lateinit var ivGifResultado: ImageView // Referencia al GIF
 
-    private val txakurraEditTexts = mutableListOf<EditText>()
-    private val lehoiaEditTexts = mutableListOf<EditText>()
-    private val allEditTexts = mutableListOf<EditText>()
+    // CAMPOS DE TEXTO
+    private lateinit var inputs: List<EditText>
 
-    private val respuestasTxakurra = listOf("kanidoa", "etxea", "orojalea", "zaunka", "txikia")
-    private val respuestasLehoia = listOf("felinoa", "sabana", "haragijalea", "orrua", "handia")
+    private val respuestasCorrectas = mapOf(
+        R.id.etTxakurra1 to listOf("kanidoa", "kanido", "txakurra"),
+        R.id.etTxakurra2 to listOf("etxea", "etxekoa", "basa", "kale"),
+        R.id.etTxakurra3 to listOf("haragijalea", "piensoa", "haragia"),
+        R.id.etTxakurra4 to listOf("zaunka", "ausiki"),
+        R.id.etTxakurra5 to listOf("txikia", "ertaina", "handia", "aldakorra"),
+
+        R.id.etLehoia1 to listOf("felidoa", "felido", "katua"),
+        R.id.etLehoia2 to listOf("sabana", "afrika", "oihana"),
+        R.id.etLehoia3 to listOf("haragijalea", "haragia"),
+        R.id.etLehoia4 to listOf("orroa", "orro"),
+        R.id.etLehoia5 to listOf("handia", "oso handia")
+    )
+
+    private var aciertos = 0
+    private var intentosTotales = 0
+    private val TOTAL_PREGUNTAS = 10
+
+    // AUDIO
+    private var audio: MediaPlayer? = null
+    private val audioHandler = Handler(Looper.getMainLooper())
+    private var isPlaying = false
+    private val updateSeekBarRunnable = object : Runnable {
+        override fun run() {
+            try {
+                if (audio != null && isPlaying) {
+                    seekBarAudio.progress = audio!!.currentPosition
+                }
+                audioHandler.postDelayed(this, 500)
+            } catch (e: Exception) { }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_txakurra)
 
-        try {
-            initializeViews()
-
-            // ---------------------------------------------------------------
-            // ACCESIBILIDAD: LETRA GRANDE
-            // ---------------------------------------------------------------
-            val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
-            val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
-
-            if (usarTextoGrande) {
-                // Pantalla INTRO
-                findViewById<TextView>(R.id.tvTituloIntro)?.textSize = 34f
-                tvTextoIntro1.textSize = 24f
-                tvTextoIntro2.textSize = 24f
-                tvLeerMas.textSize = 22f
-                btnContinuar.textSize = 22f
-
-                // Pantalla TABLA
-                findViewById<TextView>(R.id.tvTituloTabla)?.textSize = 34f
-                findViewById<TextView>(R.id.tvLabelTxakurra)?.textSize = 20f
-                findViewById<TextView>(R.id.tvLabelLehoia)?.textSize = 20f
-                findViewById<TextView>(R.id.tvInstruccionTabla)?.textSize = 20f
-
-                // Agrandamos todos los campos de texto
-                for (et in allEditTexts) {
-                    et.textSize = 24f
-                }
-
-                btnFinish.textSize = 22f
-            }
-            // ---------------------------------------------------------------
-
-            // LOGICA LEER MÁS
-            tvLeerMas.setOnClickListener {
-                if (!textoDesplegado) {
-                    // DESPLEGAR
-                    tvTextoIntro2.visibility = View.VISIBLE
-                    tvLeerMas.text = "Irakurri gutxiago ▲"
-                    ivLeonExplicacion.visibility = View.GONE // Ocultamos león
-                    textoDesplegado = true
-                } else {
-                    // PLEGAR
-                    tvTextoIntro2.visibility = View.GONE
-                    tvLeerMas.text = "Irakurri gehiago ▼"
-                    ivLeonExplicacion.visibility = View.VISIBLE // Mostramos león
-                    textoDesplegado = false
-                }
-            }
-
-            setupAudio()
-            setupAudioControls()
-            setupTextWatchers()
-            setupIndividualValidation()
-            setupNavigationButtons()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Error al iniciar: " + e.message, Toast.LENGTH_LONG).show()
-        }
+        inicializarVistas()
+        configurarAudio()
+        configurarLogicaJuego()
     }
 
-    private fun initializeViews() {
-        mainScrollView = findViewById(R.id.mainScrollView)
+    private fun inicializarVistas() {
         contenedorIntro = findViewById(R.id.contenedorIntro)
-        contenedorTabla = findViewById(R.id.contenedorTabla)
-
-        // Referencias nuevas
         tvTextoIntro1 = findViewById(R.id.tvTextoIntro1)
         tvTextoIntro2 = findViewById(R.id.tvTextoIntro2)
         tvLeerMas = findViewById(R.id.tvLeerMas)
         ivLeonExplicacion = findViewById(R.id.ivLeonExplicacion)
-
         btnPlayPauseIcon = findViewById(R.id.btnPlayPauseIcon)
         seekBarAudio = findViewById(R.id.seekBarAudio)
         btnContinuar = findViewById(R.id.btnContinuar)
-        btnVolverMapa = findViewById(R.id.btnVolverMapa)
 
+        contenedorTabla = findViewById(R.id.contenedorTabla)
         btnFinish = findViewById(R.id.btnFinish)
-        ivPerro = findViewById(R.id.ivPerro)
-        ivLeon = findViewById(R.id.ivLeon)
+        ivGifResultado = findViewById(R.id.ivGifResultado) // GIF
 
-        val idsTxakurra = listOf(R.id.etTxakurra1, R.id.etTxakurra2, R.id.etTxakurra3, R.id.etTxakurra4, R.id.etTxakurra5)
-        val idsLehoia = listOf(R.id.etLehoia1, R.id.etLehoia2, R.id.etLehoia3, R.id.etLehoia4, R.id.etLehoia5)
+        inputs = listOf(
+            findViewById(R.id.etTxakurra1), findViewById(R.id.etTxakurra2),
+            findViewById(R.id.etTxakurra3), findViewById(R.id.etTxakurra4),
+            findViewById(R.id.etTxakurra5), findViewById(R.id.etLehoia1),
+            findViewById(R.id.etLehoia2), findViewById(R.id.etLehoia3),
+            findViewById(R.id.etLehoia4), findViewById(R.id.etLehoia5)
+        )
 
-        idsTxakurra.forEach { id ->
-            val et = findViewById<EditText>(id)
-            txakurraEditTexts.add(et)
-            allEditTexts.add(et)
-        }
-        idsLehoia.forEach { id ->
-            val et = findViewById<EditText>(id)
-            lehoiaEditTexts.add(et)
-            allEditTexts.add(et)
-        }
-    }
-
-    private fun setupIndividualValidation() {
-        txakurraEditTexts.forEachIndexed { index, editText ->
-            val respuestaCorrecta = respuestasTxakurra[index]
-            editText.setOnEditorActionListener { v, actionId, event ->
-                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT || (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    validarUnSoloCampo(editText, respuestaCorrecta)
-                }
-                false
-            }
-            editText.setOnFocusChangeListener { _, hasFocus -> if (!hasFocus) validarUnSoloCampo(editText, respuestaCorrecta) }
-        }
-
-        lehoiaEditTexts.forEachIndexed { index, editText ->
-            val respuestaCorrecta = respuestasLehoia[index]
-            editText.setOnEditorActionListener { v, actionId, event ->
-                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT || (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    validarUnSoloCampo(editText, respuestaCorrecta)
-                }
-                false
-            }
-            editText.setOnFocusChangeListener { _, hasFocus -> if (!hasFocus) validarUnSoloCampo(editText, respuestaCorrecta) }
-        }
-    }
-
-    private fun validarUnSoloCampo(editText: EditText, respuestaCorrecta: String) {
-        val textoUsuario = editText.text.toString().trim()
-        if (textoUsuario.isNotEmpty()) {
-            if (textoUsuario.equals(respuestaCorrecta, ignoreCase = true)) {
-                editText.setTextColor(Color.parseColor("#009900")) // Verde acierto
-            } else {
-                editText.setTextColor(Color.RED) // Rojo error
-            }
-        } else {
-            editText.setTextColor(Color.BLACK)
-        }
-    }
-
-    private fun setupTextWatchers() {
-        val watcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) { verificarCamposLlenos() }
-        }
-        allEditTexts.forEach { it.addTextChangedListener(watcher) }
-    }
-
-    private fun verificarCamposLlenos() {
-        val estaCompleto = allEditTexts.all { it.text.toString().trim().isNotEmpty() }
-        btnFinish.isEnabled = estaCompleto
-        if (estaCompleto) {
-            btnFinish.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E57373"))
-        } else {
-            btnFinish.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#9E9E9E"))
-        }
-    }
-
-    private fun setupNavigationButtons() {
-        btnVolverMapa.visibility = View.VISIBLE
-        btnVolverMapa.setOnClickListener {
+        findViewById<ImageButton>(R.id.btnVolverMapa).setOnClickListener {
             if (isPlaying) pauseAudio()
             finish()
         }
-        btnContinuar.setOnClickListener {
-            if (::runnable.isInitialized) handler.removeCallbacks(runnable)
-            mediaPlayer?.stop()
-            isPlaying = false
-            btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
 
+        tvLeerMas.setOnClickListener {
+            if (!textoDesplegado) {
+                tvTextoIntro2.visibility = View.VISIBLE
+                tvLeerMas.text = "Irakurri gutxiago ▲"
+                ivLeonExplicacion.visibility = View.GONE
+                textoDesplegado = true
+            } else {
+                tvTextoIntro2.visibility = View.GONE
+                tvLeerMas.text = "Irakurri gehiago ▼"
+                ivLeonExplicacion.visibility = View.VISIBLE
+                textoDesplegado = false
+            }
+        }
+
+        btnContinuar.setOnClickListener {
+            if (isPlaying) pauseAudio()
             contenedorIntro.visibility = View.GONE
             contenedorTabla.visibility = View.VISIBLE
-            btnVolverMapa.visibility = View.GONE
-            mainScrollView.scrollTo(0, 0)
         }
+
         btnFinish.setOnClickListener {
-            calcularPuntuacionFinal()
-        }
-    }
-
-    private fun calcularPuntuacionFinal() {
-        btnFinish.isEnabled = false
-
-        var aciertos = 0
-        txakurraEditTexts.forEachIndexed { index, et ->
-            if (et.text.toString().trim().equals(respuestasTxakurra[index], ignoreCase = true)) aciertos++
-        }
-        lehoiaEditTexts.forEachIndexed { index, et ->
-            if (et.text.toString().trim().equals(respuestasLehoia[index], ignoreCase = true)) aciertos++
-        }
-
-        val puntosObtenidos = aciertos * 50
-
-        guardarPuntuacionEnBD(puntosObtenidos)
-        SyncHelper.subirInmediatamente(this)
-
-        Handler(Looper.getMainLooper()).postDelayed({
+            guardarPuntuacion()
             finish()
-        }, 2000)
+        }
     }
 
-    private fun guardarPuntuacionEnBD(puntos: Int) {
-        val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
-        val nombreAlumno = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
-        val dbHelper = DatabaseHelper(this)
-        dbHelper.guardarPuntuacion(nombreAlumno, "diferencias", puntos)
-    }
-
-    private fun setupAudio() {
-        try {
-            mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_4)
-            if (mediaPlayer != null) {
-                mediaPlayer?.setOnPreparedListener { mp -> seekBarAudio.max = mp.duration }
-                mediaPlayer?.setOnCompletionListener {
-                    btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
-                    seekBarAudio.progress = 0
-                    isPlaying = false
-                    if (::runnable.isInitialized) handler.removeCallbacks(runnable)
+    private fun configurarLogicaJuego() {
+        for (input in inputs) {
+            input.setOnFocusChangeListener { v, hasFocus ->
+                if (!hasFocus) validarCampo(input)
+            }
+            input.setOnEditorActionListener { v, actionId, event ->
+                if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
+                    validarCampo(input)
+                    true
+                } else {
+                    false
                 }
             }
-        } catch (e: Exception) {}
+        }
     }
 
-    private fun setupAudioControls() {
-        btnPlayPauseIcon.setOnClickListener { if (isPlaying) pauseAudio() else playAudio() }
+    private fun validarCampo(editText: EditText) {
+        if (!editText.isEnabled) return // Ya validado
+
+        val textoEscrito = editText.text.toString().trim().lowercase()
+        if (textoEscrito.isEmpty()) return // No validar si está vacío
+
+        val id = editText.id
+        val respuestasPosibles = respuestasCorrectas[id] ?: emptyList()
+
+        if (respuestasPosibles.contains(textoEscrito)) {
+            // --- CAMBIO: COLOR VERDE OSCURO ---
+            editText.setTextColor(Color.parseColor("#006400"))
+            // ----------------------------------
+            aciertos++
+        } else {
+            editText.setTextColor(Color.RED)
+        }
+
+        // BLOQUEAR CAMPO
+        editText.isEnabled = false
+        editText.isFocusable = false
+        editText.setBackgroundColor(Color.parseColor("#E0E0E0"))
+
+        intentosTotales++
+        verificarFinalizacion()
+    }
+
+    private fun verificarFinalizacion() {
+        // Se ejecuta cuando se han respondido las 10 casillas
+        if (intentosTotales == TOTAL_PREGUNTAS) {
+            btnFinish.isEnabled = true
+            btnFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.txakurra))
+
+            // SOLO SI ACIERTA TODAS (10 de 10)
+            if (aciertos == TOTAL_PREGUNTAS) {
+                ivGifResultado.visibility = View.VISIBLE
+                Glide.with(this).asGif().load(R.drawable.leonfeliz).into(ivGifResultado)
+            } else {
+                ivGifResultado.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun guardarPuntuacion() {
+        val puntos = aciertos * 10
+        val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
+        val nombre = prefs.getString("nombre_alumno_actual", "Anonimo") ?: "Anonimo"
+        val dbHelper = DatabaseHelper(this)
+        dbHelper.guardarPuntuacion(nombre, "Txakurra", puntos)
+        SyncHelper.subirInmediatamente(this)
+    }
+
+    private fun configurarAudio() {
+        if (audio == null) {
+            audio = MediaPlayer.create(this, R.raw.jarduera_4)
+            audio?.setOnCompletionListener {
+                pauseAudio()
+                audio?.seekTo(0)
+                seekBarAudio.progress = 0
+            }
+            if (audio != null) {
+                seekBarAudio.max = audio!!.duration
+            }
+        }
+
+        btnPlayPauseIcon.setOnClickListener {
+            if (isPlaying) pauseAudio() else playAudio()
+        }
+
         seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) mediaPlayer?.seekTo(progress)
+                if (fromUser) audio?.seekTo(progress)
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                audioHandler.removeCallbacks(updateSeekBarRunnable)
+            }
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                if (isPlaying) audioHandler.postDelayed(updateSeekBarRunnable, 500)
+            }
         })
     }
 
     private fun playAudio() {
-        mediaPlayer?.start()
+        audio?.start()
         isPlaying = true
         btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_pause)
-        updateSeekBar()
+        audioHandler.post(updateSeekBarRunnable)
     }
 
     private fun pauseAudio() {
-        mediaPlayer?.pause()
+        audio?.pause()
         isPlaying = false
         btnPlayPauseIcon.setImageResource(android.R.drawable.ic_media_play)
-        if (::runnable.isInitialized) handler.removeCallbacks(runnable)
-    }
-
-    private fun updateSeekBar() {
-        runnable = Runnable {
-            seekBarAudio.progress = mediaPlayer?.currentPosition ?: 0
-            handler.postDelayed(runnable, 500)
-        }
-        handler.postDelayed(runnable, 0)
+        audioHandler.removeCallbacks(updateSeekBarRunnable)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (::runnable.isInitialized) handler.removeCallbacks(runnable)
-        mediaPlayer?.release()
-        mediaPlayer = null
+        audioHandler.removeCallbacks(updateSeekBarRunnable)
+        audio?.release()
+        audio = null
     }
 }

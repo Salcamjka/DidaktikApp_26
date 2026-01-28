@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide // Importante: Necesitas la librería Glide en build.gradle
 
 class MurallaActivity : AppCompatActivity() {
 
@@ -30,6 +31,9 @@ class MurallaActivity : AppCompatActivity() {
     private lateinit var op2: RadioButton
     private lateinit var op3: RadioButton
     private lateinit var btnResponder: Button
+
+    // Referencia al ImageView del GIF
+    private lateinit var ivGifResultado: ImageView
 
     private lateinit var btnFinalizar: Button
     private lateinit var btnVolverMapa: ImageButton
@@ -65,7 +69,7 @@ class MurallaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_muralla)
 
-        // Inicialización de Vistas
+        // Inicialización
         txtTitulo = findViewById(R.id.txtTitulo)
         txtIntro1 = findViewById(R.id.txtIntro1)
         txtIntro2 = findViewById(R.id.txtIntro2)
@@ -77,8 +81,10 @@ class MurallaActivity : AppCompatActivity() {
         seekBarAudio = findViewById(R.id.seekBarAudio)
         layoutMuralla = findViewById(R.id.layoutMuralla)
 
-        btnFinalizar = findViewById(R.id.btnFinalizar)
+        // Referencia al ImageView
+        ivGifResultado = findViewById(R.id.ivGifResultado)
 
+        btnFinalizar = findViewById(R.id.btnFinalizar)
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
         btnVolverMapa.visibility = View.VISIBLE
         btnVolverMapa.setOnClickListener {
@@ -93,7 +99,6 @@ class MurallaActivity : AppCompatActivity() {
             findViewById(R.id.pieza3),
             findViewById(R.id.pieza4)
         )
-
         listaPiezas.forEach { it.visibility = View.INVISIBLE }
 
         txtPregunta = findViewById(R.id.txtPregunta)
@@ -103,20 +108,13 @@ class MurallaActivity : AppCompatActivity() {
         op3 = findViewById(R.id.op3)
         btnResponder = findViewById(R.id.btnResponder)
 
-        // ---------------------------------------------------------------
-        // ACCESIBILIDAD: LETRA GRANDE
-        // ---------------------------------------------------------------
         val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
         val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
-
         if (usarTextoGrande) {
             txtTitulo.textSize = 34f
-
-            // Textos de introducción
             txtIntro1.textSize = 24f
             txtIntro2.textSize = 24f
             tvLeerMas.textSize = 22f
-
             txtPregunta.textSize = 22f
             op1.textSize = 20f
             op2.textSize = 20f
@@ -125,18 +123,15 @@ class MurallaActivity : AppCompatActivity() {
             btnResponder.textSize = 22f
             btnFinalizar.textSize = 22f
         }
-        // ---------------------------------------------------------------
 
         btnComenzar.visibility = View.VISIBLE
         btnFinalizar.visibility = View.GONE
 
-        // --- ASIGNACIÓN DE TEXTOS ---
-        // PARTE 1: La introducción principal
+        // Textos
         txtIntro1.text = "Orain dela urte asko, Bilbon harrizko harresi handi bat eraiki zen hiria babesteko asmoarekin.\n" +
                 "Bertan familia garrantzitsuenak bizi ziren, euren etxe, denda eta Katedralarekin. Harresitik\n" +
                 "kanpo, berriz, herri giroa zegoen, Pelota eta Ronda izeneko kaleetan."
 
-        // PARTE 2: El resto del texto (oculto al principio)
         txtIntro2.text = "\nDenboraren poderioz, hiria hazi egin zen eta harresia ez zen hain beharrezkoa. Zati batzuk,\n" +
                 "gainean etxeak eraikitzeko erabili ziren, eta beste batzuk eraitsiz joan ziren, nahiz eta gaur\n" +
                 "egun ere egon zela gogorarazten diguten aztarnak dauden. Erronda kalean, esaterako,\n" +
@@ -148,19 +143,16 @@ class MurallaActivity : AppCompatActivity() {
                 "aldiz, harresia zaintzen zuten soldaduek guardiako txandak egiten zituztelako. Horregatik,\n" +
                 "gaur egun ere kale honek zaintza garai hura gogorarazten digu."
 
-        // Lógica de "Leer más"
         tvLeerMas.setOnClickListener {
             if (!textoDesplegado) {
-                // DESPLEGAR
                 txtIntro2.visibility = View.VISIBLE
                 tvLeerMas.text = "Irakurri gutxiago ▲"
-                ivLeon.visibility = View.GONE // Ocultamos león al desplegar
+                ivLeon.visibility = View.GONE
                 textoDesplegado = true
             } else {
-                // PLEGAR
                 txtIntro2.visibility = View.GONE
                 tvLeerMas.text = "Irakurri gehiago ▼"
-                ivLeon.visibility = View.VISIBLE // Mostramos león al plegar
+                ivLeon.visibility = View.VISIBLE
                 textoDesplegado = false
             }
         }
@@ -168,9 +160,7 @@ class MurallaActivity : AppCompatActivity() {
         mostrarTest(false)
         prepararAudio()
 
-        btnPlayPauseAudio.setOnClickListener {
-            if (isPlaying) pauseAudio() else playAudio()
-        }
+        btnPlayPauseAudio.setOnClickListener { if (isPlaying) pauseAudio() else playAudio() }
 
         seekBarAudio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -210,9 +200,7 @@ class MurallaActivity : AppCompatActivity() {
                 }
                 seekBarAudio.max = audio?.duration ?: 0
             }
-        } catch (e: Exception) {
-            Toast.makeText(this, "Errorea audioarekin", Toast.LENGTH_SHORT).show()
-        }
+        } catch (e: Exception) { }
     }
 
     private fun playAudio() {
@@ -237,10 +225,9 @@ class MurallaActivity : AppCompatActivity() {
         btnResponder.visibility = vis
 
         txtIntro1.visibility = if (visible) View.GONE else View.VISIBLE
-        txtIntro2.visibility = View.GONE // Siempre oculto al empezar el test
+        txtIntro2.visibility = View.GONE
         tvLeerMas.visibility = if (visible) View.GONE else View.VISIBLE
         ivLeon.visibility = if (visible) View.GONE else View.VISIBLE
-
         btnPlayPauseAudio.visibility = if (visible) View.GONE else View.VISIBLE
         seekBarAudio.visibility = if (visible) View.GONE else View.VISIBLE
     }
@@ -264,9 +251,7 @@ class MurallaActivity : AppCompatActivity() {
             else -> -1
         }
 
-        if (seleccion == -1) {
-            return
-        }
+        if (seleccion == -1) return
 
         if (seleccion == preguntas[indicePregunta].correcta) {
             progreso++
@@ -289,12 +274,7 @@ class MurallaActivity : AppCompatActivity() {
         txtPregunta.gravity = Gravity.CENTER
         val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
         val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
-
-        if(usarTextoGrande) {
-            txtPregunta.textSize = 30f
-        } else {
-            txtPregunta.textSize = 24f
-        }
+        if(usarTextoGrande) txtPregunta.textSize = 30f else txtPregunta.textSize = 24f
 
         txtPregunta.visibility = View.VISIBLE
         txtPregunta.setTypeface(null, android.graphics.Typeface.BOLD)
@@ -306,6 +286,21 @@ class MurallaActivity : AppCompatActivity() {
             txtPregunta.text = "Galdu duzu!\n(Puntuazioa: $progreso/5)"
             txtPregunta.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
         }
+
+        // --- CARGAMOS EL GIF ANIMADO CON GLIDE ---
+        ivGifResultado.visibility = View.VISIBLE
+
+        try {
+            // Asegúrate de que leonfeliz.gif está en res/drawable
+            Glide.with(this)
+                .asGif()
+                .load(R.drawable.leonfeliz)
+                .into(ivGifResultado)
+        } catch (e: Exception) {
+            // Si Glide falla (o no está instalado), muestra imagen estática
+            ivGifResultado.setImageResource(R.drawable.leonfeliz)
+        }
+        // ------------------------------------------
 
         btnFinalizar.visibility = View.VISIBLE
         guardarPuntuacionEnBD(puntuacionActual)

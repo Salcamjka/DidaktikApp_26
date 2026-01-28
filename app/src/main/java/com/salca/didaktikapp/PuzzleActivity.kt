@@ -15,6 +15,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide // Importante
 
 class PuzzleActivity : AppCompatActivity() {
 
@@ -48,6 +49,9 @@ class PuzzleActivity : AppCompatActivity() {
     private lateinit var tvInstruccionArrastrar: TextView
     private lateinit var tvMensajeVictoria: TextView
 
+    // NUEVO: Referencia al GIF
+    private lateinit var ivGifResultado: ImageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_puzzle)
@@ -58,6 +62,9 @@ class PuzzleActivity : AppCompatActivity() {
 
         tvInstruccionArrastrar = findViewById(R.id.tvInstruccionArrastrar)
         tvMensajeVictoria = findViewById(R.id.tvMensajeVictoria)
+
+        // Inicializamos el ImageView del GIF
+        ivGifResultado = findViewById(R.id.ivGifResultado)
 
         // Botón Volver Mapa
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
@@ -212,11 +219,15 @@ class PuzzleActivity : AppCompatActivity() {
             }
         }
 
-        // --- CAMBIO: SI AMBOS PUZZLES ESTÁN COMPLETOS, ACTIVAMOS EL BOTÓN ---
+        // --- SI AMBOS PUZZLES ESTÁN COMPLETOS ---
         if (completadoLehenaldia && completadoOrainaldia) {
             SyncHelper.subirInmediatamente(this)
             tvInstruccionArrastrar.visibility = View.GONE
             tvMensajeVictoria.visibility = View.VISIBLE
+
+            // MOSTRAR GIF
+            ivGifResultado.visibility = View.VISIBLE
+            Glide.with(this).asGif().load(R.drawable.leonfeliz).into(ivGifResultado)
 
             // ACTIVAMOS EL BOTÓN
             btnJarraitu.isEnabled = true
@@ -224,7 +235,6 @@ class PuzzleActivity : AppCompatActivity() {
             btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorActivo)
             btnJarraitu.setTextColor(Color.BLACK)
         }
-        // --------------------------------------------------------------------
     }
 
     private fun cambiarAPantallaFinal() {

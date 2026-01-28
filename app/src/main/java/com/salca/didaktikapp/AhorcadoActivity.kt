@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide // Importante
 
 class AhorcadoActivity : AppCompatActivity() {
 
@@ -21,6 +22,9 @@ class AhorcadoActivity : AppCompatActivity() {
     private lateinit var tvResultado: TextView
     private lateinit var llTeclado: LinearLayout
     private lateinit var btnJarraituJuego: Button
+
+    // NUEVO: Variable para el GIF
+    private lateinit var ivGifResultado: ImageView
 
     // --- Variable para el botón del mapa ---
     private lateinit var btnVolverMapa: ImageButton
@@ -81,6 +85,10 @@ class AhorcadoActivity : AppCompatActivity() {
         tvPalabra = findViewById(R.id.tvPalabra)
         tvResultado = findViewById(R.id.tvResultado)
         llTeclado = findViewById(R.id.llTeclado)
+
+        // Inicializamos el ImageView del GIF
+        ivGifResultado = findViewById(R.id.ivGifResultado)
+
         btnJarraituJuego = findViewById(R.id.btnJarraituJuego)
 
         btnJarraituJuego.isEnabled = false
@@ -121,6 +129,7 @@ class AhorcadoActivity : AppCompatActivity() {
         contenedorFaseJuego.visibility = View.VISIBLE
         contenedorFaseExplicacion.visibility = View.GONE
         tvResultado.visibility = View.GONE
+        ivGifResultado.visibility = View.GONE // Reset del GIF
 
         // Aseguramos que el teclado sea visible al empezar
         llTeclado.visibility = View.VISIBLE
@@ -225,9 +234,8 @@ class AhorcadoActivity : AppCompatActivity() {
     }
 
     private fun mostrarResultadoFinal(gano: Boolean) {
-        // --- CAMBIO: OCULTAMOS EL TECLADO ---
+        // Ocultamos el teclado siempre al finalizar
         llTeclado.visibility = View.GONE
-        // ------------------------------------
 
         tvResultado.visibility = View.VISIBLE
         if (gano) {
@@ -239,10 +247,19 @@ class AhorcadoActivity : AppCompatActivity() {
             tvResultado.text = "OSO ONDO! IRABAZI DUZU!"
             tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_acierto))
             ivAhorcado.setImageResource(R.drawable.escudo)
+
+            // --- MOSTRAR GIF SOLO SI GANA ---
+            ivGifResultado.visibility = View.VISIBLE
+            Glide.with(this).asGif().load(R.drawable.leonfeliz).into(ivGifResultado)
+            // --------------------------------
+
         } else {
             tvResultado.text = "GALDU DUZU... HITZA: $palabraActual"
             tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
             ivAhorcado.setImageResource(R.drawable.escudo)
+
+            // Si pierde, nos aseguramos de que el GIF esté oculto
+            ivGifResultado.visibility = View.GONE
         }
         guardarPuntuacionEnBD(puntuacionActual)
         btnJarraituJuego.isEnabled = true
