@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide // Importante para el GIF
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -34,8 +35,10 @@ class SopaActivity : AppCompatActivity() {
 
     // Juego
     private lateinit var wordSearchView: WordSearchView
+    private lateinit var layoutPalabras: LinearLayout // Contenedor de checkboxes y progreso
     private lateinit var tvProgress: TextView
     private lateinit var btnFinish: Button
+    private lateinit var ivGifResultado: ImageView // Referencia al GIF
 
     private lateinit var cbBarrencalle: CheckBox
     private lateinit var cbBelosticalle: CheckBox
@@ -59,35 +62,23 @@ class SopaActivity : AppCompatActivity() {
         try {
             initializeViews()
 
-            // ---------------------------------------------------------------
             // ACCESIBILIDAD: LETRA GRANDE
-            // ---------------------------------------------------------------
             val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
             val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
             if (usarTextoGrande) {
-                // PANTALLA DE INTRODUCCIÓN
                 findViewById<TextView>(R.id.tvTituloIntro)?.textSize = 34f
                 tvTextoIntroductorio.textSize = 24f
                 btnComenzarSopa.textSize = 22f
-
-                // PANTALLA DE JUEGO
                 findViewById<TextView>(R.id.tvTitle)?.textSize = 30f
                 tvProgress.textSize = 28f
                 btnFinish.textSize = 22f
 
-                // LISTA DE PALABRAS (CHECKBOXES)
-                // Aumentamos el tamaño de la lista para que se lea bien
-                val listaChecks = listOf(
-                    cbSomera, cbArtecalle, cbTenderia, cbBelosticalle,
-                    cbCarniceriaVieja, cbBarrencalle, cbBarrenkaleBarrena
-                )
-
+                val listaChecks = listOf(cbSomera, cbArtecalle, cbTenderia, cbBelosticalle, cbCarniceriaVieja, cbBarrencalle, cbBarrenkaleBarrena)
                 for (cb in listaChecks) {
                     cb.textSize = 20f
                 }
             }
-            // ---------------------------------------------------------------
 
             setupAudioControls()
             setupWordSearchView()
@@ -118,8 +109,10 @@ class SopaActivity : AppCompatActivity() {
         seekBarAudio = findViewById(R.id.seekBarAudio)
 
         wordSearchView = findViewById(R.id.wordSearchView)
+        layoutPalabras = findViewById(R.id.layoutPalabras) // Referencia al contenedor de la lista
         tvProgress = findViewById(R.id.tvProgress)
         btnFinish = findViewById(R.id.btnFinish)
+        ivGifResultado = findViewById(R.id.ivGifResultado) // Referencia al GIF
 
         cbBarrencalle = findViewById(R.id.cbBarrencalle)
         cbBelosticalle = findViewById(R.id.cbBelosticalle)
@@ -234,7 +227,14 @@ class SopaActivity : AppCompatActivity() {
     }
 
     private fun onGameCompleted() {
-        puntuacionActual += 150 // Bonus final para llegar a 500 pts
+        puntuacionActual += 150
+
+        // --- CAMBIO: OCULTAR PALABRAS Y MOSTRAR GIF ---
+        layoutPalabras.visibility = View.GONE // Oculta lista y contador
+        ivGifResultado.visibility = View.VISIBLE // Muestra GIF
+        Glide.with(this).asGif().load(R.drawable.leonfeliz).into(ivGifResultado)
+        // ----------------------------------------------
+
         guardarPuntuacionEnBD(puntuacionActual)
         SyncHelper.subirInmediatamente(this)
     }
@@ -248,7 +248,7 @@ class SopaActivity : AppCompatActivity() {
 }
 
 // ============================================================================
-// CLASE WORDSEARCHVIEW (BLOQUEO DE DIAGONALES)
+// CLASE WORDSEARCHVIEW (AQUÍ ESTÁ LA CLASE QUE FALTABA)
 // ============================================================================
 
 class WordSearchView @JvmOverloads constructor(
@@ -263,6 +263,7 @@ class WordSearchView @JvmOverloads constructor(
     private var offsetX = 0f
     private var offsetY = 0f
 
+    // La cuadrícula de letras
     private val grid = arrayOf(
         charArrayOf('C', 'S', 'O', 'M', 'E', 'R', 'A', 'K', 'Z', 'P', 'L', 'B'),
         charArrayOf('A', 'A', 'R', 'T', 'E', 'K', 'A', 'L', 'E', 'W', 'N', 'A'),
@@ -289,6 +290,7 @@ class WordSearchView @JvmOverloads constructor(
     private var currentCell: Pair<Int, Int>? = null
     private val selectedCells = mutableListOf<Pair<Int, Int>>()
 
+    // Colores para las palabras encontradas
     private val wordColors = listOf(
         ContextCompat.getColor(context, R.color.sopa_verde),
         ContextCompat.getColor(context, R.color.sopa_azul),
@@ -340,23 +342,40 @@ class WordSearchView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        // Dibujar palabras ya encontradas
         for ((cell, color) in foundCellColors) {
             highlightPaint.color = color
             val (row, col) = cell
-            canvas.drawRect(offsetX + col * cellSize, offsetY + row * cellSize, offsetX + (col + 1) * cellSize, offsetY + (row + 1) * cellSize, highlightPaint)
+            canvas.drawRect(
+                offsetX + col * cellSize,
+                offsetY + row * cellSize,
+                offsetX + (col + 1) * cellSize,
+                offsetY + (row + 1) * cellSize,
+                highlightPaint
+            )
         }
+        // Dibujar selección actual
         for (cell in selectedCells) {
             val (row, col) = cell
-            canvas.drawRect(offsetX + col * cellSize, offsetY + row * cellSize, offsetX + (col + 1) * cellSize, offsetY + (row + 1) * cellSize, selectionPaint)
+            canvas.drawRect(
+                offsetX + col * cellSize,
+                offsetY + row * cellSize,
+                offsetX + (col + 1) * cellSize,
+                offsetY + (row + 1) * cellSize,
+                selectionPaint
+            )
         }
+        // Dibujar rejilla vertical
         for (i in 0..gridCols) {
             val pos = offsetX + i * cellSize
             canvas.drawLine(pos, offsetY, pos, offsetY + gridRows * cellSize, gridPaint)
         }
+        // Dibujar rejilla horizontal
         for (i in 0..gridRows) {
             val pos = offsetY + i * cellSize
             canvas.drawLine(offsetX, pos, offsetX + gridCols * cellSize, pos, gridPaint)
         }
+        // Dibujar letras
         for (row in 0 until gridRows) {
             for (col in 0 until gridCols) {
                 val x = offsetX + col * cellSize + cellSize / 2
@@ -425,12 +444,33 @@ class WordSearchView @JvmOverloads constructor(
         val targetRow: Int
         val targetCol: Int
 
+        // Lógica para forzar selección en línea recta o diagonal perfecta
         if (abs(rowDiff) > abs(colDiff)) {
-            targetRow = current.first
-            targetCol = start.second
+            // Movimiento más vertical
+            if (abs(colDiff) < abs(rowDiff) / 2) {
+                // Vertical
+                targetRow = current.first
+                targetCol = start.second
+            } else {
+                // Diagonal vertical
+                targetRow = current.first
+                val step = if (rowDiff != 0) rowDiff / abs(rowDiff) else 1
+                val colDir = if (colDiff != 0) colDiff / abs(colDiff) else 1
+                targetCol = start.second + (abs(targetRow - start.first) * colDir)
+            }
         } else {
-            targetRow = start.first
-            targetCol = current.second
+            // Movimiento más horizontal
+            if (abs(rowDiff) < abs(colDiff) / 2) {
+                // Horizontal
+                targetRow = start.first
+                targetCol = current.second
+            } else {
+                // Diagonal horizontal
+                targetCol = current.second
+                val step = if (colDiff != 0) colDiff / abs(colDiff) else 1
+                val rowDir = if (rowDiff != 0) rowDiff / abs(rowDiff) else 1
+                targetRow = start.first + (abs(targetCol - start.second) * rowDir)
+            }
         }
 
         val newRowDiff = targetRow - start.first
@@ -445,8 +485,13 @@ class WordSearchView @JvmOverloads constructor(
         val rowStep = if (newRowDiff == 0) 0 else newRowDiff / abs(newRowDiff)
         val colStep = if (newColDiff == 0) 0 else newColDiff / abs(newColDiff)
 
+        // Limitar dentro de los bordes
         for (i in 0..steps) {
-            selectedCells.add(Pair(start.first + i * rowStep, start.second + i * colStep))
+            val r = start.first + i * rowStep
+            val c = start.second + i * colStep
+            if (r in 0 until gridRows && c in 0 until gridCols) {
+                selectedCells.add(Pair(r, c))
+            }
         }
     }
 
@@ -458,10 +503,12 @@ class WordSearchView @JvmOverloads constructor(
 
         for (word in targetWords) {
             if ((selectedWord == word || reversedWord == word) && !foundWords.contains(word)) {
+                // Caso especial para BARRENKALE (evitar que se marque dentro de BARRENKALEBARRENA si no es la correcta)
                 if (word == "BARRENKALE") {
-                    val esLaVertical = selectedCells.all { it.second == 11 }
+                    val esLaVertical = selectedCells.all { it.second == 11 } // Columna 11 es donde está la vertical
                     if (esLaVertical) continue
                 }
+
                 foundWords.add(word)
                 val colorIndex = foundWords.size - 1
                 val color = wordColors[colorIndex % wordColors.size]

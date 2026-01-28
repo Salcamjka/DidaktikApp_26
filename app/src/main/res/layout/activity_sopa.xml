@@ -144,105 +144,57 @@
                 android:background="@color/white"
                 android:elevation="1dp"/>
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/layoutPalabras"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Aurkitu beharreko hitzak:"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="6dp"/>
+                android:orientation="vertical">
 
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:columnCount="2"
-                android:layout_marginBottom="10dp">
-
-                <CheckBox
-                    android:id="@+id/cbSomera"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:text="Somera"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
-                    android:enabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/cbArtecalle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:text="Artekale"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
-                    android:enabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/cbTenderia"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:text="Tenderia"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
-                    android:enabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/cbBelosticalle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:text="Belostikale"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
-                    android:enabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/cbCarniceriaVieja"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:text="Carniceria Vieja"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
-                    android:enabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/cbBarrencalle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:text="Barrenkale"
-                    android:textSize="13sp"
-                    android:textColor="@color/black"
-                    android:enabled="false"/>
-
-                <CheckBox
-                    android:id="@+id/cbBarrenkaleBarrena"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_columnSpan="2"
-                    android:text="Barrenkale Barrena"
-                    android:textSize="13sp"
+                    android:text="Aurkitu beharreko hitzak:"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
                     android:textColor="@color/black"
-                    android:enabled="false"/>
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="6dp"/>
 
-            </GridLayout>
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2"
+                    android:layout_marginBottom="10dp">
 
-            <TextView
-                android:id="@+id/tvProgress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                    <CheckBox android:id="@+id/cbSomera" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Somera" android:textSize="13sp" android:textColor="@color/black" android:enabled="false"/>
+                    <CheckBox android:id="@+id/cbArtecalle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Artekale" android:textSize="13sp" android:textColor="@color/black" android:enabled="false"/>
+                    <CheckBox android:id="@+id/cbTenderia" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Tenderia" android:textSize="13sp" android:textColor="@color/black" android:enabled="false"/>
+                    <CheckBox android:id="@+id/cbBelosticalle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Belostikale" android:textSize="13sp" android:textColor="@color/black" android:enabled="false"/>
+                    <CheckBox android:id="@+id/cbCarniceriaVieja" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Carniceria Vieja" android:textSize="13sp" android:textColor="@color/black" android:enabled="false"/>
+                    <CheckBox android:id="@+id/cbBarrencalle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Barrenkale" android:textSize="13sp" android:textColor="@color/black" android:enabled="false"/>
+                    <CheckBox android:id="@+id/cbBarrenkaleBarrena" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_columnSpan="2" android:text="Barrenkale Barrena" android:textSize="13sp" android:textColor="@color/black" android:enabled="false"/>
+                </GridLayout>
+
+                <TextView
+                    android:id="@+id/tvProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="0/7"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/sopa"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="10dp"/>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivGifResultado"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:layout_gravity="center"
-                android:text="0/7"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/sopa"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="10dp"/>
+                android:visibility="gone"
+                android:layout_marginBottom="16dp"/>
 
             <Button
                 android:id="@+id/btnFinish"
