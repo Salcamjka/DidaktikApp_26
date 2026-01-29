@@ -10,7 +10,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide // Importante: Necesitas la librería Glide en build.gradle
+import com.bumptech.glide.Glide // Importante: Necesitas la librería Glide
 
 class MurallaActivity : AppCompatActivity() {
 
@@ -279,28 +279,31 @@ class MurallaActivity : AppCompatActivity() {
         txtPregunta.visibility = View.VISIBLE
         txtPregunta.setTypeface(null, android.graphics.Typeface.BOLD)
 
+        // VARIABLE PARA DECIDIR QUÉ GIF MOSTRAR
+        val gifResId: Int
+
         if (progreso == preguntas.size) {
+            // SI ACIERTA TODAS
             txtPregunta.text = "🏰 Zorionak!\nHarresia osatu duzu!"
             txtPregunta.setTextColor(ContextCompat.getColor(this, R.color.mi_acierto))
+            gifResId = R.drawable.leonfeliz // León feliz
         } else {
+            // SI FALLA ALGUNA
             txtPregunta.text = "Galdu duzu!\n(Puntuazioa: $progreso/5)"
             txtPregunta.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
+            gifResId = R.drawable.leontriste // León triste
         }
 
-        // --- CARGAMOS EL GIF ANIMADO CON GLIDE ---
+        // CARGAMOS EL GIF SELECCIONADO
         ivGifResultado.visibility = View.VISIBLE
-
         try {
-            // Asegúrate de que leonfeliz.gif está en res/drawable
             Glide.with(this)
                 .asGif()
-                .load(R.drawable.leonfeliz)
+                .load(gifResId) // Carga el ID decidido arriba
                 .into(ivGifResultado)
         } catch (e: Exception) {
-            // Si Glide falla (o no está instalado), muestra imagen estática
-            ivGifResultado.setImageResource(R.drawable.leonfeliz)
+            ivGifResultado.setImageResource(gifResId)
         }
-        // ------------------------------------------
 
         btnFinalizar.visibility = View.VISIBLE
         guardarPuntuacionEnBD(puntuacionActual)

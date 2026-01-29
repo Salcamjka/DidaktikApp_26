@@ -38,14 +38,14 @@ class TxakurraActivity : AppCompatActivity() {
     private val respuestasCorrectas = mapOf(
         R.id.etTxakurra1 to listOf("kanidoa", "kanido", "txakurra"),
         R.id.etTxakurra2 to listOf("etxea", "etxekoa", "basa", "kale"),
-        R.id.etTxakurra3 to listOf("haragijalea", "piensoa", "haragia"),
+        R.id.etTxakurra3 to listOf("orojalea", "piensoa"),
         R.id.etTxakurra4 to listOf("zaunka", "ausiki"),
-        R.id.etTxakurra5 to listOf("txikia", "ertaina", "handia", "aldakorra"),
+        R.id.etTxakurra5 to listOf("txikia", "ertaina"),
 
-        R.id.etLehoia1 to listOf("felidoa", "felido", "katua"),
+        R.id.etLehoia1 to listOf("felidoa", "felido"),
         R.id.etLehoia2 to listOf("sabana", "afrika", "oihana"),
         R.id.etLehoia3 to listOf("haragijalea", "haragia"),
-        R.id.etLehoia4 to listOf("orroa", "orro"),
+        R.id.etLehoia4 to listOf("orrua", "orro"),
         R.id.etLehoia5 to listOf("handia", "oso handia")
     )
 
@@ -156,11 +156,11 @@ class TxakurraActivity : AppCompatActivity() {
         val respuestasPosibles = respuestasCorrectas[id] ?: emptyList()
 
         if (respuestasPosibles.contains(textoEscrito)) {
-            // --- CAMBIO: COLOR VERDE OSCURO ---
+            // VERDE OSCURO SI ACIERTA
             editText.setTextColor(Color.parseColor("#006400"))
-            // ----------------------------------
             aciertos++
         } else {
+            // ROJO SI FALLA
             editText.setTextColor(Color.RED)
         }
 
@@ -179,13 +179,21 @@ class TxakurraActivity : AppCompatActivity() {
             btnFinish.isEnabled = true
             btnFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.txakurra))
 
-            // SOLO SI ACIERTA TODAS (10 de 10)
-            if (aciertos == TOTAL_PREGUNTAS) {
-                ivGifResultado.visibility = View.VISIBLE
-                Glide.with(this).asGif().load(R.drawable.leonfeliz).into(ivGifResultado)
+            ivGifResultado.visibility = View.VISIBLE
+
+            // --- LÓGICA DEL GIF FINAL ---
+            val gifResId = if (aciertos == TOTAL_PREGUNTAS) {
+                R.drawable.leonfeliz // Si acierta todas
             } else {
-                ivGifResultado.visibility = View.GONE
+                R.drawable.leontriste // Si falla alguna
             }
+
+            try {
+                Glide.with(this).asGif().load(gifResId).into(ivGifResultado)
+            } catch (e: Exception) {
+                ivGifResultado.setImageResource(gifResId)
+            }
+            // ----------------------------
         }
     }
 

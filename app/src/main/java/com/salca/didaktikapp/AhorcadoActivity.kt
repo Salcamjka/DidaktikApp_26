@@ -23,7 +23,7 @@ class AhorcadoActivity : AppCompatActivity() {
     private lateinit var llTeclado: LinearLayout
     private lateinit var btnJarraituJuego: Button
 
-    // NUEVO: Variable para el GIF
+    // Variable para el GIF
     private lateinit var ivGifResultado: ImageView
 
     // --- Variable para el botón del mapa ---
@@ -238,6 +238,10 @@ class AhorcadoActivity : AppCompatActivity() {
         llTeclado.visibility = View.GONE
 
         tvResultado.visibility = View.VISIBLE
+
+        // --- VARIABLE PARA EL GIF ---
+        val gifResId: Int
+
         if (gano) {
             val bonusVictoria = 120
             val vidasRestantes = 7 - errores
@@ -248,19 +252,27 @@ class AhorcadoActivity : AppCompatActivity() {
             tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_acierto))
             ivAhorcado.setImageResource(R.drawable.escudo)
 
-            // --- MOSTRAR GIF SOLO SI GANA ---
-            ivGifResultado.visibility = View.VISIBLE
-            Glide.with(this).asGif().load(R.drawable.leonfeliz).into(ivGifResultado)
-            // --------------------------------
+            // GIF FELIZ
+            gifResId = R.drawable.leonfeliz
 
         } else {
             tvResultado.text = "GALDU DUZU... HITZA: $palabraActual"
             tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
             ivAhorcado.setImageResource(R.drawable.escudo)
 
-            // Si pierde, nos aseguramos de que el GIF esté oculto
-            ivGifResultado.visibility = View.GONE
+            // GIF TRISTE
+            gifResId = R.drawable.leontriste
         }
+
+        // --- CARGAR EL GIF CORRESPONDIENTE ---
+        ivGifResultado.visibility = View.VISIBLE
+        try {
+            Glide.with(this).asGif().load(gifResId).into(ivGifResultado)
+        } catch (e: Exception) {
+            ivGifResultado.setImageResource(gifResId)
+        }
+        // -------------------------------------
+
         guardarPuntuacionEnBD(puntuacionActual)
         btnJarraituJuego.isEnabled = true
         val colorActivo = ContextCompat.getColor(this, R.color.ahorcado)
