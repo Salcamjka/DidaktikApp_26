@@ -9,6 +9,11 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 object SyncHelper {
+
+    // =================================================================
+    // 🌍 AHORA APUNTA A LA NUBE (RENDER)
+    // =================================================================
+    // Ya no busca tu PC local, ahora envía los datos a Internet.
     private const val API_URL = "https://api-didaktikapp.onrender.com/upload-db"
 
     fun subirInmediatamente(context: Context) {
@@ -18,17 +23,16 @@ object SyncHelper {
             // Si no existe la base de datos, no hacemos nada
             if (!dbPath.exists()) return@Thread
 
-            // 1. FORZAR GUARDADO: Obligamos a Android a escribir los datos en el archivo .db
+            // 1. FORZAR GUARDADO (CheckPoint) para asegurar que los datos no se quedan en memoria
             try {
                 val dbHelper = DatabaseHelper(context)
                 val db = dbHelper.writableDatabase
                 db.rawQuery("PRAGMA wal_checkpoint(FULL)", null).close()
-                // No cerramos la conexión para no interferir con la app
             } catch (e: Exception) {
                 e.printStackTrace()
             }
 
-            // 2. SUBIR EL ARCHIVO AL SERVIDOR
+            // 2. SUBIR EL ARCHIVO
             uploadFile(dbPath)
         }.start()
     }
@@ -75,9 +79,9 @@ object SyncHelper {
             // Verificar respuesta
             val responseCode = conn.responseCode
             if (responseCode == 200 || responseCode == 201) {
-                Log.d("API", "✅ ÉXITO: Base de datos subida al PC. Código: $responseCode")
+                Log.d("API", "✅ ÉXITO: Base de datos subida a RENDER. Código: $responseCode")
             } else {
-                Log.e("API", "❌ ERROR al subir. Código: $responseCode")
+                Log.e("API", "❌ ERROR al subir a Render. Código: $responseCode")
             }
 
         } catch (e: Exception) {
