@@ -2,7 +2,6 @@ package com.salca.didaktikapp
 
 import android.content.ClipData
 import android.content.Context
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.media.MediaPlayer
