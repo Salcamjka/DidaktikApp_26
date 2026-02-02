@@ -116,4 +116,18 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "DidaktikApp.
         db.close()
         return rankingList
     }
+
+    // 👇 FUNCIÓN NUEVA PARA BORRAR Y REINICIAR ID A 1
+    fun borrarTodo() {
+        val db = this.writableDatabase
+
+        // 1. Borra todos los alumnos
+        db.execSQL("DELETE FROM $TABLE_ALUMNOS")
+
+        // 2. Reinicia el contador (ID vuelve a 1)
+        // OJO: 'sqlite_sequence' es una tabla interna de Android, no la toques
+        db.execSQL("DELETE FROM sqlite_sequence WHERE name = '$TABLE_ALUMNOS'")
+
+        db.close()
+    }
 }

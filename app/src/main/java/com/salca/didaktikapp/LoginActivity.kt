@@ -24,6 +24,9 @@ class LoginActivity : AppCompatActivity() {
 
         dbHelper = DatabaseHelper(this)
 
+        // ⚠️ DESCOMENTA LA SIGUIENTE LÍNEA UNA VEZ PARA BORRAR TODO Y REINICIAR IDs
+        // dbHelper.borrarTodo()
+
         val etName = findViewById<EditText>(R.id.etName)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
 
