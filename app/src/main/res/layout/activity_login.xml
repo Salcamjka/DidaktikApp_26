@@ -18,7 +18,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="DidaktikApp"
+            android:text="EUSKAL PLAY"
             android:textSize="42sp"
             android:textStyle="bold"
             android:textColor="#FF4081"/>
