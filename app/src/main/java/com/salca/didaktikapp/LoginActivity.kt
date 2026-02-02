@@ -76,11 +76,10 @@ class LoginActivity : AppCompatActivity() {
 
                 dbHelper.crearUsuarioInicial(studentName)
 
-                // Feedback visual
-                Toast.makeText(this, "Sartzen...", Toast.LENGTH_SHORT).show()
+                // Desactivamos el botón para evitar doble click
                 btnLogin.isEnabled = false
 
-                // Esperamos 1.5s antes de subir para asegurar que la BD está cerrada
+                // Esperamos 1.5s antes de subir para asegurar que la BD está cerrada y cargar datos
                 Handler(Looper.getMainLooper()).postDelayed({
                     SyncHelper.subirInmediatamente(this@LoginActivity)
                     val intent = Intent(this@LoginActivity, MapActivity::class.java)
