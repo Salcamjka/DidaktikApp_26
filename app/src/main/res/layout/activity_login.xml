@@ -4,31 +4,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E3F2FD"> <LinearLayout
-    android:id="@+id/headerContainer"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:layout_marginTop="40dp"
-    app:layout_constraintTop_toTopOf="parent">
+    android:background="#E3F2FD">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/headerContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="DidaktikApp"
-        android:textSize="42sp"
-        android:textStyle="bold"
-        android:textColor="#FF4081"/>
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ongi etorri! Ikas dezagun jolasten."
-        android:textSize="18sp"
-        android:textColor="#546E7A"
-        android:layout_marginTop="8dp"/>
-</LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DidaktikApp"
+            android:textSize="42sp"
+            android:textStyle="bold"
+            android:textColor="#FF4081"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ongi etorri! Ikas dezagun jolasten."
+            android:textSize="18sp"
+            android:textColor="#546E7A"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/ivLoginLogo"
@@ -41,13 +43,13 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardViewLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="24dp"
         app:cardElevation="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivLoginLogo"
         app:layout_constraintVertical_bias="0.3">
 
@@ -89,7 +91,53 @@
                 android:textColor="@android:color/white"
                 app:cornerRadius="30dp"/>
         </LinearLayout>
-
     </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardViewLogin"
+        app:layout_constraintVertical_bias="1.0">
+
+        <TextView
+            android:text="🏆 TOP 3 TXAPELDUNAK 🏆"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FF4081"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tvTop1"
+            android:text="🥇 1. -"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="#546E7A"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvTop2"
+            android:text="🥈 2. -"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="#546E7A"/>
+
+        <TextView
+            android:id="@+id/tvTop3"
+            android:text="🥉 3. -"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="#546E7A"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

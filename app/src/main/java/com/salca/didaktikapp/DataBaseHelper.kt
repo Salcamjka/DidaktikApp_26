@@ -5,10 +5,15 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-// VERSIÓN 10: Para limpiar y estabilizar
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "DidaktikApp.db", null, 10) {
 
     private val TABLE_ALUMNOS = "alumnos"
+
+    // 👇 ESTO ES LO QUE ARREGLA LA SUBIDA DE ARCHIVOS
+    override fun onConfigure(db: SQLiteDatabase) {
+        super.onConfigure(db)
+        db.disableWriteAheadLogging()
+    }
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("CREATE TABLE $TABLE_ALUMNOS (" +
@@ -29,9 +34,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "DidaktikApp.
         onCreate(db)
     }
 
-    // =================================================
-    //  CREAR USUARIO (LOGIN)
-    // =================================================
     fun crearUsuarioInicial(nombre: String) {
         val db = this.writableDatabase
         val nombreLimpio = nombre.trim()
@@ -40,16 +42,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "DidaktikApp.
         val existe = cursor.moveToFirst()
         cursor.close()
 
-        if (existe) return
-
-        val values = ContentValues()
-        values.put("nombre", nombreLimpio)
-        db.insert(TABLE_ALUMNOS, null, values)
+        if (!existe) {
+            val values = ContentValues()
+            values.put("nombre", nombreLimpio)
+            db.insert(TABLE_ALUMNOS, null, values)
+        }
+        db.close()
     }
 
-    // =================================================
-    //  GUARDAR PUNTOS
-    // =================================================
     fun guardarPuntuacion(nombre: String, juego: String, puntos: Int) {
         val db = this.writableDatabase
         val nombreLimpio = nombre.trim()
@@ -65,23 +65,21 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "DidaktikApp.
 
         val values = ContentValues()
         values.put(columna, puntos)
-
         db.update(TABLE_ALUMNOS, values, "nombre = ?", arrayOf(nombreLimpio))
+        db.close()
     }
 
-    // =================================================
-    //  OBTENER PUNTOS (Lo dejamos por si acaso lo usas después)
-    // =================================================
     fun obtenerPuntuacion(nombre: String, juego: String): Int {
         val db = this.readableDatabase
         val nombreLimpio = nombre.trim()
 
-        val columna = when (juego) {
-            "Ahorcado", "AhorcadoActivity" -> "ahorcado"
-            "Muralla", "MurallaActivity" -> "muralla"
-            "Sopa", "SopaActivity" -> "sopa"
-            "Txakurra", "diferencias", "TxakurraActivity" -> "diferencias"
-            "Puzzle", "PuzzleActivity" -> "puzzle"
+        // Mapeo simple de nombres de actividad a columnas
+        val columna = when {
+            juego.contains("Ahorcado") -> "ahorcado"
+            juego.contains("Muralla") -> "muralla"
+            juego.contains("Sopa") -> "sopa"
+            juego.contains("Txakurra") || juego.contains("diferencias") -> "diferencias"
+            juego.contains("Puzzle") -> "puzzle"
             else -> return 0
         }
 
@@ -91,7 +89,31 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "DidaktikApp.
             puntuacion = cursor.getInt(0)
         }
         cursor.close()
-
+        db.close()
         return puntuacion
+    }
+
+    fun getTop3Ranking(): List<String> {
+        val rankingList = mutableListOf<String>()
+        val db = this.readableDatabase
+
+        val query = """
+            SELECT nombre, (ahorcado + muralla + sopa + diferencias + puzzle) as total 
+            FROM $TABLE_ALUMNOS 
+            ORDER BY total DESC 
+            LIMIT 3
+        """
+
+        val cursor = db.rawQuery(query, null)
+        if (cursor.moveToFirst()) {
+            do {
+                val nombre = cursor.getString(0)
+                val puntos = cursor.getInt(1)
+                rankingList.add("$nombre ($puntos pt)")
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return rankingList
     }
 }
