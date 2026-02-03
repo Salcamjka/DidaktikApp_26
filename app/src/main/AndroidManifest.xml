@@ -31,15 +31,39 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MainActivity" android:screenOrientation="portrait" />
-        <activity android:name=".MapActivity" android:exported="false" android:screenOrientation="portrait" />
-        <activity android:name=".AhorcadoActivity" android:exported="false" android:screenOrientation="portrait" />
-        <activity android:name=".SopaActivity" android:screenOrientation="portrait" />
-        <activity android:name=".TxakurraActivity" android:screenOrientation="portrait" />
-        <activity android:name=".MurallaActivity" android:screenOrientation="portrait" />
-        <activity android:name=".PuzzleActivity" android:screenOrientation="portrait" />
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".AccesibilidadActivity" android:screenOrientation="portrait" />
+        <activity
+            android:name=".MapActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".AccesibilidadActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".AhorcadoActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".SopaActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".TxakurraActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".MurallaActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".PuzzleActivity"
+            android:screenOrientation="portrait" />
 
     </application>
 </manifest>
