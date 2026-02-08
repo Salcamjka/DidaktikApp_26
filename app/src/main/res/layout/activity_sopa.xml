@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- ScrollView principal que permite desplazamiento vertical en toda la pantalla -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mainScrollView"
@@ -7,11 +8,15 @@
     android:fillViewport="true"
     android:background="@color/mi_fondo_pantalla">
 
+    <!-- LinearLayout contenedor principal que organiza todo verticalmente -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- ========================================== -->
+        <!-- CONTENEDOR DE INTRODUCCIÓN (Pantalla inicial con explicación) -->
+        <!-- ========================================== -->
         <LinearLayout
             android:id="@+id/contenedorIntro"
             android:layout_width="match_parent"
@@ -20,11 +25,13 @@
             android:padding="16dp"
             android:gravity="center_horizontal">
 
+            <!-- Barra superior con botón de volver y título -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp">
 
+                <!-- Botón para volver al mapa (esquina izquierda) -->
                 <ImageButton
                     android:id="@+id/btnVolverMapa"
                     android:layout_width="35dp"
@@ -37,6 +44,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="8dp"/>
 
+                <!-- Título centrado de la actividad -->
                 <TextView
                     android:id="@+id/tvTituloIntro"
                     android:layout_width="wrap_content"
@@ -48,17 +56,53 @@
                     android:layout_centerInParent="true"/>
             </RelativeLayout>
 
+            <!-- ========================================== -->
+            <!-- TEXTO EXPANDIBLE (NUEVO - como en Txakurra) -->
+            <!-- ========================================== -->
+
+            <!-- Primera parte del texto (SIEMPRE VISIBLE) -->
             <TextView
-                android:id="@+id/tvTextoIntroductorio"
+                android:id="@+id/tvTextoIntro1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Bilbo 1300. urtean sortu zen itsasadarraren ertzean, merkataritza bultzatzeko diseinatua. Herria zazpi kale nagusiren inguruan egituratzen zen (Somera, Artekale, Tenderia, Belostikale, Carnicería Vieja, Barrenkale eta Barrenkale Barrena). Kale horiek hiriaren merkataritza eta artisau bihotza ziren, eta merkatariak, zapatariak, arrantzaleak, artisauak, errementariak eta beste lanbide batzuk hartzen zituzten.\n\nBilboko Alde Zaharreko kaleek antzinako lanbideen izenak jasotzen dituzte: Somera (barazkiak eta frutak saltzen ziren), Artekale (erdikoa), Tenderia (dendariengatik/ohialeengatik), Belostikale (larru sailtzaileengatik), Carniceria Vieja (harategiengatik), Barrenkale eta Barrenkale Barrena (kalerik baxuenak), jatorriz zapatariak eta beste artisau batzuk hartzen zituena. Kaleen izenek gaur egun ere jatorrizko funtzioaren aztarnak gordetzen dituzte."
+                android:text="Bilbo 1300. urtean sortu zen itsasadarraren ertzean, merkataritza bultzatzeko diseinatua. Herria zazpi kale nagusiren inguruan egituratzen zen (Somera, Artekale, Tenderia, Belostikale, Carnicería Vieja, Barrenkale eta Barrenkale Barrena). Kale horiek hiriaren merkataritza eta artisau bihotza ziren, eta merkatariak, zapatariak, arrantzaleak, artisauak, errementariak eta beste lanbide batzuk hartzen zituzten."
                 android:textSize="18sp"
                 android:textColor="@color/black"
                 android:textAlignment="center"
                 android:lineSpacingExtra="3dp"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="4dp"/>
 
+            <!-- Segunda parte del texto (SE MUESTRA AL HACER CLIC EN "Irakurri gehiago") -->
+            <TextView
+                android:id="@+id/tvTextoIntro2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Bilboko Alde Zaharreko kaleek antzinako lanbideen izenak jasotzen dituzte: Somera (barazkiak eta frutak saltzen ziren), Artekale (erdikoa), Tenderia (dendariengatik/ohialeengatik), Belostikale (larru sailtzaileengatik), Carniceria Vieja (harategiengatik), Barrenkale eta Barrenkale Barrena (kalerik baxuenak), jatorriz zapatariak eta beste artisau batzuk hartzen zituena. Kaleen izenek gaur egun ere jatorrizko funtzioaren aztarnak gordetzen dituzte."
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:textAlignment="center"
+                android:lineSpacingExtra="3dp"
+                android:visibility="gone"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Botón de expandir/contraer texto -->
+            <TextView
+                android:id="@+id/tvLeerMas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Irakurri gehiago ▼"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_gravity="center"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- ========================================== -->
+            <!-- REPRODUCTOR DE AUDIO -->
+            <!-- ========================================== -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,6 +111,7 @@
                 android:layout_marginBottom="20dp"
                 android:paddingHorizontal="16dp">
 
+                <!-- Botón Play/Pause -->
                 <ImageButton
                     android:id="@+id/btnPlayPauseIcon"
                     android:layout_width="40dp"
@@ -76,6 +121,7 @@
                     app:tint="@color/black"
                     android:contentDescription="Reproducir" />
 
+                <!-- Barra de progreso del audio -->
                 <SeekBar
                     android:id="@+id/seekBarAudio"
                     android:layout_width="0dp"
@@ -86,6 +132,7 @@
                     android:thumbTint="@color/sopa" />
             </LinearLayout>
 
+            <!-- Imagen decorativa del león (se oculta al expandir el texto) -->
             <ImageView
                 android:id="@+id/ivLeonExplicacion"
                 android:layout_width="150dp"
@@ -96,11 +143,13 @@
                 android:scaleType="fitCenter"
                 android:contentDescription="Leon Explicacion"/>
 
+            <!-- Espacio flexible que empuja el botón hacia abajo -->
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
 
+            <!-- Botón para iniciar la sopa de letras -->
             <Button
                 android:id="@+id/btnComenzarSopa"
                 android:layout_width="wrap_content"
@@ -115,6 +164,9 @@
                 android:layout_marginBottom="30dp"/>
         </LinearLayout>
 
+        <!-- ========================================== -->
+        <!-- CONTENEDOR DEL JUEGO (Sopa de letras) -->
+        <!-- ========================================== -->
         <LinearLayout
             android:id="@+id/sopaContainer"
             android:layout_width="match_parent"
@@ -124,6 +176,7 @@
             android:visibility="gone"
             android:background="@color/mi_fondo_pantalla">
 
+            <!-- Título del juego -->
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="match_parent"
@@ -135,6 +188,7 @@
                 android:gravity="center"
                 android:layout_marginBottom="6dp"/>
 
+            <!-- Vista personalizada de la sopa de letras (WordSearchView) -->
             <com.salca.didaktikapp.WordSearchView
                 android:id="@+id/wordSearchView"
                 android:layout_width="match_parent"
@@ -144,12 +198,14 @@
                 android:background="@color/white"
                 android:elevation="1dp"/>
 
+            <!-- Contenedor de la lista de palabras y progreso (se oculta al completar) -->
             <LinearLayout
                 android:id="@+id/layoutPalabras"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <!-- Título de la lista de palabras -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -160,12 +216,14 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginBottom="6dp"/>
 
+                <!-- Grid con los checkboxes de las palabras a encontrar -->
                 <GridLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:columnCount="2"
                     android:layout_marginBottom="10dp">
 
+                    <!-- Cada CheckBox representa una palabra de la sopa -->
                     <CheckBox android:id="@+id/cbSomera" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Somera" android:textSize="13sp" android:textColor="@color/black" android:enabled="false"/>
                     <CheckBox android:id="@+id/cbArtecalle" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Artekale" android:textSize="13sp" android:textColor="@color/black" android:enabled="false"/>
                     <CheckBox android:id="@+id/cbTenderia" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="Tenderia" android:textSize="13sp" android:textColor="@color/black" android:enabled="false"/>
@@ -175,6 +233,7 @@
                     <CheckBox android:id="@+id/cbBarrenkaleBarrena" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_columnSpan="2" android:text="Barrenkale Barrena" android:textSize="13sp" android:textColor="@color/black" android:enabled="false"/>
                 </GridLayout>
 
+                <!-- Contador de palabras encontradas -->
                 <TextView
                     android:id="@+id/tvProgress"
                     android:layout_width="wrap_content"
@@ -188,6 +247,7 @@
                     android:layout_marginBottom="10dp"/>
             </LinearLayout>
 
+            <!-- GIF que se muestra al completar todas las palabras -->
             <ImageView
                 android:id="@+id/ivGifResultado"
                 android:layout_width="200dp"
@@ -196,6 +256,7 @@
                 android:visibility="gone"
                 android:layout_marginBottom="16dp"/>
 
+            <!-- Botón para finalizar la actividad (se activa al encontrar todas las palabras) -->
             <Button
                 android:id="@+id/btnFinish"
                 android:layout_width="wrap_content"
