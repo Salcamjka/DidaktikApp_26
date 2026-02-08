@@ -4,21 +4,23 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@android:color/white">
+    android:background="@color/mi_fondo_pantalla">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Accesibilidad"
+        android:text="Irisgarritasuna"
         android:textSize="28sp"
         android:textStyle="bold"
+        android:textColor="@color/black"
         android:layout_marginBottom="32dp"/>
 
     <Switch
         android:id="@+id/switchContraste"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mapa de Alto Contraste"
+        android:text="Kontraste Handiko Mapa"
+        android:textColor="@color/black"
         android:minHeight="48dp"
         android:layout_marginBottom="16dp"/>
 
@@ -26,14 +28,17 @@
         android:id="@+id/switchTexto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Textos más grandes"
+        android:text="Testu handiagoak"
+        android:textColor="@color/black"
         android:minHeight="48dp"/>
 
     <Button
         android:id="@+id/btnVolver"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Guardar y Volver"
+        android:text="Gorde eta Itxi"
+        android:textStyle="bold"
+        android:textColor="@color/black"
         android:layout_marginTop="40dp"/>
 
 </LinearLayout>
