@@ -327,6 +327,9 @@ class AhorcadoActivity : AppCompatActivity() {
         btnJarraituJuego.isEnabled = true
         val colorActivo = ContextCompat.getColor(this, R.color.ahorcado)
         btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(colorActivo)
+
+        // ✅ AQUÍ ESTÁ EL CAMBIO: TEXTO BLANCO AL ACTIVARSE
+        btnJarraituJuego.setTextColor(android.graphics.Color.WHITE)
     }
 
     private fun guardarPuntuacionEnBD(puntos: Int) {
