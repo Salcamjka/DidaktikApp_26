@@ -222,6 +222,13 @@ class PuzzleActivity : AppCompatActivity() {
         if (completadoLehenaldia && completadoOrainaldia) {
             SyncHelper.subirInmediatamente(this)
             tvInstruccionArrastrar.visibility = View.GONE
+            // ========================================
+            // ✅ NUEVO: MARCAR ACTIVIDAD COMO COMPLETADA PARA ESTE USUARIO
+            // ========================================
+            val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
+            val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
+            prefs.edit().putBoolean("completado_puzzle_$nombreUsuario", true).apply()
+            // ========================================
             tvMensajeVictoria.visibility = View.VISIBLE
 
             // MOSTRAR GIF

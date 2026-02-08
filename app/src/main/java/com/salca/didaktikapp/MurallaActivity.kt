@@ -293,6 +293,12 @@ class MurallaActivity : AppCompatActivity() {
             txtPregunta.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
             gifResId = R.drawable.leontriste // León triste
         }
+        // ========================================
+        // ✅ NUEVO: MARCAR ACTIVIDAD COMO COMPLETADA PARA ESTE USUARIO
+        // ========================================
+        val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
+        val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
+        prefs.edit().putBoolean("completado_muralla_$nombreUsuario", true).apply()
 
         // CARGAMOS EL GIF SELECCIONADO
         ivGifResultado.visibility = View.VISIBLE

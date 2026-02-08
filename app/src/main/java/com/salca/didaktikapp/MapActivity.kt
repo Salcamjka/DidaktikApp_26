@@ -13,7 +13,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.BitmapDescriptorFactory // ✅ NUEVO: Para cambiar colores
 
+/**
+ * Actividad principal del mapa
+ * Muestra los marcadores de las actividades y cambia su color según el progreso del usuario
+ */
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var map: GoogleMap
@@ -62,9 +67,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         // Leer configuración visual
         leerPreferencias()
 
-        // Actualizar mapa si ya está cargado
+        // ========================================
+        // ✅ NUEVO: Actualizar marcadores cuando volvemos al mapa
+        // Esto cambia los colores según qué actividades completó el usuario actual
+        // ========================================
         if (mapReady) {
             actualizarTipoDeMapa()
+            recargarMarcadores() // ✅ NUEVO
         }
     }
 
@@ -81,20 +90,71 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
         actualizarTipoDeMapa()
 
-        val kokapenak = listOf(
-            Triple(LatLng(43.255000, -2.923333), "San Anton Eliza", "Urkatua"),
-            Triple(LatLng(43.256389, -2.922222), "Antzinako Harresia", "Harresia"),
-            Triple(LatLng(43.256389, -2.924722), "Zazpi Kaleak", "Letra Sopa"),
-            Triple(LatLng(43.257833, -2.924389), "Txakurraren Iturria", "Ezberdintasunak"),
-            Triple(LatLng(43.260221, -2.924074), "Bilboko Areatza", "Puzzlea")
-        )
-
-        for (puntu in kokapenak) {
-            map.addMarker(MarkerOptions().position(puntu.first).title(puntu.second).snippet(puntu.third))
-        }
+        // ========================================
+        // ✅ MODIFICADO: Ahora usamos función separada para crear marcadores
+        // ========================================
+        crearMarcadores()
 
         val centro = LatLng(43.2575, -2.9235)
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(centro, 16.5f))
+    }
+
+    /**
+     * ✅ NUEVA FUNCIÓN: Crea los marcadores con el color correcto
+     * según si la actividad está completada POR EL USUARIO ACTUAL
+     */
+    private fun crearMarcadores() {
+        val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
+        // ✅ Obtener el nombre del usuario actual
+        val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
+
+        // ========================================
+        // Definición de todos los puntos del mapa
+        // Cada punto tiene: Coordenadas, Título, Snippet, Clave de completado
+        // ✅ IMPORTANTE: La clave incluye el nombre del usuario
+        // ========================================
+        val puntos = listOf(
+            Cuadruple(LatLng(43.255000, -2.923333), "San Anton Eliza", "Urkatua", "completado_ahorcado_$nombreUsuario"),
+            Cuadruple(LatLng(43.256389, -2.922222), "Antzinako Harresia", "Harresia", "completado_muralla_$nombreUsuario"),
+            Cuadruple(LatLng(43.256389, -2.924722), "Zazpi Kaleak", "Letra Sopa", "completado_sopa_$nombreUsuario"),
+            Cuadruple(LatLng(43.257833, -2.924389), "Txakurraren Iturria", "Ezberdintasunak", "completado_txakurra_$nombreUsuario"),
+            Cuadruple(LatLng(43.260221, -2.924074), "Bilboko Areatza", "Puzzlea", "completado_puzzle_$nombreUsuario")
+        )
+
+        // Crear cada marcador con su color correspondiente
+        for (punto in puntos) {
+            // Verifica si ESTE USUARIO completó la actividad
+            val estaCompletado = prefs.getBoolean(punto.claveCompletado, false)
+
+            // ========================================
+            // LÓGICA DE COLOR:
+            // - GRIS/AZUL (HUE_AZURE) si el usuario la completó
+            // - ROJO (HUE_RED) si el usuario NO la ha completado
+            // ========================================
+            val color = if (estaCompletado) {
+                BitmapDescriptorFactory.HUE_CYAN// Gris/Azul grisáceo
+            } else {
+                BitmapDescriptorFactory.HUE_RED   // Rojo (por defecto)
+            }
+
+            // Crear el marcador con el color correspondiente
+            map.addMarker(
+                MarkerOptions()
+                    .position(punto.coordenadas)
+                    .title(punto.titulo)
+                    .snippet(punto.snippet)
+                    .icon(BitmapDescriptorFactory.defaultMarker(color))
+            )
+        }
+    }
+
+    /**
+     * ✅ NUEVA FUNCIÓN: Recarga todos los marcadores
+     * Se llama cuando volvemos de una actividad al mapa (en onResume)
+     */
+    private fun recargarMarcadores() {
+        map.clear() // Borra todos los marcadores actuales del mapa
+        crearMarcadores() // Vuelve a crearlos con los colores actualizados
     }
 
     private fun actualizarTipoDeMapa() {
@@ -118,4 +178,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         }
         return false
     }
+
+    /**
+     * ✅ NUEVA CLASE AUXILIAR: Para agrupar datos de cada punto del mapa
+     * Es como una tupla de 4 elementos
+     */
+    data class Cuadruple(
+        val coordenadas: LatLng,
+        val titulo: String,
+        val snippet: String,
+        val claveCompletado: String
+    )
 }

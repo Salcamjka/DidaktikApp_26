@@ -254,6 +254,13 @@ class AhorcadoActivity : AppCompatActivity() {
 
             // GIF FELIZ
             gifResId = R.drawable.leonfeliz
+            /// ✅ NUEVO: MARCAR ACTIVIDAD COMO COMPLETADA SOLO SI GANA
+            // ========================================
+            val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
+            val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
+            prefs.edit().putBoolean("completado_ahorcado_$nombreUsuario", true).apply()
+            // ========================================
+
 
         } else {
             tvResultado.text = "GALDU DUZU... HITZA: $palabraActual"

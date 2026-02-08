@@ -12,11 +12,10 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide // Importante para el GIF
+import com.bumptech.glide.Glide
 
 class TxakurraActivity : AppCompatActivity() {
 
-    // VISTAS INTRODUCCIÓN
     private lateinit var contenedorIntro: LinearLayout
     private lateinit var tvTextoIntro1: TextView
     private lateinit var tvTextoIntro2: TextView
@@ -27,12 +26,10 @@ class TxakurraActivity : AppCompatActivity() {
     private lateinit var btnContinuar: Button
     private var textoDesplegado = false
 
-    // VISTAS TABLA
     private lateinit var contenedorTabla: LinearLayout
     private lateinit var btnFinish: Button
-    private lateinit var ivGifResultado: ImageView // Referencia al GIF
+    private lateinit var ivGifResultado: ImageView
 
-    // CAMPOS DE TEXTO
     private lateinit var inputs: List<EditText>
 
     private val respuestasCorrectas = mapOf(
@@ -53,7 +50,6 @@ class TxakurraActivity : AppCompatActivity() {
     private var intentosTotales = 0
     private val TOTAL_PREGUNTAS = 10
 
-    // AUDIO
     private var audio: MediaPlayer? = null
     private val audioHandler = Handler(Looper.getMainLooper())
     private var isPlaying = false
@@ -89,7 +85,7 @@ class TxakurraActivity : AppCompatActivity() {
 
         contenedorTabla = findViewById(R.id.contenedorTabla)
         btnFinish = findViewById(R.id.btnFinish)
-        ivGifResultado = findViewById(R.id.ivGifResultado) // GIF
+        ivGifResultado = findViewById(R.id.ivGifResultado)
 
         inputs = listOf(
             findViewById(R.id.etTxakurra1), findViewById(R.id.etTxakurra2),
@@ -147,24 +143,21 @@ class TxakurraActivity : AppCompatActivity() {
     }
 
     private fun validarCampo(editText: EditText) {
-        if (!editText.isEnabled) return // Ya validado
+        if (!editText.isEnabled) return
 
         val textoEscrito = editText.text.toString().trim().lowercase()
-        if (textoEscrito.isEmpty()) return // No validar si está vacío
+        if (textoEscrito.isEmpty()) return
 
         val id = editText.id
         val respuestasPosibles = respuestasCorrectas[id] ?: emptyList()
 
         if (respuestasPosibles.contains(textoEscrito)) {
-            // VERDE OSCURO SI ACIERTA
             editText.setTextColor(Color.parseColor("#006400"))
             aciertos++
         } else {
-            // ROJO SI FALLA
             editText.setTextColor(Color.RED)
         }
 
-        // BLOQUEAR CAMPO
         editText.isEnabled = false
         editText.isFocusable = false
         editText.setBackgroundColor(Color.parseColor("#E0E0E0"))
@@ -173,19 +166,28 @@ class TxakurraActivity : AppCompatActivity() {
         verificarFinalizacion()
     }
 
+    /**
+     * Verifica si se han completado todas las casillas
+     */
     private fun verificarFinalizacion() {
-        // Se ejecuta cuando se han respondido las 10 casillas
         if (intentosTotales == TOTAL_PREGUNTAS) {
             btnFinish.isEnabled = true
             btnFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.txakurra))
 
+            // ========================================
+            // ✅ NUEVO: MARCAR ACTIVIDAD COMO COMPLETADA PARA ESTE USUARIO
+            // ========================================
+            val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
+            val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
+            prefs.edit().putBoolean("completado_txakurra_$nombreUsuario", true).apply()
+            // ========================================
+
             ivGifResultado.visibility = View.VISIBLE
 
-            // --- LÓGICA DEL GIF FINAL ---
             val gifResId = if (aciertos == TOTAL_PREGUNTAS) {
-                R.drawable.leonfeliz // Si acierta todas
+                R.drawable.leonfeliz
             } else {
-                R.drawable.leontriste // Si falla alguna
+                R.drawable.leontriste
             }
 
             try {
@@ -193,7 +195,6 @@ class TxakurraActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 ivGifResultado.setImageResource(gifResId)
             }
-            // ----------------------------
         }
     }
 
