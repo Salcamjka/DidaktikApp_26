@@ -31,4 +31,8 @@
     <color name="sopa_amarillo">#FFF9C4</color>
     <color name="sopa_lima">#DCEDC8</color>
 
+    <color name="top">#546E7A</color>
+
+    <color name="login">#FF4081</color>
+
 </resources>
