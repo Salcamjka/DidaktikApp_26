@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import kotlin.math.abs
-import kotlin.math.max
 import kotlin.math.min
 
 class SopaActivity : AppCompatActivity() {
@@ -248,19 +247,11 @@ class SopaActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Se ejecuta cuando se completa el juego (todas las palabras encontradas)
-     */
     private fun onGameCompleted() {
         puntuacionActual += 150
-
-        // ========================================
-        // ✅ NUEVO: MARCAR ACTIVIDAD COMO COMPLETADA PARA ESTE USUARIO
-        // ========================================
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
         prefs.edit().putBoolean("completado_sopa_$nombreUsuario", true).apply()
-        // ========================================
 
         layoutPalabras.visibility = View.GONE
         ivGifResultado.visibility = View.VISIBLE
@@ -279,7 +270,7 @@ class SopaActivity : AppCompatActivity() {
 }
 
 // ============================================================================
-// CLASE WORDSEARCHVIEW (SIN CAMBIOS)
+// CLASE WORDSEARCHVIEW (MODIFICADA PARA BLOQUEAR DIAGONALES)
 // ============================================================================
 
 class WordSearchView @JvmOverloads constructor(
@@ -429,7 +420,7 @@ class WordSearchView @JvmOverloads constructor(
                     val cell = getCellFromTouch(event.x, event.y)
                     if (cell != null && cell != currentCell) {
                         currentCell = cell
-                        updateSelection()
+                        updateSelection() // 👈 AQUÍ SE LLAMA A LA LÓGICA NUEVA
                         invalidate()
                     }
                 }
@@ -457,56 +448,30 @@ class WordSearchView @JvmOverloads constructor(
         return if (row in 0 until gridRows && col in 0 until gridCols) Pair(row, col) else null
     }
 
+    // 🔴 CAMBIO IMPORTANTE: SOLO PERMITE SELECCIÓN VERTICAL U HORIZONTAL
     private fun updateSelection() {
         val start = startCell ?: return
         val current = currentCell ?: return
+
         selectedCells.clear()
 
         val rowDiff = current.first - start.first
         val colDiff = current.second - start.second
 
-        val targetRow: Int
-        val targetCol: Int
-
-        if (abs(rowDiff) > abs(colDiff)) {
-            if (abs(colDiff) < abs(rowDiff) / 2) {
-                targetRow = current.first
-                targetCol = start.second
-            } else {
-                targetRow = current.first
-                val step = if (rowDiff != 0) rowDiff / abs(rowDiff) else 1
-                val colDir = if (colDiff != 0) colDiff / abs(colDiff) else 1
-                targetCol = start.second + (abs(targetRow - start.first) * colDir)
-            }
-        } else {
-            if (abs(rowDiff) < abs(colDiff) / 2) {
-                targetRow = start.first
-                targetCol = current.second
-            } else {
-                targetCol = current.second
-                val step = if (colDiff != 0) colDiff / abs(colDiff) else 1
-                val rowDir = if (rowDiff != 0) rowDiff / abs(rowDiff) else 1
-                targetRow = start.first + (abs(targetCol - start.second) * rowDir)
+        // Si la distancia horizontal es mayor que la vertical -> BLOQUEO HORIZONTAL
+        if (abs(colDiff) > abs(rowDiff)) {
+            val step = if (colDiff > 0) 1 else -1
+            val count = abs(colDiff)
+            for (i in 0..count) {
+                selectedCells.add(Pair(start.first, start.second + (i * step)))
             }
         }
-
-        val newRowDiff = targetRow - start.first
-        val newColDiff = targetCol - start.second
-        val steps = max(abs(newRowDiff), abs(newColDiff))
-
-        if (steps == 0) {
-            selectedCells.add(start)
-            return
-        }
-
-        val rowStep = if (newRowDiff == 0) 0 else newRowDiff / abs(newRowDiff)
-        val colStep = if (newColDiff == 0) 0 else newColDiff / abs(newColDiff)
-
-        for (i in 0..steps) {
-            val r = start.first + i * rowStep
-            val c = start.second + i * colStep
-            if (r in 0 until gridRows && c in 0 until gridCols) {
-                selectedCells.add(Pair(r, c))
+        // Si no (distancia vertical mayor) -> BLOQUEO VERTICAL
+        else {
+            val step = if (rowDiff > 0) 1 else -1
+            val count = abs(rowDiff)
+            for (i in 0..count) {
+                selectedCells.add(Pair(start.first + (i * step), start.second))
             }
         }
     }
@@ -519,6 +484,8 @@ class WordSearchView @JvmOverloads constructor(
 
         for (word in targetWords) {
             if ((selectedWord == word || reversedWord == word) && !foundWords.contains(word)) {
+
+                // Evitar conflictos si una palabra vertical corta se parece a una horizontal
                 if (word == "BARRENKALE") {
                     val esLaVertical = selectedCells.all { it.second == 11 }
                     if (esLaVertical) continue
