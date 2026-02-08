@@ -37,14 +37,11 @@ class LoginActivity : AppCompatActivity() {
         // ----------------------------------------------------
         // 1. CARGAR RANKING MUNDIAL
         // ----------------------------------------------------
-        tvTop1.text = "Cargando..." // Feedback visual
+        tvTop1.text = "Cargando..."
 
-        // Llamamos a nuestra función manual (sin Retrofit)
         SyncHelper.obtenerRankingMundial { rankingList ->
-            // Volvemos al hilo principal para tocar la pantalla
             runOnUiThread {
                 if (rankingList.isNotEmpty()) {
-                    // Si hay internet y datos, mostramos el ranking nube
                     if (rankingList.isNotEmpty()) tvTop1.text = "🥇 1. ${rankingList[0]}"
                     else tvTop1.text = "🥇 1. -"
 
@@ -54,7 +51,6 @@ class LoginActivity : AppCompatActivity() {
                     if (rankingList.size >= 3) tvTop3.text = "🥉 3. ${rankingList[2]}"
                     else tvTop3.text = "🥉 3. -"
                 } else {
-                    // Si falló internet o está vacío, intentamos cargar el local
                     val local = dbHelper.getTop3Ranking()
                     if (local.isNotEmpty()) {
                         tvTop1.text = "🥇 1. ${local[0]}"
@@ -74,15 +70,28 @@ class LoginActivity : AppCompatActivity() {
             if (studentName.isNotEmpty()) {
                 val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
                 val editor = prefs.edit()
+
+                // Guardamos el nombre actual
                 editor.putString("nombre_alumno_actual", studentName)
-                editor.apply()
+
+                // ================================================================
+                // 🔄 RESETEAMOS EL PROGRESO AL ENTRAR DE NUEVO
+                // Así, si vuelve a entrar, los marcadores volverán a ser ROJOS
+                // ================================================================
+                editor.putBoolean("completado_ahorcado_$studentName", false)
+                editor.putBoolean("completado_sopa_$studentName", false)
+                editor.putBoolean("completado_txakurra_$studentName", false)
+                editor.putBoolean("completado_puzzle_$studentName", false)
+                editor.putBoolean("completado_muralla_$studentName", false)
+
+                editor.apply() // Confirmamos los cambios
 
                 dbHelper.crearUsuarioInicial(studentName)
 
                 // Desactivamos el botón para evitar doble click
                 btnLogin.isEnabled = false
 
-                // Esperamos 1.5s antes de subir para asegurar que la BD está cerrada y cargar datos
+                // Esperamos 1.5s antes de subir para asegurar que la BD está cerrada
                 Handler(Looper.getMainLooper()).postDelayed({
                     SyncHelper.subirInmediatamente(this@LoginActivity)
                     val intent = Intent(this@LoginActivity, MapActivity::class.java)

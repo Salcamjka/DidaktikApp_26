@@ -14,7 +14,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide // Importante
+import com.bumptech.glide.Glide
 
 class PuzzleActivity : AppCompatActivity() {
 
@@ -28,6 +28,10 @@ class PuzzleActivity : AppCompatActivity() {
     private val PIEZAS_POR_PUZZLE = 12
     private val PUNTOS_POR_PUZZLE = 250
     private var puntuacionTotal = 0
+
+    // Dimensiones de las piezas (Un poco más pequeñas para que quepan mejor)
+    private val PIEZA_ANCHO = 150
+    private val PIEZA_ALTO = 110
 
     // Audio
     private var mediaPlayer: MediaPlayer? = null
@@ -48,7 +52,7 @@ class PuzzleActivity : AppCompatActivity() {
     private lateinit var tvInstruccionArrastrar: TextView
     private lateinit var tvMensajeVictoria: TextView
 
-    // NUEVO: Referencia al GIF
+    // GIF
     private lateinit var ivGifResultado: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,11 +65,8 @@ class PuzzleActivity : AppCompatActivity() {
 
         tvInstruccionArrastrar = findViewById(R.id.tvInstruccionArrastrar)
         tvMensajeVictoria = findViewById(R.id.tvMensajeVictoria)
-
-        // Inicializamos el ImageView del GIF
         ivGifResultado = findViewById(R.id.ivGifResultado)
 
-        // Botón Volver Mapa
         btnVolverMapa = findViewById(R.id.btnVolverMapa)
         btnVolverMapa.setOnClickListener {
             if (isPlaying) pauseAudio()
@@ -78,34 +79,26 @@ class PuzzleActivity : AppCompatActivity() {
         btnJarraitu = findViewById(R.id.btnJarraitu)
         val btnFinalizarTotal = findViewById<Button>(R.id.btnFinalizarTotal)
 
-        // ---------------------------------------------------------------
-        // ACCESIBILIDAD: LETRA GRANDE
-        // ---------------------------------------------------------------
+        // ACCESIBILIDAD
         val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
         val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
         if (usarTextoGrande) {
-            txtTituloPrincipal.textSize = 34f
-            findViewById<TextView>(R.id.tvLabelPasado)?.textSize = 18f
-            findViewById<TextView>(R.id.tvLabelPresente)?.textSize = 18f
-            tvInstruccionArrastrar.textSize = 24f
-            tvMensajeVictoria.textSize = 30f
-            findViewById<TextView>(R.id.tvExplicacionFinal)?.textSize = 24f
+            txtTituloPrincipal.textSize = 32f
+            findViewById<TextView>(R.id.tvLabelPasado)?.textSize = 16f
+            findViewById<TextView>(R.id.tvLabelPresente)?.textSize = 16f
+            tvInstruccionArrastrar.textSize = 22f
+            tvMensajeVictoria.textSize = 26f
+            findViewById<TextView>(R.id.tvExplicacionFinal)?.textSize = 22f
             btnJarraitu.textSize = 22f
             btnFinalizarTotal.textSize = 22f
         }
-        // ---------------------------------------------------------------
 
-        // --- CAMBIO: BOTÓN DESACTIVADO AL PRINCIPIO ---
-        btnJarraitu.visibility = View.VISIBLE
-        btnJarraitu.isEnabled = false // No se puede pulsar
+        btnJarraitu.isEnabled = false
         val colorInactivo = ContextCompat.getColor(this, R.color.boton_desactivado)
         btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorInactivo)
-        // ---------------------------------------------
 
-        btnJarraitu.setOnClickListener {
-            cambiarAPantallaFinal()
-        }
+        btnJarraitu.setOnClickListener { cambiarAPantallaFinal() }
 
         btnFinalizarTotal.setOnClickListener {
             SyncHelper.subirInmediatamente(this)
@@ -124,7 +117,7 @@ class PuzzleActivity : AppCompatActivity() {
         for (i in 0 until PIEZAS_POR_PUZZLE) todasLasPiezas.add(PiezaPuzzle(i, "orainaldia", imagenesPresente[i]))
         todasLasPiezas.shuffle()
 
-        // CONFIGURACIÓN DE LAS PIEZAS PARA ARRASTRAR
+        // CREAR PIEZAS ARRASTRABLES (TAMAÑO AJUSTADO)
         for (pieza in todasLasPiezas) {
             val img = ImageView(this)
             img.setImageResource(pieza.imagenID)
@@ -132,9 +125,9 @@ class PuzzleActivity : AppCompatActivity() {
             img.scaleType = ImageView.ScaleType.FIT_XY
 
             val params = GridLayout.LayoutParams()
-            params.width = 180
-            params.height = 130
-            params.setMargins(5, 5, 5, 5)
+            params.width = PIEZA_ANCHO
+            params.height = PIEZA_ALTO
+            params.setMargins(6, 6, 6, 6)
             img.layoutParams = params
 
             img.setOnTouchListener { view, event ->
@@ -156,10 +149,13 @@ class PuzzleActivity : AppCompatActivity() {
             val hueco = ImageView(this)
             hueco.setBackgroundColor(Color.LTGRAY)
             hueco.scaleType = ImageView.ScaleType.FIT_XY
+
+            // TAMAÑO AJUSTADO AQUÍ TAMBIÉN
             val params = GridLayout.LayoutParams()
-            params.width = 180
-            params.height = 130
+            params.width = PIEZA_ANCHO
+            params.height = PIEZA_ALTO
             params.setMargins(2, 2, 2, 2)
+
             hueco.layoutParams = params
             hueco.tag = i
 
@@ -218,28 +214,26 @@ class PuzzleActivity : AppCompatActivity() {
             }
         }
 
-        // --- SI AMBOS PUZZLES ESTÁN COMPLETOS ---
         if (completadoLehenaldia && completadoOrainaldia) {
             SyncHelper.subirInmediatamente(this)
             tvInstruccionArrastrar.visibility = View.GONE
-            // ========================================
-            // ✅ NUEVO: MARCAR ACTIVIDAD COMO COMPLETADA PARA ESTE USUARIO
-            // ========================================
+
             val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
             val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
             prefs.edit().putBoolean("completado_puzzle_$nombreUsuario", true).apply()
-            // ========================================
+
             tvMensajeVictoria.visibility = View.VISIBLE
-
-            // MOSTRAR GIF
             ivGifResultado.visibility = View.VISIBLE
-            Glide.with(this).asGif().load(R.drawable.leonfeliz).into(ivGifResultado)
+            try {
+                Glide.with(this).asGif().load(R.drawable.leonfeliz).into(ivGifResultado)
+            } catch (e: Exception) {
+                ivGifResultado.setImageResource(R.drawable.leonfeliz)
+            }
 
-            // ACTIVAMOS EL BOTÓN
             btnJarraitu.isEnabled = true
             val colorActivo = ContextCompat.getColor(this, R.color.puzzle)
             btnJarraitu.backgroundTintList = ColorStateList.valueOf(colorActivo)
-            btnJarraitu.setTextColor(Color.BLACK)
+            btnJarraitu.setTextColor(Color.WHITE)
         }
     }
 

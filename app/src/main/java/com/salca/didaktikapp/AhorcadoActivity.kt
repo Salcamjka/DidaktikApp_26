@@ -1,6 +1,7 @@
 package com.salca.didaktikapp
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.content.res.ColorStateList
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -46,20 +47,26 @@ class AhorcadoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Bloqueo de orientación
+        try {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } catch (e: Exception) {}
+
         setContentView(R.layout.activity_ahorcado)
 
         // 1. Inicializamos las vistas estándar
         inicializarVistas()
 
         // ---------------------------------------------------------------
-        // 2. ACCESIBILIDAD: APLICAR TEXTO GRANDE SI ES NECESARIO
+        // 2. ACCESIBILIDAD
         // ---------------------------------------------------------------
         val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
         val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
         if (usarTextoGrande) {
             findViewById<TextView>(R.id.tvTituloCabecera)?.textSize = 34f
-            tvPalabra.textSize = 32f
+            // tvPalabra.textSize = 32f  <-- ELIMINADO para que funcione el Autosize del XML
             tvResultado.textSize = 30f
             findViewById<TextView>(R.id.tvTextoExplicativo)?.textSize = 24f
             btnJarraituJuego.textSize = 22f
@@ -156,30 +163,64 @@ class AhorcadoActivity : AppCompatActivity() {
         llTeclado.removeAllViews()
         var contador = 0
         var filaActual: LinearLayout? = null
+
+        // Margen entre botones (2dp)
+        val marginPx = (2 * resources.displayMetrics.density).toInt()
+
         for (letra in 'A'..'Z') {
             if (contador % 7 == 0) {
                 filaActual = LinearLayout(this)
                 filaActual.orientation = LinearLayout.HORIZONTAL
                 filaActual.gravity = Gravity.CENTER
-                val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-                params.setMargins(0, 5, 0, 5)
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                params.setMargins(0, 0, 0, marginPx * 2)
                 filaActual.layoutParams = params
                 llTeclado.addView(filaActual)
             }
+
             val boton = Button(this)
             boton.text = letra.toString()
             boton.textSize = 14f
-            val paramsBtn = LinearLayout.LayoutParams(110, 110)
-            paramsBtn.setMargins(5, 0, 5, 0)
+
+            // Ajustes para que quepan 7 botones
+            boton.setPadding(0,0,0,0)
+            boton.minWidth = 0
+            boton.minimumWidth = 0
+            boton.minHeight = 0
+            boton.minimumHeight = 0
+
+            val paramsBtn = LinearLayout.LayoutParams(
+                0, // Ancho 0 para usar weight
+                120, // Altura fija (pixeles)
+                1.0f // Peso 1 para que se repartan
+            )
+            paramsBtn.setMargins(marginPx, 0, marginPx, 0)
+
             boton.layoutParams = paramsBtn
             boton.setOnClickListener { procesarLetra(letra, boton) }
             filaActual?.addView(boton)
             contador++
         }
+
+        // Rellenar huecos en la última fila
+        val letrasRestantes = 7 - (contador % 7)
+        if (letrasRestantes < 7 && filaActual != null) {
+            for (i in 0 until letrasRestantes) {
+                val hueco = View(this)
+                val paramsHueco = LinearLayout.LayoutParams(0, 120, 1.0f)
+                paramsHueco.setMargins(marginPx, 0, marginPx, 0)
+                hueco.layoutParams = paramsHueco
+                filaActual.addView(hueco)
+            }
+        }
     }
 
     private fun procesarLetra(letra: Char, boton: Button) {
         if (palabraActual.contains(letra)) {
+            // --- ACIERTO (VERDE) ---
             if (!letrasAdivinadas.contains(letra)) {
                 letrasAdivinadas.add(letra)
                 puntuacionActual += 10
@@ -189,9 +230,15 @@ class AhorcadoActivity : AppCompatActivity() {
             actualizarTextoPantalla()
             verificarVictoria()
         } else {
+            // --- FALLO (GRIS) ---
             errores++
             puntuacionActual -= 5
             if (puntuacionActual < 0) puntuacionActual = 0
+
+            // ⚪ AHORA SE PONE GRIS (No rojo)
+            boton.isEnabled = false
+            boton.setBackgroundColor(android.graphics.Color.GRAY)
+
             actualizarImagenAhorcado()
             if (errores >= 7) mostrarResultadoFinal(gano = false)
         }
@@ -254,13 +301,10 @@ class AhorcadoActivity : AppCompatActivity() {
 
             // GIF FELIZ
             gifResId = R.drawable.leonfeliz
-            /// ✅ NUEVO: MARCAR ACTIVIDAD COMO COMPLETADA SOLO SI GANA
-            // ========================================
+            // MARCAR ACTIVIDAD COMO COMPLETADA
             val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
             val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
             prefs.edit().putBoolean("completado_ahorcado_$nombreUsuario", true).apply()
-            // ========================================
-
 
         } else {
             tvResultado.text = "GALDU DUZU... HITZA: $palabraActual"
@@ -278,7 +322,6 @@ class AhorcadoActivity : AppCompatActivity() {
         } catch (e: Exception) {
             ivGifResultado.setImageResource(gifResId)
         }
-        // -------------------------------------
 
         guardarPuntuacionEnBD(puntuacionActual)
         btnJarraituJuego.isEnabled = true
