@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E3F2FD">
+    android:background="@color/mi_fondo_pantalla">
 
     <LinearLayout
         android:id="@+id/headerContainer"
@@ -13,7 +13,9 @@
         android:orientation="vertical"
         android:gravity="center"
         android:layout_marginTop="40dp"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
             android:layout_width="wrap_content"
@@ -21,14 +23,14 @@
             android:text="EUSKAL PLAY"
             android:textSize="42sp"
             android:textStyle="bold"
-            android:textColor="#FF4081"/>
+            android:textColor="@color/login"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Ongi etorri! Ikas dezagun jolasten."
             android:textSize="18sp"
-            android:textColor="#546E7A"
+            android:textColor="@color/black"
             android:layout_marginTop="8dp"/>
     </LinearLayout>
 
@@ -51,7 +53,8 @@
         app:cardCornerRadius="24dp"
         app:cardElevation="8dp"
         app:layout_constraintTop_toBottomOf="@+id/ivLoginLogo"
-        app:layout_constraintVertical_bias="0.3">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,7 +66,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nola duzu izena?"
-                app:boxStrokeColor="#FF4081"
+                app:boxStrokeColor="@color/login"
                 app:boxCornerRadiusTopStart="12dp"
                 app:boxCornerRadiusTopEnd="12dp"
                 app:boxCornerRadiusBottomStart="12dp"
@@ -75,6 +78,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
+                    android:textColor="@color/black"
                     android:maxLines="1"
                     android:textSize="18sp"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -87,7 +91,7 @@
                 android:text="SARTU"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:backgroundTint="#FF4081"
+                android:backgroundTint="@color/login"
                 android:textColor="@android:color/white"
                 app:cornerRadius="30dp"/>
         </LinearLayout>
@@ -101,9 +105,7 @@
         android:paddingBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardViewLogin"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
             android:text="🏆 TOP 3 TXAPELDUNAK 🏆"
@@ -111,7 +113,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#FF4081"
+            android:textColor="@color/login"
             android:layout_marginBottom="8dp"/>
 
         <TextView
@@ -120,7 +122,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:textColor="#546E7A"
+            android:textColor="@color/top"
             android:textStyle="bold"/>
 
         <TextView
@@ -129,7 +131,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:textColor="#546E7A"/>
+            android:textColor="@color/top"/>
 
         <TextView
             android:id="@+id/tvTop3"
@@ -137,7 +139,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:textColor="#546E7A"/>
+            android:textColor="@color/top"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

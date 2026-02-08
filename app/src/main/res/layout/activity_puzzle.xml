@@ -4,20 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="0dp"
-    android:gravity="center_horizontal"
     android:background="@color/mi_fondo_pantalla">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:layout_marginBottom="0dp">
+        android:padding="8dp">
 
         <ImageButton
             android:id="@+id/btnVolverMapa"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="fitCenter"
             android:src="@drawable/mapaimg"
@@ -28,14 +25,11 @@
 
         <TextView
             android:id="@+id/txtTituloPrincipal"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/btnVolverMapa"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="40dp"
+            android:layout_centerInParent="true"
             android:text="Bilboko Arenala"
-            android:textSize="28sp"
+            android:textSize="26sp"
             android:textStyle="bold"
             android:textColor="@color/puzzle"
             android:gravity="center"/>
@@ -45,13 +39,15 @@
     <ScrollView
         android:id="@+id/scrollViewMain"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:paddingBottom="40dp"
             android:gravity="center_horizontal">
 
             <LinearLayout
@@ -59,16 +55,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="8dp"
-                android:visibility="visible"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal"
+                android:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="15dp">
+                    android:layout_marginTop="10dp">
 
                     <TextView
                         android:id="@+id/tvLabelPasado"
@@ -77,24 +72,19 @@
                         android:textColor="@color/black"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="2dp"
+                        android:layout_marginEnd="8dp"
                         android:gravity="center"
-                        android:lineSpacingExtra="-4dp"
+                        android:lineSpacingExtra="2dp"
                         android:textSize="14sp"/>
 
-                    <FrameLayout
+                    <GridLayout
+                        android:id="@+id/gridPasado"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <GridLayout
-                            android:id="@+id/gridPasado"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:columnCount="4"
-                            android:rowCount="3"
-                            android:background="@color/white"
-                            android:padding="0dp"/>
-                    </FrameLayout>
+                        android:layout_height="wrap_content"
+                        android:columnCount="4"
+                        android:rowCount="3"
+                        android:background="@color/white"
+                        android:padding="2dp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -102,7 +92,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="10dp">
+                    android:layout_marginTop="20dp">
 
                     <TextView
                         android:id="@+id/tvLabelPresente"
@@ -111,24 +101,19 @@
                         android:textColor="@color/black"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="2dp"
+                        android:layout_marginEnd="8dp"
                         android:gravity="center"
-                        android:lineSpacingExtra="-4dp"
+                        android:lineSpacingExtra="2dp"
                         android:textSize="14sp"/>
 
-                    <FrameLayout
+                    <GridLayout
+                        android:id="@+id/gridPresente"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <GridLayout
-                            android:id="@+id/gridPresente"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:columnCount="4"
-                            android:rowCount="3"
-                            android:background="@color/white"
-                            android:padding="0dp"/>
-                    </FrameLayout>
+                        android:layout_height="wrap_content"
+                        android:columnCount="4"
+                        android:rowCount="3"
+                        android:background="@color/white"
+                        android:padding="2dp"/>
                 </LinearLayout>
 
                 <TextView
@@ -136,52 +121,49 @@
                     android:text="Arrastatu piezak:"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="15dp"
                     android:textStyle="italic"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:textSize="16sp"/>
 
                 <TextView
                     android:id="@+id/tvMensajeVictoria"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="OSO ONDO!\n2 PUZZLEAK BETE DITUZU!"
-                    android:textSize="22sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/mi_acierto"
                     android:gravity="center"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
                     android:visibility="gone"/>
 
                 <ImageView
                     android:id="@+id/ivGifResultado"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:layout_gravity="center"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_marginTop="10dp"
                     android:src="@drawable/leonfeliz"
-                    android:visibility="gone"
-                    android:layout_marginBottom="10dp"/>
+                    android:visibility="gone"/>
 
                 <GridLayout
                     android:id="@+id/gridPiezas"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:columnCount="5"
-                    android:layout_marginBottom="10dp"/>
+                    android:layout_marginTop="10dp"
+                    android:columnCount="4"
+                    android:alignmentMode="alignMargins"/>
 
                 <Button
                     android:id="@+id/btnJarraitu"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Jarraitu"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="20dp"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="20dp"
+                    android:enabled="false"
                     app:backgroundTint="@color/boton_desactivado"/>
             </LinearLayout>
 
@@ -192,21 +174,17 @@
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
                 android:visibility="gone"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                android:paddingBottom="15dp"
-                android:paddingTop="20dp">
+                android:padding="20dp">
 
                 <TextView
                     android:id="@+id/tvExplicacionFinal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Areatza Bilboko leku garrantzitsu eta ezagunenetako bat da, Alde Zaharrean kokatua.\n\nIraganean, Areatza, izenak dioen bezala, hondartza bat zen, Bilboko hiriaren kanpoaldean, harresietatik haratago, kokatutako eremu bat. Leku hau arrantza-auzoa zen, Nerbioi ibaiaren sarreran kai gisa balio zuen harezko eremu batean kokatua.\n\nPixkanaka garrantzia hartu zuen portu naturala bilakatu zen, non itsasontziak karga deskargatzeko atrakatzen ziren. Urteetan zehar, Bilbo hazi egin zen, y Areatza bilbotarrek paseatzera joaten ziren leku bihurtu zen. Horregatik hartzen da hiriko parkerik zaharrena bezala."
+                    android:text="Areatza Bilboko leku garrantzitsu eta ezagunenetako bat da, Alde Zaharrean kokatua.\n\nIraganean, Areatza, izenak dioen bezala, hondartza bat zen, Bilboko hiriaren kanpoaldean, harresietatik haratago, kokatutako eremu bat. Leku hau arrantza-auzoa zen, Nerbioi ibaiaren sarreran kai gisa balio zuen harezko eremu batean kokatua.\n\nPixkanaka garrantzia hartu zuen portu naturala bilakatu zen, non itsasontziak karga deskargatzeko atrakatzen ziren. Urteetan zehar, Bilbo hazi egin zen, eta Areatza bilbotarrek paseatzera joaten ziren leku bihurtu zen. Horregatik hartzen da hiriko parkerik zaharrena bezala."
                     android:textSize="18sp"
                     android:textColor="@color/black"
                     android:gravity="center"
-                    android:lineSpacingExtra="0dp"
-                    android:layout_marginBottom="25dp"/>
+                    android:layout_marginBottom="20dp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -220,7 +198,6 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:src="@android:drawable/ic_media_play"
-                        android:scaleType="fitCenter"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         app:tint="@color/black"/>
 
@@ -229,7 +206,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="10dp"
                         android:progressTint="@color/puzzle"
                         android:thumbTint="@color/puzzle"/>
                 </LinearLayout>
@@ -238,11 +215,8 @@
                     android:id="@+id/ivLeonExplicacion"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:layout_gravity="center"
                     android:src="@drawable/leonexplicacion"
-                    android:layout_marginBottom="20dp"
-                    android:scaleType="fitCenter"
-                    android:contentDescription="Leon Explicacion"/>
+                    android:layout_marginBottom="20dp"/>
 
                 <Button
                     android:id="@+id/btnFinalizarTotal"
@@ -250,8 +224,8 @@
                     android:layout_height="wrap_content"
                     android:text="Amaitu Jarduera"
                     android:textStyle="bold"
-                    app:backgroundTint="@color/puzzle"
-                    android:textColor="@color/white"/>
+                    android:textColor="@color/white"
+                    app:backgroundTint="@color/puzzle"/>
 
             </LinearLayout>
 
