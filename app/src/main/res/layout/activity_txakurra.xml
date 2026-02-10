@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- ScrollView principal que permite desplazamiento vertical en toda la pantalla -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mainScrollView"
@@ -7,11 +8,15 @@
     android:fillViewport="true"
     android:background="@color/mi_fondo_pantalla">
 
+    <!-- LinearLayout contenedor principal -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- ======================================================================= -->
+        <!-- SECCIÓN 1: CONTENEDOR DE INTRODUCCIÓN (Explicación de la fuente)      -->
+        <!-- ======================================================================= -->
         <LinearLayout
             android:id="@+id/contenedorIntro"
             android:layout_width="match_parent"
@@ -20,11 +25,13 @@
             android:padding="16dp"
             android:visibility="visible">
 
+            <!-- Barra superior: Botón volver + Título -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp">
 
+                <!-- Botón para volver al mapa principal -->
                 <ImageButton
                     android:id="@+id/btnVolverMapa"
                     android:layout_width="40dp"
@@ -37,6 +44,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="8dp"/>
 
+                <!-- Título de la actividad: "Txakurraren Iturria" -->
                 <TextView
                     android:id="@+id/tvTituloIntro"
                     android:layout_width="368dp"
@@ -52,6 +60,7 @@
                     android:textStyle="bold" />
             </RelativeLayout>
 
+            <!-- Primer párrafo de texto informativo (siempre visible) -->
             <TextView
                 android:id="@+id/tvTextoIntro1"
                 android:layout_width="match_parent"
@@ -63,6 +72,7 @@
                 android:lineSpacingExtra="3dp"
                 android:layout_marginBottom="4dp"/>
 
+            <!-- Segundo párrafo de texto informativo (expandible, oculto por defecto) -->
             <TextView
                 android:id="@+id/tvTextoIntro2"
                 android:layout_width="match_parent"
@@ -75,6 +85,7 @@
                 android:visibility="gone"
                 android:layout_marginBottom="4dp"/>
 
+            <!-- Botón de texto para expandir/colapsar la información adicional -->
             <TextView
                 android:id="@+id/tvLeerMas"
                 android:layout_width="wrap_content"
@@ -89,6 +100,7 @@
                 android:focusable="true"
                 android:layout_marginBottom="12dp"/>
 
+            <!-- Reproductor de audio con botón play/pause y barra de progreso -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -98,6 +110,7 @@
                 android:layout_marginBottom="20dp"
                 android:paddingHorizontal="16dp">
 
+                <!-- Botón de reproducción/pausa del audio -->
                 <ImageButton
                     android:id="@+id/btnPlayPauseIcon"
                     android:layout_width="40dp"
@@ -107,6 +120,7 @@
                     app:tint="@color/black"
                     android:contentDescription="Reproducir audio" />
 
+                <!-- Barra de progreso del audio -->
                 <SeekBar
                     android:id="@+id/seekBarAudio"
                     android:layout_width="0dp"
@@ -117,6 +131,7 @@
                     android:thumbTint="@color/txakurra" />
             </LinearLayout>
 
+            <!-- Imagen decorativa del león (se oculta cuando se expande el texto) -->
             <ImageView
                 android:id="@+id/ivLeonExplicacion"
                 android:layout_width="150dp"
@@ -127,11 +142,13 @@
                 android:scaleType="fitCenter"
                 android:contentDescription="Leon Explicacion"/>
 
+            <!-- Espacio flexible que empuja el botón hacia abajo -->
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
 
+            <!-- Botón para pasar de la introducción al juego de la tabla -->
             <Button
                 android:id="@+id/btnContinuar"
                 android:layout_width="wrap_content"
@@ -149,6 +166,9 @@
 
         </LinearLayout>
 
+        <!-- ======================================================================= -->
+        <!-- SECCIÓN 2: CONTENEDOR DE LA TABLA (Juego de características)          -->
+        <!-- ======================================================================= -->
         <LinearLayout
             android:id="@+id/contenedorTabla"
             android:layout_width="match_parent"
@@ -157,6 +177,7 @@
             android:padding="16dp"
             android:visibility="gone">
 
+            <!-- Título de la sección de la tabla -->
             <TextView
                 android:id="@+id/tvTituloTabla"
                 android:layout_width="wrap_content"
@@ -168,6 +189,7 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="8dp"/>
 
+            <!-- Contenedor horizontal de las dos columnas (Perro y León) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -175,6 +197,7 @@
                 android:orientation="horizontal"
                 android:weightSum="2">
 
+                <!-- ========== COLUMNA IZQUIERDA: TXAKURRA (PERRO) ========== -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -183,12 +206,16 @@
                     android:gravity="center"
                     android:padding="8dp">
 
+                    <!-- Imagen del perro -->
                     <ImageView
                         android:id="@+id/ivPerro"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:src="@drawable/perro"
                         android:scaleType="centerCrop"/>
+
+                    <!-- Etiqueta "TXAKURRA" - Es solo un título informativo, NO clickeable -->
+                    <!-- Mantiene fondo de color para coherencia visual con el diseño -->
                     <TextView
                         android:id="@+id/tvLabelTxakurra"
                         android:layout_width="match_parent"
@@ -200,9 +227,12 @@
                         android:gravity="center"
                         android:background="@color/txakurra"
                         android:textColor="@android:color/white"
-                        android:padding="8dp"/>
+                        android:padding="8dp"
+                        android:clickable="false"
+                        android:focusable="false"/>
                 </LinearLayout>
 
+                <!-- ========== COLUMNA DERECHA: LEHOIA (LEÓN) ========== -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -211,12 +241,16 @@
                     android:gravity="center"
                     android:padding="8dp">
 
+                    <!-- Imagen del león -->
                     <ImageView
                         android:id="@+id/ivLeon"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:src="@drawable/leon"
                         android:scaleType="centerCrop"/>
+
+                    <!-- Etiqueta "LEHOIA" - Es solo un título informativo, NO clickeable -->
+                    <!-- Mantiene fondo de color para coherencia visual con el diseño -->
                     <TextView
                         android:id="@+id/tvLabelLehoia"
                         android:layout_width="match_parent"
@@ -228,10 +262,13 @@
                         android:gravity="center"
                         android:background="@color/txakurra"
                         android:textColor="@android:color/white"
-                        android:padding="8dp"/>
+                        android:padding="8dp"
+                        android:clickable="false"
+                        android:focusable="false"/>
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Instrucción para el usuario -->
             <TextView
                 android:id="@+id/tvInstruccionTabla"
                 android:layout_width="match_parent"
@@ -243,6 +280,8 @@
                 android:textColor="@color/black"
                 android:gravity="center"/>
 
+            <!-- ========== TABLA DE CAMPOS DE TEXTO EDITABLES ========== -->
+            <!-- Contenedor con borde gris que contiene las dos columnas de inputs -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -251,6 +290,7 @@
                 android:background="#9E9E9E"
                 android:padding="2dp">
 
+                <!-- ========== COLUMNA IZQUIERDA: 5 CAMPOS PARA TXAKURRA ========== -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -258,6 +298,7 @@
                     android:orientation="vertical"
                     android:layout_marginEnd="1dp">
 
+                    <!-- Campo 1: FAMILIA MOTA (Tipo de familia) -->
                     <EditText
                         android:id="@+id/etTxakurra1"
                         android:layout_width="match_parent"
@@ -271,6 +312,7 @@
                         android:layout_marginBottom="2dp"
                         android:inputType="textCapSentences"/>
 
+                    <!-- Campo 2: BIZILEKUA (Hábitat) -->
                     <EditText
                         android:id="@+id/etTxakurra2"
                         android:layout_width="match_parent"
@@ -284,6 +326,7 @@
                         android:layout_marginBottom="2dp"
                         android:inputType="textCapSentences"/>
 
+                    <!-- Campo 3: JANARI MOTA (Tipo de comida) -->
                     <EditText
                         android:id="@+id/etTxakurra3"
                         android:layout_width="match_parent"
@@ -297,6 +340,7 @@
                         android:layout_marginBottom="2dp"
                         android:inputType="textCapSentences"/>
 
+                    <!-- Campo 4: SOINUA (Sonido que hace) -->
                     <EditText
                         android:id="@+id/etTxakurra4"
                         android:layout_width="match_parent"
@@ -310,6 +354,7 @@
                         android:layout_marginBottom="2dp"
                         android:inputType="textCapSentences"/>
 
+                    <!-- Campo 5: TAMAINA (Tamaño) -->
                     <EditText
                         android:id="@+id/etTxakurra5"
                         android:layout_width="match_parent"
@@ -323,6 +368,7 @@
                         android:inputType="textCapSentences"/>
                 </LinearLayout>
 
+                <!-- ========== COLUMNA DERECHA: 5 CAMPOS PARA LEHOIA ========== -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -330,6 +376,7 @@
                     android:orientation="vertical"
                     android:layout_marginStart="1dp">
 
+                    <!-- Campo 1: FAMILIA MOTA (Tipo de familia) -->
                     <EditText
                         android:id="@+id/etLehoia1"
                         android:layout_width="match_parent"
@@ -343,6 +390,7 @@
                         android:layout_marginBottom="2dp"
                         android:inputType="textCapSentences"/>
 
+                    <!-- Campo 2: BIZILEKUA (Hábitat) -->
                     <EditText
                         android:id="@+id/etLehoia2"
                         android:layout_width="match_parent"
@@ -356,6 +404,7 @@
                         android:layout_marginBottom="2dp"
                         android:inputType="textCapSentences"/>
 
+                    <!-- Campo 3: JANARI MOTA (Tipo de comida) -->
                     <EditText
                         android:id="@+id/etLehoia3"
                         android:layout_width="match_parent"
@@ -369,6 +418,7 @@
                         android:layout_marginBottom="2dp"
                         android:inputType="textCapSentences"/>
 
+                    <!-- Campo 4: SOINUA (Sonido que hace) -->
                     <EditText
                         android:id="@+id/etLehoia4"
                         android:layout_width="match_parent"
@@ -382,6 +432,7 @@
                         android:layout_marginBottom="2dp"
                         android:inputType="textCapSentences"/>
 
+                    <!-- Campo 5: TAMAINA (Tamaño) -->
                     <EditText
                         android:id="@+id/etLehoia5"
                         android:layout_width="match_parent"
@@ -396,6 +447,8 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- GIF de resultado (león feliz o triste según puntuación) -->
+            <!-- Se muestra solo al terminar todos los campos -->
             <ImageView
                 android:id="@+id/ivGifResultado"
                 android:layout_width="200dp"
@@ -406,6 +459,8 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="10dp"/>
 
+            <!-- Botón de finalizar actividad -->
+            <!-- Deshabilitado hasta completar las 10 respuestas -->
             <Button
                 android:id="@+id/btnFinish"
                 android:layout_width="wrap_content"
