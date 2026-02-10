@@ -16,19 +16,8 @@ import com.bumptech.glide.Glide
 
 /**
  * Actividad correspondiente a la parada "Txakurraren Iturria" (La Fuente del Perro).
- *
- * Esta actividad plantea una dinámica diferente:
- * 1. **Fase Educativa:** Explicación sobre la fuente, sus leones (que parecen perros) y su historia.
- * 2. **Fase de Juego:** Una tabla comparativa donde el alumno debe escribir características
- * que diferencian a un Perro (Txakurra) de un León (Lehoia).
- *
- * Características técnicas:
- * * Validación de texto escrito por el usuario.
- * * Gestión de foco y teclado (IME Actions).
- * * Feedback visual inmediato (Texto verde/rojo).
- *
- * @author Salca
- * @version 1.0
+ * Lógica ajustada: Si el usuario tiene la mitad o más respuestas mal (5 aciertos o menos),
+ * sale el león triste. Necesita 6 aciertos para ver al feliz.
  */
 class TxakurraActivity : AppCompatActivity() {
 
@@ -51,7 +40,7 @@ class TxakurraActivity : AppCompatActivity() {
     // Lista de todos los campos de texto (EditText)
     private lateinit var inputs: List<EditText>
 
-    // Mapa de respuestas correctas: ID del campo -> Lista de palabras válidas
+    // Mapa de respuestas correctas
     private val respuestasCorrectas = mapOf(
         R.id.etTxakurra1 to listOf("kanidoa", "kanido", "txakurra"),
         R.id.etTxakurra2 to listOf("etxea", "etxekoa", "basa", "kale"),
@@ -76,7 +65,6 @@ class TxakurraActivity : AppCompatActivity() {
     private val audioHandler = Handler(Looper.getMainLooper())
     private var isPlaying = false
 
-    // Runnable para actualizar la barra de progreso del audio
     private val updateSeekBarRunnable = object : Runnable {
         override fun run() {
             try {
@@ -88,44 +76,32 @@ class TxakurraActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Método de inicio de la actividad.
-     *
-     * Carga el layout, aplica accesibilidad si es necesario e inicializa la lógica de validación.
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_txakurra)
 
         try {
-            // 1. Inicializar vistas
             inicializarVistas()
 
-            // 2. Comprobar Accesibilidad (Texto Grande)
+            // Comprobar Accesibilidad (Texto Grande)
             val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
             val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
             if (usarTextoGrande) {
-                // Aumentar tamaños de fuente manualmente
                 tvTextoIntro1.textSize = 24f
                 tvTextoIntro2.textSize = 24f
                 tvLeerMas.textSize = 22f
                 btnContinuar.textSize = 24f
-
                 findViewById<TextView>(R.id.tvTituloTabla)?.textSize = 34f
                 findViewById<TextView>(R.id.tvLabelTxakurra)?.textSize = 22f
                 findViewById<TextView>(R.id.tvLabelLehoia)?.textSize = 22f
                 findViewById<TextView>(R.id.tvInstruccionTabla)?.textSize = 22f
-
-                // Ajustar todos los cuadros de texto
                 for (input in inputs) {
                     input.textSize = 20f
                 }
-
                 btnFinish.textSize = 24f
             }
 
-            // 3. Configurar lógica
             configurarAudio()
             configurarLogicaJuego()
 
@@ -134,9 +110,6 @@ class TxakurraActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Vincula las variables con los elementos del XML.
-     */
     private fun inicializarVistas() {
         contenedorIntro = findViewById(R.id.contenedorIntro)
         tvTextoIntro1 = findViewById(R.id.tvTextoIntro1)
@@ -151,7 +124,6 @@ class TxakurraActivity : AppCompatActivity() {
         btnFinish = findViewById(R.id.btnFinish)
         ivGifResultado = findViewById(R.id.ivGifResultado)
 
-        // Lista de los 10 campos editables (5 perro + 5 león)
         inputs = listOf(
             findViewById(R.id.etTxakurra1), findViewById(R.id.etTxakurra2),
             findViewById(R.id.etTxakurra3), findViewById(R.id.etTxakurra4),
@@ -165,7 +137,6 @@ class TxakurraActivity : AppCompatActivity() {
             finish()
         }
 
-        // Expandir/Colapsar texto de introducción
         tvLeerMas.setOnClickListener {
             if (!textoDesplegado) {
                 tvTextoIntro2.visibility = View.VISIBLE
@@ -180,7 +151,6 @@ class TxakurraActivity : AppCompatActivity() {
             }
         }
 
-        // Pasar de la intro al juego
         btnContinuar.setOnClickListener {
             if (isPlaying) pauseAudio()
             contenedorIntro.visibility = View.GONE
@@ -193,19 +163,11 @@ class TxakurraActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Configura los Listeners para cada campo de texto.
-     * Se valida la respuesta cuando:
-     * 1. El usuario cambia el foco a otro campo.
-     * 2. El usuario pulsa "Intro" o "Siguiente" en el teclado.
-     */
     private fun configurarLogicaJuego() {
         for (input in inputs) {
-            // Listener de Foco (cuando pinchas fuera)
             input.setOnFocusChangeListener { v, hasFocus ->
                 if (!hasFocus) validarCampo(input)
             }
-            // Listener de Teclado (Done/Next)
             input.setOnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                     validarCampo(input)
@@ -217,74 +179,65 @@ class TxakurraActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Valida si el texto introducido es correcto comparándolo con el mapa `respuestasCorrectas`.
-     *
-     * @param editText El campo de texto a validar.
-     */
     private fun validarCampo(editText: EditText) {
-        if (!editText.isEnabled) return // Si ya está validado, salimos
+        if (!editText.isEnabled) return
 
         val textoEscrito = editText.text.toString().trim().lowercase()
-        if (textoEscrito.isEmpty()) return // Si está vacío, no hacemos nada
+        if (textoEscrito.isEmpty()) return
 
         val id = editText.id
         val respuestasPosibles = respuestasCorrectas[id] ?: emptyList()
 
         if (respuestasPosibles.contains(textoEscrito)) {
-            // ACIERTO: Texto verde oscuro
-            editText.setTextColor(Color.parseColor("#006400"))
+            editText.setTextColor(Color.parseColor("#006400")) // Verde oscuro
             aciertos++
         } else {
-            // FALLO: Texto rojo
             editText.setTextColor(Color.RED)
         }
 
-        // Bloqueamos el campo para que no se pueda editar más
         editText.isEnabled = false
         editText.isFocusable = false
-        editText.setBackgroundColor(Color.parseColor("#E0E0E0")) // Fondo grisáceo
+        editText.setBackgroundColor(Color.parseColor("#E0E0E0"))
 
         intentosTotales++
         verificarFinalizacion()
     }
 
-    /**
-     * Comprueba si se han respondido las 10 preguntas.
-     */
+    // -----------------------------------------------------------------------
+    // AQUÍ ESTÁ EL CAMBIO IMPORTANTE
+    // -----------------------------------------------------------------------
     private fun verificarFinalizacion() {
         if (intentosTotales == TOTAL_PREGUNTAS) {
-            // Habilitar botón de finalizar
             btnFinish.isEnabled = true
             btnFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.txakurra))
 
-            // Guardar estado completado
             val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
             val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
             prefs.edit().putBoolean("completado_txakurra_$nombreUsuario", true).apply()
 
-            // Mostrar GIF según rendimiento
             ivGifResultado.visibility = View.VISIBLE
-            val gifResId = if (aciertos >= 5) { // Aprobado
+
+            // LÓGICA: "Mitad o más mal" -> Triste.
+            // Mitad de 10 es 5. Si tiene 5 aciertos, significa que tiene 5 fallos (la mitad mal).
+            // Por tanto:
+            // Si aciertos > 5 (6, 7, 8, 9, 10) -> FELIZ
+            // Si aciertos <= 5 (0, 1, 2, 3, 4, 5) -> TRISTE
+
+            val gifResId = if (aciertos > 5) {
                 R.drawable.leonfeliz
-            } else { // Suspenso
+            } else {
                 R.drawable.leontriste
             }
 
             try {
                 Glide.with(this).asGif().load(gifResId).into(ivGifResultado)
             } catch (e: Exception) {
+                // Fallback por si falla Glide o no es un gif
                 ivGifResultado.setImageResource(gifResId)
             }
-
-            // Guardar automáticamente al terminar
-            guardarPuntuacion()
         }
     }
 
-    /**
-     * Guarda la puntuación en la BD y sincroniza con el servidor.
-     */
     private fun guardarPuntuacion() {
         val puntos = aciertos * 10
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
@@ -293,10 +246,6 @@ class TxakurraActivity : AppCompatActivity() {
         dbHelper.guardarPuntuacion(nombre, "Txakurra", puntos)
         SyncHelper.subirInmediatamente(this)
     }
-
-    // ================================================================
-    // MÉTODOS DE AUDIO
-    // ================================================================
 
     private fun configurarAudio() {
         if (audio == null) {
