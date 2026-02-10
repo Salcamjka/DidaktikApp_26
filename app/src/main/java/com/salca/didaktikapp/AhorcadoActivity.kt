@@ -12,11 +12,10 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide // Importante
+import com.bumptech.glide.Glide
 
 class AhorcadoActivity : AppCompatActivity() {
 
-    // --- Variables UI ---
     private lateinit var contenedorFaseJuego: View
     private lateinit var ivAhorcado: ImageView
     private lateinit var tvPalabra: TextView
@@ -24,20 +23,16 @@ class AhorcadoActivity : AppCompatActivity() {
     private lateinit var llTeclado: LinearLayout
     private lateinit var btnJarraituJuego: Button
 
-    // Variable para el GIF
     private lateinit var ivGifResultado: ImageView
 
-    // --- Variable para el botón del mapa ---
     private lateinit var btnVolverMapa: ImageButton
 
-    // --- Variables Lógica Juego ---
     private val palabras = listOf("ATHLETIC-EN ARMARRIA")
     private var palabraActual = ""
     private var letrasAdivinadas = mutableListOf<Char>()
     private var errores = 0
     private var puntuacionActual = 0
 
-    // --- Variables Explicación/Audio ---
     private lateinit var contenedorFaseExplicacion: View
     private lateinit var btnPlayPause: ImageButton
     private lateinit var seekBar: SeekBar
@@ -48,33 +43,25 @@ class AhorcadoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Bloqueo de orientación
         try {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         } catch (e: Exception) {}
 
         setContentView(R.layout.activity_ahorcado)
 
-        // 1. Inicializamos las vistas estándar
         inicializarVistas()
 
-        // ---------------------------------------------------------------
-        // 2. ACCESIBILIDAD
-        // ---------------------------------------------------------------
         val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
         val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
         if (usarTextoGrande) {
             findViewById<TextView>(R.id.tvTituloCabecera)?.textSize = 34f
-            // tvPalabra.textSize = 32f  <-- ELIMINADO para que funcione el Autosize del XML
             tvResultado.textSize = 30f
             findViewById<TextView>(R.id.tvTextoExplicativo)?.textSize = 24f
             btnJarraituJuego.textSize = 22f
             btnJarraituExplicacion.textSize = 22f
         }
-        // ---------------------------------------------------------------
 
-        // 3. Iniciamos el juego
         iniciarJuego()
     }
 
@@ -93,7 +80,6 @@ class AhorcadoActivity : AppCompatActivity() {
         tvResultado = findViewById(R.id.tvResultado)
         llTeclado = findViewById(R.id.llTeclado)
 
-        // Inicializamos el ImageView del GIF
         ivGifResultado = findViewById(R.id.ivGifResultado)
 
         btnJarraituJuego = findViewById(R.id.btnJarraituJuego)
@@ -136,9 +122,8 @@ class AhorcadoActivity : AppCompatActivity() {
         contenedorFaseJuego.visibility = View.VISIBLE
         contenedorFaseExplicacion.visibility = View.GONE
         tvResultado.visibility = View.GONE
-        ivGifResultado.visibility = View.GONE // Reset del GIF
+        ivGifResultado.visibility = View.GONE
 
-        // Aseguramos que el teclado sea visible al empezar
         llTeclado.visibility = View.VISIBLE
 
         btnVolverMapa.visibility = View.VISIBLE
@@ -164,7 +149,6 @@ class AhorcadoActivity : AppCompatActivity() {
         var contador = 0
         var filaActual: LinearLayout? = null
 
-        // Margen entre botones (2dp)
         val marginPx = (2 * resources.displayMetrics.density).toInt()
 
         for (letra in 'A'..'Z') {
@@ -185,7 +169,6 @@ class AhorcadoActivity : AppCompatActivity() {
             boton.text = letra.toString()
             boton.textSize = 14f
 
-            // Ajustes para que quepan 7 botones
             boton.setPadding(0,0,0,0)
             boton.minWidth = 0
             boton.minimumWidth = 0
@@ -193,9 +176,9 @@ class AhorcadoActivity : AppCompatActivity() {
             boton.minimumHeight = 0
 
             val paramsBtn = LinearLayout.LayoutParams(
-                0, // Ancho 0 para usar weight
-                120, // Altura fija (pixeles)
-                1.0f // Peso 1 para que se repartan
+                0,
+                120,
+                1.0f
             )
             paramsBtn.setMargins(marginPx, 0, marginPx, 0)
 
@@ -205,7 +188,6 @@ class AhorcadoActivity : AppCompatActivity() {
             contador++
         }
 
-        // Rellenar huecos en la última fila
         val letrasRestantes = 7 - (contador % 7)
         if (letrasRestantes < 7 && filaActual != null) {
             for (i in 0 until letrasRestantes) {
@@ -220,7 +202,6 @@ class AhorcadoActivity : AppCompatActivity() {
 
     private fun procesarLetra(letra: Char, boton: Button) {
         if (palabraActual.contains(letra)) {
-            // --- ACIERTO (VERDE) ---
             if (!letrasAdivinadas.contains(letra)) {
                 letrasAdivinadas.add(letra)
                 puntuacionActual += 10
@@ -230,12 +211,10 @@ class AhorcadoActivity : AppCompatActivity() {
             actualizarTextoPantalla()
             verificarVictoria()
         } else {
-            // --- FALLO (GRIS) ---
             errores++
             puntuacionActual -= 5
             if (puntuacionActual < 0) puntuacionActual = 0
 
-            // ⚪ AHORA SE PONE GRIS (No rojo)
             boton.isEnabled = false
             boton.setBackgroundColor(android.graphics.Color.GRAY)
 
@@ -281,12 +260,10 @@ class AhorcadoActivity : AppCompatActivity() {
     }
 
     private fun mostrarResultadoFinal(gano: Boolean) {
-        // Ocultamos el teclado siempre al finalizar
         llTeclado.visibility = View.GONE
 
         tvResultado.visibility = View.VISIBLE
 
-        // --- VARIABLE PARA EL GIF ---
         val gifResId: Int
 
         if (gano) {
@@ -299,9 +276,7 @@ class AhorcadoActivity : AppCompatActivity() {
             tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_acierto))
             ivAhorcado.setImageResource(R.drawable.escudo)
 
-            // GIF FELIZ
             gifResId = R.drawable.leonfeliz
-            // MARCAR ACTIVIDAD COMO COMPLETADA
             val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
             val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
             prefs.edit().putBoolean("completado_ahorcado_$nombreUsuario", true).apply()
@@ -311,11 +286,9 @@ class AhorcadoActivity : AppCompatActivity() {
             tvResultado.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
             ivAhorcado.setImageResource(R.drawable.escudo)
 
-            // GIF TRISTE
             gifResId = R.drawable.leontriste
         }
 
-        // --- CARGAR EL GIF CORRESPONDIENTE ---
         ivGifResultado.visibility = View.VISIBLE
         try {
             Glide.with(this).asGif().load(gifResId).into(ivGifResultado)
@@ -328,7 +301,6 @@ class AhorcadoActivity : AppCompatActivity() {
         val colorActivo = ContextCompat.getColor(this, R.color.ahorcado)
         btnJarraituJuego.backgroundTintList = ColorStateList.valueOf(colorActivo)
 
-        // ✅ AQUÍ ESTÁ EL CAMBIO: TEXTO BLANCO AL ACTIVARSE
         btnJarraituJuego.setTextColor(android.graphics.Color.WHITE)
     }
 
@@ -342,7 +314,7 @@ class AhorcadoActivity : AppCompatActivity() {
 
     private fun configurarAudio() {
         if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(this, R.raw.audioahorcado)
+            mediaPlayer = MediaPlayer.create(this, R.raw.jarduera_1)
             mediaPlayer?.let { seekBar.max = it.duration }
             mediaPlayer?.setOnCompletionListener {
                 btnPlayPause.setImageResource(android.R.drawable.ic_media_play)

@@ -30,13 +30,11 @@ class SopaActivity : AppCompatActivity() {
     private lateinit var btnVolverMapa: ImageButton
     private var textoDesplegado = false
 
-    // Audio
     private lateinit var btnPlayPauseIcon: ImageButton
     private lateinit var seekBarAudio: SeekBar
     private lateinit var runnable: Runnable
     private var handler = Handler(Looper.getMainLooper())
 
-    // Juego
     private lateinit var wordSearchView: WordSearchView
     private lateinit var layoutPalabras: LinearLayout
     private lateinit var tvProgress: TextView
@@ -65,7 +63,6 @@ class SopaActivity : AppCompatActivity() {
         try {
             initializeViews()
 
-            // ACCESIBILIDAD: LETRA GRANDE
             val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
             val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
@@ -269,10 +266,6 @@ class SopaActivity : AppCompatActivity() {
     }
 }
 
-// ============================================================================
-// CLASE WORDSEARCHVIEW (MODIFICADA PARA BLOQUEAR DIAGONALES)
-// ============================================================================
-
 class WordSearchView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -420,7 +413,7 @@ class WordSearchView @JvmOverloads constructor(
                     val cell = getCellFromTouch(event.x, event.y)
                     if (cell != null && cell != currentCell) {
                         currentCell = cell
-                        updateSelection() // 👈 AQUÍ SE LLAMA A LA LÓGICA NUEVA
+                        updateSelection()
                         invalidate()
                     }
                 }
@@ -448,7 +441,6 @@ class WordSearchView @JvmOverloads constructor(
         return if (row in 0 until gridRows && col in 0 until gridCols) Pair(row, col) else null
     }
 
-    // 🔴 CAMBIO IMPORTANTE: SOLO PERMITE SELECCIÓN VERTICAL U HORIZONTAL
     private fun updateSelection() {
         val start = startCell ?: return
         val current = currentCell ?: return
@@ -458,7 +450,6 @@ class WordSearchView @JvmOverloads constructor(
         val rowDiff = current.first - start.first
         val colDiff = current.second - start.second
 
-        // Si la distancia horizontal es mayor que la vertical -> BLOQUEO HORIZONTAL
         if (abs(colDiff) > abs(rowDiff)) {
             val step = if (colDiff > 0) 1 else -1
             val count = abs(colDiff)
@@ -466,7 +457,6 @@ class WordSearchView @JvmOverloads constructor(
                 selectedCells.add(Pair(start.first, start.second + (i * step)))
             }
         }
-        // Si no (distancia vertical mayor) -> BLOQUEO VERTICAL
         else {
             val step = if (rowDiff > 0) 1 else -1
             val count = abs(rowDiff)
@@ -485,7 +475,6 @@ class WordSearchView @JvmOverloads constructor(
         for (word in targetWords) {
             if ((selectedWord == word || reversedWord == word) && !foundWords.contains(word)) {
 
-                // Evitar conflictos si una palabra vertical corta se parece a una horizontal
                 if (word == "BARRENKALE") {
                     val esLaVertical = selectedCells.all { it.second == 11 }
                     if (esLaVertical) continue

@@ -9,7 +9,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "DidaktikApp.
 
     private val TABLE_ALUMNOS = "alumnos"
 
-    // 👇 ESTO ES LO QUE ARREGLA LA SUBIDA DE ARCHIVOS
     override fun onConfigure(db: SQLiteDatabase) {
         super.onConfigure(db)
         db.disableWriteAheadLogging()
@@ -73,7 +72,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "DidaktikApp.
         val db = this.readableDatabase
         val nombreLimpio = nombre.trim()
 
-        // Mapeo simple de nombres de actividad a columnas
         val columna = when {
             juego.contains("Ahorcado") -> "ahorcado"
             juego.contains("Muralla") -> "muralla"
@@ -117,17 +115,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "DidaktikApp.
         return rankingList
     }
 
-    // 👇 FUNCIÓN NUEVA PARA BORRAR Y REINICIAR ID A 1
     fun borrarTodo() {
         val db = this.writableDatabase
-
-        // 1. Borra todos los alumnos
         db.execSQL("DELETE FROM $TABLE_ALUMNOS")
-
-        // 2. Reinicia el contador (ID vuelve a 1)
-        // OJO: 'sqlite_sequence' es una tabla interna de Android, no la toques
         db.execSQL("DELETE FROM sqlite_sequence WHERE name = '$TABLE_ALUMNOS'")
-
         db.close()
     }
 }

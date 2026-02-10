@@ -10,7 +10,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide // Importante: Necesitas la librería Glide
+import com.bumptech.glide.Glide
 
 class MurallaActivity : AppCompatActivity() {
 
@@ -32,7 +32,6 @@ class MurallaActivity : AppCompatActivity() {
     private lateinit var op3: RadioButton
     private lateinit var btnResponder: Button
 
-    // Referencia al ImageView del GIF
     private lateinit var ivGifResultado: ImageView
 
     private lateinit var btnFinalizar: Button
@@ -69,7 +68,6 @@ class MurallaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_muralla)
 
-        // Inicialización
         txtTitulo = findViewById(R.id.txtTitulo)
         txtIntro1 = findViewById(R.id.txtIntro1)
         txtIntro2 = findViewById(R.id.txtIntro2)
@@ -81,7 +79,6 @@ class MurallaActivity : AppCompatActivity() {
         seekBarAudio = findViewById(R.id.seekBarAudio)
         layoutMuralla = findViewById(R.id.layoutMuralla)
 
-        // Referencia al ImageView
         ivGifResultado = findViewById(R.id.ivGifResultado)
 
         btnFinalizar = findViewById(R.id.btnFinalizar)
@@ -127,7 +124,6 @@ class MurallaActivity : AppCompatActivity() {
         btnComenzar.visibility = View.VISIBLE
         btnFinalizar.visibility = View.GONE
 
-        // Textos
         txtIntro1.text = "Orain dela urte asko, Bilbon harrizko harresi handi bat eraiki zen hiria babesteko asmoarekin.\n" +
                 "Bertan familia garrantzitsuenak bizi ziren, euren etxe, denda eta Katedralarekin. Harresitik\n" +
                 "kanpo, berriz, herri giroa zegoen, Pelota eta Ronda izeneko kaleetan."
@@ -279,33 +275,27 @@ class MurallaActivity : AppCompatActivity() {
         txtPregunta.visibility = View.VISIBLE
         txtPregunta.setTypeface(null, android.graphics.Typeface.BOLD)
 
-        // VARIABLE PARA DECIDIR QUÉ GIF MOSTRAR
         val gifResId: Int
 
         if (progreso == preguntas.size) {
-            // SI ACIERTA TODAS
             txtPregunta.text = "🏰 Zorionak!\nHarresia osatu duzu!"
             txtPregunta.setTextColor(ContextCompat.getColor(this, R.color.mi_acierto))
-            gifResId = R.drawable.leonfeliz // León feliz
+            gifResId = R.drawable.leonfeliz
         } else {
-            // SI FALLA ALGUNA
             txtPregunta.text = "Galdu duzu!\n(Puntuazioa: $progreso/5)"
             txtPregunta.setTextColor(ContextCompat.getColor(this, R.color.mi_error_texto))
-            gifResId = R.drawable.leontriste // León triste
+            gifResId = R.drawable.leontriste
         }
-        // ========================================
-        // ✅ NUEVO: MARCAR ACTIVIDAD COMO COMPLETADA PARA ESTE USUARIO
-        // ========================================
+
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
         prefs.edit().putBoolean("completado_muralla_$nombreUsuario", true).apply()
 
-        // CARGAMOS EL GIF SELECCIONADO
         ivGifResultado.visibility = View.VISIBLE
         try {
             Glide.with(this)
                 .asGif()
-                .load(gifResId) // Carga el ID decidido arriba
+                .load(gifResId)
                 .into(ivGifResultado)
         } catch (e: Exception) {
             ivGifResultado.setImageResource(gifResId)

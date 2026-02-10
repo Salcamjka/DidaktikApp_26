@@ -18,22 +18,18 @@ import com.bumptech.glide.Glide
 
 class PuzzleActivity : AppCompatActivity() {
 
-    // Contadores
     private var aciertosLehenaldia = 0
     private var aciertosOrainaldia = 0
     private var completadoLehenaldia = false
     private var completadoOrainaldia = false
 
-    // 12 piezas (4x3)
     private val PIEZAS_POR_PUZZLE = 12
     private val PUNTOS_POR_PUZZLE = 250
     private var puntuacionTotal = 0
 
-    // Dimensiones de las piezas (Un poco más pequeñas para que quepan mejor)
     private val PIEZA_ANCHO = 150
     private val PIEZA_ALTO = 110
 
-    // Audio
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
     private lateinit var runnable: Runnable
@@ -41,18 +37,15 @@ class PuzzleActivity : AppCompatActivity() {
     private lateinit var seekBarAudio: SeekBar
     private lateinit var btnAudio: ImageButton
 
-    // Contenedores
     private lateinit var contenedorJuego: LinearLayout
     private lateinit var layoutFinal: LinearLayout
     private lateinit var btnJarraitu: Button
     private lateinit var txtTituloPrincipal: TextView
     private lateinit var btnVolverMapa: ImageButton
 
-    // Referencias a textos
     private lateinit var tvInstruccionArrastrar: TextView
     private lateinit var tvMensajeVictoria: TextView
 
-    // GIF
     private lateinit var ivGifResultado: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +72,6 @@ class PuzzleActivity : AppCompatActivity() {
         btnJarraitu = findViewById(R.id.btnJarraitu)
         val btnFinalizarTotal = findViewById<Button>(R.id.btnFinalizarTotal)
 
-        // ACCESIBILIDAD
         val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
         val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
@@ -105,7 +97,6 @@ class PuzzleActivity : AppCompatActivity() {
             finish()
         }
 
-        // Carga de imágenes
         val imagenesPasado = Array(PIEZAS_POR_PUZZLE) { i -> resources.getIdentifier("pasado$i", "drawable", packageName) }
         val imagenesPresente = Array(PIEZAS_POR_PUZZLE) { i -> resources.getIdentifier("presente$i", "drawable", packageName) }
 
@@ -117,7 +108,6 @@ class PuzzleActivity : AppCompatActivity() {
         for (i in 0 until PIEZAS_POR_PUZZLE) todasLasPiezas.add(PiezaPuzzle(i, "orainaldia", imagenesPresente[i]))
         todasLasPiezas.shuffle()
 
-        // CREAR PIEZAS ARRASTRABLES (TAMAÑO AJUSTADO)
         for (pieza in todasLasPiezas) {
             val img = ImageView(this)
             img.setImageResource(pieza.imagenID)
@@ -150,7 +140,6 @@ class PuzzleActivity : AppCompatActivity() {
             hueco.setBackgroundColor(Color.LTGRAY)
             hueco.scaleType = ImageView.ScaleType.FIT_XY
 
-            // TAMAÑO AJUSTADO AQUÍ TAMBIÉN
             val params = GridLayout.LayoutParams()
             params.width = PIEZA_ANCHO
             params.height = PIEZA_ALTO

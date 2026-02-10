@@ -6,7 +6,7 @@ import android.content.pm.ActivityInfo
 import android.graphics.*
 import android.os.Bundle
 import android.widget.ImageButton
-import android.widget.Toast // ✅ Importante para el mensaje
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -93,10 +93,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             val estaCompletado = prefs.getBoolean(punto.claveCompletado, false)
 
             val iconoMarcador = if (estaCompletado) {
-                // 🖌️ PINCHO GRIS
                 crearPinchoGris()
             } else {
-                // 🔴 PINCHO ROJO
                 BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
             }
 
@@ -121,14 +119,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         map.mapType = if (modoOscuro) GoogleMap.MAP_TYPE_HYBRID else GoogleMap.MAP_TYPE_NORMAL
     }
 
-    // ================================================================
-    // 🔒 LÓGICA DE BLOQUEO DE ACTIVIDADES COMPLETADAS
-    // ================================================================
     override fun onMarkerClick(marker: Marker): Boolean {
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
 
-        // Identificamos qué actividad es y cuál es su clave de completado
         val (claveCompletado, claseActividad) = when (marker.title) {
             "Antzinako Harresia" -> Pair("completado_muralla_$nombreUsuario", MurallaActivity::class.java)
             "Zazpi Kaleak" -> Pair("completado_sopa_$nombreUsuario", SopaActivity::class.java)
@@ -139,24 +133,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         }
 
         if (claveCompletado != null && claseActividad != null) {
-            // Comprobamos si ya está hecha
             val yaHecho = prefs.getBoolean(claveCompletado, false)
 
             if (yaHecho) {
-                // 🚫 BLOQUEADO: Mostramos mensaje y NO abrimos la actividad
                 Toast.makeText(this, "Jarduera hau eginda dago! ✅", Toast.LENGTH_SHORT).show()
             } else {
-                // ✅ LIBRE: Abrimos la actividad
                 startActivity(Intent(this, claseActividad))
             }
         }
 
-        return true // Devolvemos true para indicar que hemos gestionado el click
+        return true
     }
 
-    // ================================================================
-    // DIBUJAR PINCHO GRIS EN MEMORIA
-    // ================================================================
     private fun crearPinchoGris(): BitmapDescriptor {
         val width = 60
         val height = 90
@@ -164,7 +152,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         val canvas = Canvas(bitmap)
         val paint = Paint()
 
-        paint.color = Color.parseColor("#616161") // Gris Oscuro
+        paint.color = Color.parseColor("#616161")
         paint.style = Paint.Style.FILL
         paint.isAntiAlias = true
 

@@ -11,27 +11,21 @@ class AccesibilidadActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_accesibilidad)
 
-        // Referencias
         val switchContraste = findViewById<Switch>(R.id.switchContraste)
         val switchTexto = findViewById<Switch>(R.id.switchTexto)
         val btnVolver = findViewById<Button>(R.id.btnVolver)
 
-        // 1. ABRIR MEMORIA
         val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
         val editor = sharedPref.edit()
 
-        // 2. LEER ESTADO REAL
-        // Aquí recuperamos cómo estaba el interruptor mientras la app siga abierta
         switchContraste.isChecked = sharedPref.getBoolean("MODO_OSCURO", false)
         switchTexto.isChecked = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
-        // 3. GUARDAR CAMBIOS: ALTO CONTRASTE
         switchContraste.setOnCheckedChangeListener { _, isChecked ->
             editor.putBoolean("MODO_OSCURO", isChecked)
             editor.apply()
         }
 
-        // 4. GUARDAR CAMBIOS: TEXTO GRANDE
         switchTexto.setOnCheckedChangeListener { _, isChecked ->
             editor.putBoolean("MODO_TEXTO_GRANDE", isChecked)
             editor.apply()

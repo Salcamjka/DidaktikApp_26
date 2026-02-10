@@ -71,38 +71,26 @@ class TxakurraActivity : AppCompatActivity() {
         try {
             inicializarVistas()
 
-            // ================================================================
-            // 🔎 ACCESIBILIDAD: LETRA GRANDE
-            // ================================================================
             val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
             val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
             if (usarTextoGrande) {
-                // NOTA: El título "Txakurraren Iturria" NO se toca aquí.
-                // Se ajusta solo en el XML gracias al AutoSize.
-
-                // 1. Cabecera e Intro
                 tvTextoIntro1.textSize = 24f
                 tvTextoIntro2.textSize = 24f
                 tvLeerMas.textSize = 22f
                 btnContinuar.textSize = 24f
 
-                // 2. Tabla (Títulos y etiquetas)
                 findViewById<TextView>(R.id.tvTituloTabla)?.textSize = 34f
                 findViewById<TextView>(R.id.tvLabelTxakurra)?.textSize = 22f
                 findViewById<TextView>(R.id.tvLabelLehoia)?.textSize = 22f
                 findViewById<TextView>(R.id.tvInstruccionTabla)?.textSize = 22f
 
-                // 3. Inputs (Cuadros de texto) - CORREGIDO
-                // Antes estaba en 24f y era demasiado grande. Lo bajamos a 20f.
                 for (input in inputs) {
                     input.textSize = 20f
                 }
 
-                // 4. Botón final
                 btnFinish.textSize = 24f
             }
-            // ================================================================
 
             configurarAudio()
             configurarLogicaJuego()
@@ -191,17 +179,14 @@ class TxakurraActivity : AppCompatActivity() {
         val respuestasPosibles = respuestasCorrectas[id] ?: emptyList()
 
         if (respuestasPosibles.contains(textoEscrito)) {
-            // ACIERTO: Verde Oscuro
             editText.setTextColor(Color.parseColor("#006400"))
             aciertos++
         } else {
-            // FALLO: Rojo
             editText.setTextColor(Color.RED)
         }
 
         editText.isEnabled = false
         editText.isFocusable = false
-        // Fondo grisáceo al terminar
         editText.setBackgroundColor(Color.parseColor("#E0E0E0"))
 
         intentosTotales++
@@ -219,7 +204,7 @@ class TxakurraActivity : AppCompatActivity() {
 
             ivGifResultado.visibility = View.VISIBLE
 
-            val gifResId = if (aciertos >= 5) { // Un poco flexible con los aciertos
+            val gifResId = if (aciertos >= 5) {
                 R.drawable.leonfeliz
             } else {
                 R.drawable.leontriste
@@ -231,7 +216,6 @@ class TxakurraActivity : AppCompatActivity() {
                 ivGifResultado.setImageResource(gifResId)
             }
 
-            // Subimos puntuación al terminar
             guardarPuntuacion()
         }
     }

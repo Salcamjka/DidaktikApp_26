@@ -17,14 +17,12 @@ object SyncHelper {
     private const val UPLOAD_URL = "$BASE_URL/upload-db"
     private const val RANKING_URL = "$BASE_URL/ranking"
 
-    // --- FUNCIÓN PARA SUBIR DATOS (POST) ---
     fun subirInmediatamente(context: Context) {
         Thread {
             val dbPath = context.getDatabasePath("DidaktikApp.db")
             if (!dbPath.exists()) return@Thread
 
             try {
-                // Checkpoint para asegurar datos frescos
                 val dbHelper = DatabaseHelper(context)
                 val db = dbHelper.writableDatabase
                 db.rawQuery("PRAGMA wal_checkpoint(FULL)", null).close()
@@ -37,8 +35,6 @@ object SyncHelper {
         }.start()
     }
 
-    // --- NUEVA FUNCIÓN PARA DESCARGAR RANKING (GET) ---
-    // Recibe una "función callback" para devolver los datos cuando lleguen
     fun obtenerRankingMundial(onResultado: (List<String>) -> Unit) {
         Thread {
             try {
@@ -49,7 +45,6 @@ object SyncHelper {
                 conn.readTimeout = 5000
 
                 if (conn.responseCode == 200) {
-                    // Leer respuesta
                     val reader = BufferedReader(InputStreamReader(conn.inputStream))
                     val response = StringBuilder()
                     var line: String?
@@ -58,8 +53,6 @@ object SyncHelper {
                     }
                     reader.close()
 
-                    // Parsear JSON manual (Sin Retrofit)
-                    // El JSON viene así: [{"nombre":"Nini", "puntos":1500}, ...]
                     val jsonArray = JSONArray(response.toString())
                     val rankingList = mutableListOf<String>()
 
@@ -70,22 +63,20 @@ object SyncHelper {
                         rankingList.add("$nombre ($puntos pt)")
                     }
 
-                    // Devolver lista al hilo principal
                     onResultado(rankingList)
 
                 } else {
-                    onResultado(emptyList()) // Error o lista vacía
+                    onResultado(emptyList())
                 }
                 conn.disconnect()
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                onResultado(emptyList()) // Error de conexión
+                onResultado(emptyList())
             }
         }.start()
     }
 
-    // --- LÓGICA INTERNA DE SUBIDA ---
     private fun uploadFile(file: File) {
         val boundary = "*****" + System.currentTimeMillis() + "*****"
         val lineEnd = "\r\n"
