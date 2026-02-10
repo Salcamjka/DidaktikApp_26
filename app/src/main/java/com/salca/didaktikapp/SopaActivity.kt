@@ -17,8 +17,23 @@ import com.bumptech.glide.Glide
 import kotlin.math.abs
 import kotlin.math.min
 
+/**
+ * Actividad que implementa el juego de Sopa de Letras (Letra Sopa).
+ *
+ * El objetivo es encontrar los nombres de las 7 calles históricas del Casco Viejo de Bilbao (Zazpi Kaleak).
+ *
+ * Características principales:
+ * * **Dos fases:** Introducción histórica (texto/audio) y Juego.
+ * * **Vista personalizada:** Utiliza [WordSearchView] para dibujar el tablero y gestionar los gestos táctiles.
+ * * **Restricciones:** Solo permite seleccionar palabras en horizontal o vertical (no diagonal).
+ * * **Feedback:** Checkboxes que se marcan automáticamente al encontrar palabras.
+ *
+ * @author Salca
+ * @version 1.0
+ */
 class SopaActivity : AppCompatActivity() {
 
+    // --- Variables de Interfaz (UI) ---
     private lateinit var mainScrollView: ScrollView
     private lateinit var contenedorIntro: LinearLayout
     private lateinit var sopaContainer: LinearLayout
@@ -30,17 +45,20 @@ class SopaActivity : AppCompatActivity() {
     private lateinit var btnVolverMapa: ImageButton
     private var textoDesplegado = false
 
+    // --- Variables de Audio ---
     private lateinit var btnPlayPauseIcon: ImageButton
     private lateinit var seekBarAudio: SeekBar
     private lateinit var runnable: Runnable
     private var handler = Handler(Looper.getMainLooper())
 
+    // --- Variables del Juego ---
     private lateinit var wordSearchView: WordSearchView
     private lateinit var layoutPalabras: LinearLayout
     private lateinit var tvProgress: TextView
     private lateinit var btnFinish: Button
     private lateinit var ivGifResultado: ImageView
 
+    // Checkboxes para feedback visual de las calles encontradas
     private lateinit var cbBarrencalle: CheckBox
     private lateinit var cbBelosticalle: CheckBox
     private lateinit var cbCarniceriaVieja: CheckBox
@@ -49,7 +67,10 @@ class SopaActivity : AppCompatActivity() {
     private lateinit var cbTenderia: CheckBox
     private lateinit var cbBarrenkaleBarrena: CheckBox
 
+    // Mapa para vincular el nombre de la palabra encontrada con su CheckBox correspondiente
     private val wordToCheckbox = mutableMapOf<String, CheckBox>()
+
+    // Estado del juego
     private var foundWordsCount = 0
     private val totalWords = 7
     private var puntuacionActual = 0
@@ -57,16 +78,25 @@ class SopaActivity : AppCompatActivity() {
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
 
+    /**
+     * Método de creación de la actividad.
+     *
+     * Inicializa la interfaz, configura los ajustes de accesibilidad (tamaño de texto)
+     * y prepara los controles de audio y juego.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sopa)
         try {
+            // 1. Inicializar vistas
             initializeViews()
 
+            // 2. Configurar Accesibilidad (Texto Grande)
             val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
             val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
             if (usarTextoGrande) {
+                // Aumentar tamaño de fuentes manualmente si el modo está activo
                 findViewById<TextView>(R.id.tvTituloIntro)?.textSize = 34f
                 tvTextoIntro1.textSize = 24f
                 tvTextoIntro2.textSize = 24f
@@ -81,6 +111,7 @@ class SopaActivity : AppCompatActivity() {
                 }
             }
 
+            // 3. Configurar lógica
             setupAudioControls()
             setupWordSearchView()
             setupFinishButton()
@@ -91,6 +122,7 @@ class SopaActivity : AppCompatActivity() {
         }
     }
 
+    /** Libera recursos del MediaPlayer y el Handler al salir. */
     override fun onDestroy() {
         super.onDestroy()
         if (::runnable.isInitialized) handler.removeCallbacks(runnable)
@@ -98,6 +130,9 @@ class SopaActivity : AppCompatActivity() {
         mediaPlayer = null
     }
 
+    /**
+     * Vincula las variables con los IDs del XML y configura los botones iniciales.
+     */
     private fun initializeViews() {
         mainScrollView = findViewById(R.id.mainScrollView)
         contenedorIntro = findViewById(R.id.contenedorIntro)
@@ -118,6 +153,7 @@ class SopaActivity : AppCompatActivity() {
         btnFinish = findViewById(R.id.btnFinish)
         ivGifResultado = findViewById(R.id.ivGifResultado)
 
+        // Inicialización de CheckBoxes
         cbBarrencalle = findViewById(R.id.cbBarrencalle)
         cbBelosticalle = findViewById(R.id.cbBelosticalle)
         cbCarniceriaVieja = findViewById(R.id.cbCarniceriaVieja)
@@ -126,6 +162,7 @@ class SopaActivity : AppCompatActivity() {
         cbTenderia = findViewById(R.id.cbTenderia)
         cbBarrenkaleBarrena = findViewById(R.id.cbBarrenkaleBarrena)
 
+        // Mapeo para saber qué CheckBox activar al encontrar una palabra
         wordToCheckbox["SOMERA"] = cbSomera
         wordToCheckbox["ARTEKALE"] = cbArtecalle
         wordToCheckbox["TENDERIA"] = cbTenderia
@@ -141,6 +178,7 @@ class SopaActivity : AppCompatActivity() {
             finish()
         }
 
+        // Lógica "Leer más / Leer menos"
         tvLeerMas.setOnClickListener {
             if (!textoDesplegado) {
                 tvTextoIntro2.visibility = View.VISIBLE
@@ -155,13 +193,19 @@ class SopaActivity : AppCompatActivity() {
             }
         }
 
+        // Botón para ocultar intro y mostrar el juego
         btnComenzarSopa.setOnClickListener {
             if (isPlaying) pauseAudio()
             contenedorIntro.visibility = View.GONE
             sopaContainer.visibility = View.VISIBLE
+            // Scroll arriba para ver el tablero completo
             mainScrollView.scrollTo(0, 0)
         }
     }
+
+    // ================================================================
+    // MÉTODOS DE AUDIO
+    // ================================================================
 
     private fun setupAudio() {
         try {
@@ -209,13 +253,24 @@ class SopaActivity : AppCompatActivity() {
         handler.postDelayed(runnable, 0)
     }
 
+    // ================================================================
+    // LÓGICA DEL JUEGO (Callback desde WordSearchView)
+    // ================================================================
+
+    /**
+     * Configura el listener que se dispara cuando el usuario encuentra una palabra en el tablero.
+     */
     private fun setupWordSearchView() {
         wordSearchView.onWordFoundListener = { word, count ->
             foundWordsCount = count
+
+            // Marcar el CheckBox correspondiente
             wordToCheckbox[word]?.isChecked = true
+
             puntuacionActual += 50
             updateProgress()
 
+            // Guardado automático tras cada acierto
             guardarPuntuacionEnBD(puntuacionActual)
             SyncHelper.subirInmediatamente(this)
 
@@ -231,6 +286,9 @@ class SopaActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Actualiza el contador de texto (X/7) y habilita el botón finalizar si está completo.
+     */
     private fun updateProgress() {
         tvProgress.text = "$foundWordsCount/$totalWords"
         val isComplete = foundWordsCount == totalWords
@@ -244,12 +302,16 @@ class SopaActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Gestiona la victoria: Suma bonus, guarda estado "Completado" y muestra GIF.
+     */
     private fun onGameCompleted() {
-        puntuacionActual += 150
+        puntuacionActual += 150 // Bonus por completar todo
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
         val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
         prefs.edit().putBoolean("completado_sopa_$nombreUsuario", true).apply()
 
+        // Ocultar lista de palabras y mostrar León Feliz
         layoutPalabras.visibility = View.GONE
         ivGifResultado.visibility = View.VISIBLE
         Glide.with(this).asGif().load(R.drawable.leonfeliz).into(ivGifResultado)
@@ -266,18 +328,35 @@ class SopaActivity : AppCompatActivity() {
     }
 }
 
+// ============================================================================
+// CLASE WORDSEARCHVIEW (VISTA PERSONALIZADA)
+// ============================================================================
+
+/**
+ * Vista personalizada que dibuja una matriz de letras y gestiona la selección táctil.
+ *
+ * Funcionalidades:
+ * * Dibuja una cuadrícula de 17x12 letras.
+ * * Detecta gestos de arrastre (Drag) del dedo.
+ * * **Bloqueo de ejes:** Fuerza la selección a ser horizontal o vertical (evita diagonales).
+ * * Ilumina las palabras ya encontradas.
+ *
+ * @constructor Inicializa los objetos Paint y las dimensiones.
+ */
 class WordSearchView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    // Configuración de la cuadrícula
     private val gridRows = 17
     private val gridCols = 12
     private var cellSize = 0f
     private var offsetX = 0f
     private var offsetY = 0f
 
+    // Matriz de letras (Hardcoded con las 7 calles)
     private val grid = arrayOf(
         charArrayOf('C', 'S', 'O', 'M', 'E', 'R', 'A', 'K', 'Z', 'P', 'L', 'B'),
         charArrayOf('A', 'A', 'R', 'T', 'E', 'K', 'A', 'L', 'E', 'W', 'N', 'A'),
@@ -298,12 +377,14 @@ class WordSearchView @JvmOverloads constructor(
         charArrayOf('O', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'A')
     )
 
+    // Variables de estado de selección
     private val foundWords = mutableSetOf<String>()
     private var isDragging = false
-    private var startCell: Pair<Int, Int>? = null
-    private var currentCell: Pair<Int, Int>? = null
-    private val selectedCells = mutableListOf<Pair<Int, Int>>()
+    private var startCell: Pair<Int, Int>? = null   // Celda donde empezó el toque
+    private var currentCell: Pair<Int, Int>? = null // Celda actual del dedo
+    private val selectedCells = mutableListOf<Pair<Int, Int>>() // Lista de celdas seleccionadas temporalmente
 
+    // Colores para resaltar palabras encontradas
     private val wordColors = listOf(
         ContextCompat.getColor(context, R.color.sopa_verde),
         ContextCompat.getColor(context, R.color.sopa_azul),
@@ -314,8 +395,10 @@ class WordSearchView @JvmOverloads constructor(
         ContextCompat.getColor(context, R.color.sopa_lima)
     )
 
+    // Mapa para recordar de qué color pintar cada celda encontrada
     private val foundCellColors = mutableMapOf<Pair<Int, Int>, Int>()
 
+    // Objetos Paint (Estilos de dibujo)
     private val gridPaint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.sopa_rejilla)
         strokeWidth = 1.5f
@@ -330,31 +413,41 @@ class WordSearchView @JvmOverloads constructor(
 
     private val highlightPaint = Paint().apply {
         style = Paint.Style.FILL
-        alpha = 200
+        alpha = 200 // Transparencia para ver la letra debajo
     }
 
     private val selectionPaint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.sopa_seleccion_dedo)
         style = Paint.Style.FILL
-        alpha = 120
+        alpha = 120 // Transparencia durante la selección
     }
 
+    // Callback para notificar a la Activity
     var onWordFoundListener: ((String, Int) -> Unit)? = null
 
+    /** Calcula el tamaño de las celdas cuando cambia el tamaño de la pantalla. */
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         val gridWidth = w - 32f
         val gridHeight = h - 32f
+        // Calculamos el tamaño de celda para que quepa todo el grid centrado
         cellSize = min(gridWidth / gridCols, gridHeight / gridRows)
         val totalWidth = cellSize * gridCols
         val totalHeight = cellSize * gridRows
+        // Calculamos márgenes para centrar
         offsetX = (w - totalWidth) / 2f
         offsetY = (h - totalHeight) / 2f
         textPaint.textSize = cellSize * 0.45f
     }
 
+    /**
+     * Dibuja el tablero en el Canvas.
+     * Orden: Celdas encontradas -> Selección actual -> Líneas -> Letras.
+     */
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
+        // 1. Pintar fondo de palabras ya encontradas
         for ((cell, color) in foundCellColors) {
             highlightPaint.color = color
             val (row, col) = cell
@@ -366,6 +459,8 @@ class WordSearchView @JvmOverloads constructor(
                 highlightPaint
             )
         }
+
+        // 2. Pintar la selección actual del usuario (arrastre)
         for (cell in selectedCells) {
             val (row, col) = cell
             canvas.drawRect(
@@ -376,6 +471,8 @@ class WordSearchView @JvmOverloads constructor(
                 selectionPaint
             )
         }
+
+        // 3. Pintar líneas de la cuadrícula
         for (i in 0..gridCols) {
             val pos = offsetX + i * cellSize
             canvas.drawLine(pos, offsetY, pos, offsetY + gridRows * cellSize, gridPaint)
@@ -384,6 +481,8 @@ class WordSearchView @JvmOverloads constructor(
             val pos = offsetY + i * cellSize
             canvas.drawLine(offsetX, pos, offsetX + gridCols * cellSize, pos, gridPaint)
         }
+
+        // 4. Pintar letras
         for (row in 0 until gridRows) {
             for (col in 0 until gridCols) {
                 val x = offsetX + col * cellSize + cellSize / 2
@@ -393,8 +492,12 @@ class WordSearchView @JvmOverloads constructor(
         }
     }
 
+    /** Gestiona los eventos táctiles (tocar y arrastrar). */
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        // Importante: Pedimos al ScrollView padre que NO intercepte el toque
+        // para poder arrastrar el dedo por la sopa de letras sin que se mueva la pantalla.
         parent.requestDisallowInterceptTouchEvent(true)
+
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 val cell = getCellFromTouch(event.x, event.y)
@@ -404,7 +507,7 @@ class WordSearchView @JvmOverloads constructor(
                     currentCell = cell
                     selectedCells.clear()
                     selectedCells.add(cell)
-                    invalidate()
+                    invalidate() // Forzar redibujado
                 }
                 return true
             }
@@ -413,7 +516,7 @@ class WordSearchView @JvmOverloads constructor(
                     val cell = getCellFromTouch(event.x, event.y)
                     if (cell != null && cell != currentCell) {
                         currentCell = cell
-                        updateSelection()
+                        updateSelection() // Calculamos qué celdas iluminar
                         invalidate()
                     }
                 }
@@ -421,13 +524,14 @@ class WordSearchView @JvmOverloads constructor(
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 if (isDragging) {
-                    checkForWord()
+                    checkForWord() // Comprobar si la selección forma una palabra válida
                     isDragging = false
                     selectedCells.clear()
                     startCell = null
                     currentCell = null
                     invalidate()
                 }
+                // Permitir scroll de nuevo al soltar
                 parent.requestDisallowInterceptTouchEvent(false)
                 return true
             }
@@ -435,12 +539,21 @@ class WordSearchView @JvmOverloads constructor(
         return super.onTouchEvent(event)
     }
 
+    /** Convierte coordenadas de pantalla (X,Y) a índices de matriz (Fila, Columna). */
     private fun getCellFromTouch(x: Float, y: Float): Pair<Int, Int>? {
         val col = ((x - offsetX) / cellSize).toInt()
         val row = ((y - offsetY) / cellSize).toInt()
         return if (row in 0 until gridRows && col in 0 until gridCols) Pair(row, col) else null
     }
 
+    /**
+     * Calcula las celdas seleccionadas entre el punto inicial y el actual.
+     *
+     * IMPLENTA EL BLOQUEO DE EJES:
+     * Si el usuario mueve el dedo más en horizontal, se bloquea la fila.
+     * Si lo mueve más en vertical, se bloquea la columna.
+     * Esto evita selecciones diagonales.
+     */
     private fun updateSelection() {
         val start = startCell ?: return
         val current = currentCell ?: return
@@ -450,6 +563,7 @@ class WordSearchView @JvmOverloads constructor(
         val rowDiff = current.first - start.first
         val colDiff = current.second - start.second
 
+        // Si la distancia horizontal es mayor que la vertical -> BLOQUEO HORIZONTAL (Misma fila)
         if (abs(colDiff) > abs(rowDiff)) {
             val step = if (colDiff > 0) 1 else -1
             val count = abs(colDiff)
@@ -457,6 +571,7 @@ class WordSearchView @JvmOverloads constructor(
                 selectedCells.add(Pair(start.first, start.second + (i * step)))
             }
         }
+        // Si no (distancia vertical mayor) -> BLOQUEO VERTICAL (Misma columna)
         else {
             val step = if (rowDiff > 0) 1 else -1
             val count = abs(rowDiff)
@@ -466,24 +581,39 @@ class WordSearchView @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Comprueba si las celdas seleccionadas forman una de las 7 palabras objetivo.
+     */
     private fun checkForWord() {
         if (selectedCells.isEmpty()) return
+
+        // Construir string con las letras seleccionadas
         val selectedWord = buildString { for (cell in selectedCells) append(grid[cell.first][cell.second]) }
+        // Permitir selección inversa (de derecha a izquierda o abajo a arriba)
         val reversedWord = selectedWord.reversed()
+
         val targetWords = listOf("SOMERA", "ARTEKALE", "TENDERIA", "BELOSTIKALE", "CARNICERIAVIEJA", "BARRENKALE", "BARRENKALEBARRENA")
 
         for (word in targetWords) {
             if ((selectedWord == word || reversedWord == word) && !foundWords.contains(word)) {
 
+                // Lógica especial para evitar conflicto entre BARRENKALE y BARRENKALEBARRENA
+                // Si encontramos "BARRENKALE" pero es la columna vertical (índice 11), ignoramos
+                // para obligar al usuario a seleccionar la larga horizontal.
                 if (word == "BARRENKALE") {
                     val esLaVertical = selectedCells.all { it.second == 11 }
                     if (esLaVertical) continue
                 }
 
+                // ¡Palabra encontrada!
                 foundWords.add(word)
+
+                // Asignar color permanente
                 val colorIndex = foundWords.size - 1
                 val color = wordColors[colorIndex % wordColors.size]
                 for (cell in selectedCells) foundCellColors[cell] = color
+
+                // Avisar a la Activity
                 onWordFoundListener?.invoke(word, foundWords.size)
                 break
             }

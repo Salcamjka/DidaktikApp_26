@@ -14,8 +14,25 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 
+/**
+ * Actividad correspondiente a la parada "Txakurraren Iturria" (La Fuente del Perro).
+ *
+ * Esta actividad plantea una dinámica diferente:
+ * 1. **Fase Educativa:** Explicación sobre la fuente, sus leones (que parecen perros) y su historia.
+ * 2. **Fase de Juego:** Una tabla comparativa donde el alumno debe escribir características
+ * que diferencian a un Perro (Txakurra) de un León (Lehoia).
+ *
+ * Características técnicas:
+ * * Validación de texto escrito por el usuario.
+ * * Gestión de foco y teclado (IME Actions).
+ * * Feedback visual inmediato (Texto verde/rojo).
+ *
+ * @author Salca
+ * @version 1.0
+ */
 class TxakurraActivity : AppCompatActivity() {
 
+    // --- Variables de Interfaz (Intro) ---
     private lateinit var contenedorIntro: LinearLayout
     private lateinit var tvTextoIntro1: TextView
     private lateinit var tvTextoIntro2: TextView
@@ -26,12 +43,15 @@ class TxakurraActivity : AppCompatActivity() {
     private lateinit var btnContinuar: Button
     private var textoDesplegado = false
 
+    // --- Variables de Interfaz (Juego) ---
     private lateinit var contenedorTabla: LinearLayout
     private lateinit var btnFinish: Button
     private lateinit var ivGifResultado: ImageView
 
+    // Lista de todos los campos de texto (EditText)
     private lateinit var inputs: List<EditText>
 
+    // Mapa de respuestas correctas: ID del campo -> Lista de palabras válidas
     private val respuestasCorrectas = mapOf(
         R.id.etTxakurra1 to listOf("kanidoa", "kanido", "txakurra"),
         R.id.etTxakurra2 to listOf("etxea", "etxekoa", "basa", "kale"),
@@ -46,13 +66,17 @@ class TxakurraActivity : AppCompatActivity() {
         R.id.etLehoia5 to listOf("handia", "oso handia")
     )
 
+    // Variables de estado del juego
     private var aciertos = 0
     private var intentosTotales = 0
     private val TOTAL_PREGUNTAS = 10
 
+    // --- Variables de Audio ---
     private var audio: MediaPlayer? = null
     private val audioHandler = Handler(Looper.getMainLooper())
     private var isPlaying = false
+
+    // Runnable para actualizar la barra de progreso del audio
     private val updateSeekBarRunnable = object : Runnable {
         override fun run() {
             try {
@@ -64,17 +88,25 @@ class TxakurraActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Método de inicio de la actividad.
+     *
+     * Carga el layout, aplica accesibilidad si es necesario e inicializa la lógica de validación.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_txakurra)
 
         try {
+            // 1. Inicializar vistas
             inicializarVistas()
 
+            // 2. Comprobar Accesibilidad (Texto Grande)
             val sharedPref = getSharedPreferences("AjustesApp", Context.MODE_PRIVATE)
             val usarTextoGrande = sharedPref.getBoolean("MODO_TEXTO_GRANDE", false)
 
             if (usarTextoGrande) {
+                // Aumentar tamaños de fuente manualmente
                 tvTextoIntro1.textSize = 24f
                 tvTextoIntro2.textSize = 24f
                 tvLeerMas.textSize = 22f
@@ -85,6 +117,7 @@ class TxakurraActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.tvLabelLehoia)?.textSize = 22f
                 findViewById<TextView>(R.id.tvInstruccionTabla)?.textSize = 22f
 
+                // Ajustar todos los cuadros de texto
                 for (input in inputs) {
                     input.textSize = 20f
                 }
@@ -92,6 +125,7 @@ class TxakurraActivity : AppCompatActivity() {
                 btnFinish.textSize = 24f
             }
 
+            // 3. Configurar lógica
             configurarAudio()
             configurarLogicaJuego()
 
@@ -100,6 +134,9 @@ class TxakurraActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Vincula las variables con los elementos del XML.
+     */
     private fun inicializarVistas() {
         contenedorIntro = findViewById(R.id.contenedorIntro)
         tvTextoIntro1 = findViewById(R.id.tvTextoIntro1)
@@ -114,6 +151,7 @@ class TxakurraActivity : AppCompatActivity() {
         btnFinish = findViewById(R.id.btnFinish)
         ivGifResultado = findViewById(R.id.ivGifResultado)
 
+        // Lista de los 10 campos editables (5 perro + 5 león)
         inputs = listOf(
             findViewById(R.id.etTxakurra1), findViewById(R.id.etTxakurra2),
             findViewById(R.id.etTxakurra3), findViewById(R.id.etTxakurra4),
@@ -127,6 +165,7 @@ class TxakurraActivity : AppCompatActivity() {
             finish()
         }
 
+        // Expandir/Colapsar texto de introducción
         tvLeerMas.setOnClickListener {
             if (!textoDesplegado) {
                 tvTextoIntro2.visibility = View.VISIBLE
@@ -141,6 +180,7 @@ class TxakurraActivity : AppCompatActivity() {
             }
         }
 
+        // Pasar de la intro al juego
         btnContinuar.setOnClickListener {
             if (isPlaying) pauseAudio()
             contenedorIntro.visibility = View.GONE
@@ -153,11 +193,19 @@ class TxakurraActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Configura los Listeners para cada campo de texto.
+     * Se valida la respuesta cuando:
+     * 1. El usuario cambia el foco a otro campo.
+     * 2. El usuario pulsa "Intro" o "Siguiente" en el teclado.
+     */
     private fun configurarLogicaJuego() {
         for (input in inputs) {
+            // Listener de Foco (cuando pinchas fuera)
             input.setOnFocusChangeListener { v, hasFocus ->
                 if (!hasFocus) validarCampo(input)
             }
+            // Listener de Teclado (Done/Next)
             input.setOnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                     validarCampo(input)
@@ -169,44 +217,57 @@ class TxakurraActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Valida si el texto introducido es correcto comparándolo con el mapa `respuestasCorrectas`.
+     *
+     * @param editText El campo de texto a validar.
+     */
     private fun validarCampo(editText: EditText) {
-        if (!editText.isEnabled) return
+        if (!editText.isEnabled) return // Si ya está validado, salimos
 
         val textoEscrito = editText.text.toString().trim().lowercase()
-        if (textoEscrito.isEmpty()) return
+        if (textoEscrito.isEmpty()) return // Si está vacío, no hacemos nada
 
         val id = editText.id
         val respuestasPosibles = respuestasCorrectas[id] ?: emptyList()
 
         if (respuestasPosibles.contains(textoEscrito)) {
+            // ACIERTO: Texto verde oscuro
             editText.setTextColor(Color.parseColor("#006400"))
             aciertos++
         } else {
+            // FALLO: Texto rojo
             editText.setTextColor(Color.RED)
         }
 
+        // Bloqueamos el campo para que no se pueda editar más
         editText.isEnabled = false
         editText.isFocusable = false
-        editText.setBackgroundColor(Color.parseColor("#E0E0E0"))
+        editText.setBackgroundColor(Color.parseColor("#E0E0E0")) // Fondo grisáceo
 
         intentosTotales++
         verificarFinalizacion()
     }
 
+    /**
+     * Comprueba si se han respondido las 10 preguntas.
+     */
     private fun verificarFinalizacion() {
         if (intentosTotales == TOTAL_PREGUNTAS) {
+            // Habilitar botón de finalizar
             btnFinish.isEnabled = true
             btnFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.txakurra))
 
+            // Guardar estado completado
             val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
             val nombreUsuario = prefs.getString("nombre_alumno_actual", "") ?: ""
             prefs.edit().putBoolean("completado_txakurra_$nombreUsuario", true).apply()
 
+            // Mostrar GIF según rendimiento
             ivGifResultado.visibility = View.VISIBLE
-
-            val gifResId = if (aciertos >= 5) {
+            val gifResId = if (aciertos >= 5) { // Aprobado
                 R.drawable.leonfeliz
-            } else {
+            } else { // Suspenso
                 R.drawable.leontriste
             }
 
@@ -216,10 +277,14 @@ class TxakurraActivity : AppCompatActivity() {
                 ivGifResultado.setImageResource(gifResId)
             }
 
+            // Guardar automáticamente al terminar
             guardarPuntuacion()
         }
     }
 
+    /**
+     * Guarda la puntuación en la BD y sincroniza con el servidor.
+     */
     private fun guardarPuntuacion() {
         val puntos = aciertos * 10
         val prefs = getSharedPreferences("DidaktikAppPrefs", Context.MODE_PRIVATE)
@@ -228,6 +293,10 @@ class TxakurraActivity : AppCompatActivity() {
         dbHelper.guardarPuntuacion(nombre, "Txakurra", puntos)
         SyncHelper.subirInmediatamente(this)
     }
+
+    // ================================================================
+    // MÉTODOS DE AUDIO
+    // ================================================================
 
     private fun configurarAudio() {
         if (audio == null) {
